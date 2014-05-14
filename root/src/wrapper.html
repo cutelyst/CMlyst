@@ -1,0 +1,9 @@
+{% if no_wrapper %}
+  {% include template %}
+{% else %}
+  {% if adminbase %}
+    {% include "admin/base.html" %}
+  {% else %}
+    {% include "site/base.html" %}
+  {% endif %}
+{% endif %}

@@ -7,6 +7,7 @@ include_directories(
 set(untitled_SRCS
     root.cpp
     admin.cpp
+    adminsetup.cpp
     adminlogin.cpp
     blog.cpp
     authstoresql.cpp

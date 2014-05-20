@@ -39,6 +39,10 @@ Root::Root()
     m_view->setWrapper("wrapper.html");
 }
 
+Root::~Root()
+{
+}
+
 void Root::notFound(Context *c, Controller::Path)
 {
     c->stash()[QLatin1String("template")] = "404.html";

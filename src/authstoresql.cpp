@@ -14,11 +14,13 @@ AuthStoreSql::AuthStoreSql()
 
 Authentication::User AuthStoreSql::findUser(Context *ctx, const CStringHash &userinfo)
 {
+    Q_UNUSED(ctx);
+
     qDebug() << "FIND USER -> " << userinfo;
     QString id = userinfo[m_idField];
 
     QSqlQuery query;
-    query.prepare("SELECT * FROM users WHERE username = :id");
+    query.prepare("SELECT * FROM u_users WHERE username = :id");
     query.bindValue(":id", id);
     query.exec();
     qDebug() << query.executedQuery() <<  query.size();

@@ -24,14 +24,26 @@
 
 using namespace Cutelyst;
 
+namespace Cutelyst {
+class View;
+}
+
 class Admin : public Controller
 {
     Q_OBJECT
+    Q_CLASSINFO(C_NAMESPACE, ".admin")
 public:
     Admin();
 
-    Q_INVOKABLE bool Auto(Context *ctx);
+public slots:
+    bool Auto(Context *ctx);
 
+    void notFound(Context *ctx, Path);
+
+    void End(Context *ctx);
+
+private:
+    View *m_view;
 };
 
 #endif // ADMIN_H

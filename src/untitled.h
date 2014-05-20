@@ -29,8 +29,12 @@ class Untitled : public Cutelyst::Application
     Q_INTERFACES(Cutelyst::Application)
 public:
     explicit Untitled(QObject *parent = 0);
+    ~Untitled();
 
     bool init();
+
+public slots:
+    void loop();
 };
 
 #endif // UNTITLED_H

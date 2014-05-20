@@ -19,20 +19,32 @@
 
 #include "admin.h"
 
-#include <QSqlQuery>
+#include <Cutelyst/Context>
 #include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/view.h>
+
+#include <QTimer>
+#include <QSqlRecord>
+#include <QStringBuilder>
+#include <QDebug>
 
 using namespace Plugin;
 
 Admin::Admin()
 {
+    m_view = new View("Grantlee", this);
+    m_view->setIncludePath("/home/daniel/code/untitled/root/src/admin");
+    m_view->setTemplateExtension(".html");
+    m_view->setWrapper("wrapper.html");
 }
 
 bool Admin::Auto(Context *ctx)
 {
     qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
 
-    if (*ctx->controller() == "AdminLogin" || ctx->actionName() == "logout") {
+    if (*ctx->controller() == "AdminLogin" ||
+            *ctx->controller() == "AdminSetup" ||
+            ctx->actionName() == "logout") {
         return true;
     }
 
@@ -46,4 +58,16 @@ bool Admin::Auto(Context *ctx)
     ctx->stash()["adminbase"] = true;
 
     return true;
+}
+
+void Admin::notFound(Context *ctx, Controller::Path)
+{
+    ctx->stash()[QLatin1String("template")] = "404.html";
+    ctx->res()->setStatus(404);
+}
+
+void Admin::End(Context *ctx)
+{
+    qDebug() << "*** Admin::End()";
+    m_view->process(ctx);
 }

@@ -28,12 +28,14 @@
 
 #include <QtSql/QSqlDatabase>
 #include <QSqlError>
+#include <QTimer>
 
 #include "authstoresql.h"
 
 #include "root.h"
 #include "admin.h"
 #include "adminlogin.h"
+#include "adminsetup.h"
 #include "blog.h"
 
 Untitled::Untitled(QObject *parent) :
@@ -41,10 +43,17 @@ Untitled::Untitled(QObject *parent) :
 {
 }
 
+Untitled::~Untitled()
+{
+}
+
 bool Untitled::init()
 {
     registerController(new Root);
     registerController(new Admin);
+    if (qEnvironmentVariableIsSet("SETUP")) {
+        registerController(new AdminSetup);
+    }
     registerController(new AdminLogin);
     registerController(new Blog);
 
@@ -82,7 +91,14 @@ bool Untitled::init()
         qDebug() << "Failed to open database";
         qDebug() << db.lastError().databaseText();
         qDebug() << db.lastError().driverText();
-        return false;
+//        return false;
     }
+//    QTimer::singleShot(1000, this, SLOT(loop()));
+
     return true;
+}
+
+void Untitled::loop()
+{
+    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 }

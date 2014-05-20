@@ -33,14 +33,15 @@ class View;
 class Root : public Controller
 {
     Q_OBJECT
-    Q_CLASSINFO("Namespace", "")
+    Q_CLASSINFO(C_NAMESPACE, "")
 public:
     Root();
+    ~Root();
 
-public:
-    Q_INVOKABLE void notFound(Context *c, Path);
+public slots:
+    void notFound(Context *c, Path);
 
-    Q_INVOKABLE void End(Context *c);
+    void End(Context *c);
 
     static QVariant sqlQueryToStash(QSqlQuery *query, bool singleRow = false);
     static void bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &params, bool htmlEscaped = true);

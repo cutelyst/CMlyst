@@ -27,10 +27,12 @@ using namespace Cutelyst;
 class AdminLogin : public Controller
 {
     Q_OBJECT
+    Q_CLASSINFO(C_NAMESPACE, ".admin/login")
 public:
     explicit AdminLogin(QObject *parent = 0);
 
-    Q_INVOKABLE void Index(Cutelyst::Context *c, Path, Args);
+public slots:
+    void index(Cutelyst::Context *c, Path, Args);
 };
 
 #endif // ADMINLOGIN_H

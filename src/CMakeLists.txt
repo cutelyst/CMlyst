@@ -9,6 +9,7 @@ set(untitled_SRCS
     admin.cpp
     adminsetup.cpp
     adminlogin.cpp
+    adminposts.cpp
     blog.cpp
     authstoresql.cpp
     untitled.cpp

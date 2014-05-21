@@ -1,0 +1,24 @@
+<h2 class="sub-header">Posts</h2>
+
+<a href="/.admin/posts/new">Add New</a>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for post in posts %}
+      <tr>
+      <td><a href="/.admin/edit/{{ post.id }}">{{ post.title }}</a></td>
+        <td>{{ post.author }}</td>
+        <td>{{ post.created }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

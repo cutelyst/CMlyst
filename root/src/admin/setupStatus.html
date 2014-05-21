@@ -1,0 +1,23 @@
+<h2 class="sub-header">Configured Users</h2>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>E-mail</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for user in users %}
+      <tr>
+        <td>{{ user.id }}</td>
+        <td><a href="/edit/{{ user.id }}">{{ user.username }}</a></td>
+        <td>{{ user.email }}</td>
+        <td><a href="/remove_user/{{ user.id }}">Delete</a></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

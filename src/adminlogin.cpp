@@ -34,7 +34,7 @@ AdminLogin::AdminLogin(QObject *parent)
 {
 }
 
-void AdminLogin::Index(Context *c, Path, Args)
+void AdminLogin::index(Context *c, Controller::Path, Controller::Args)
 {
     qDebug() << "AdminLogin::Index";
 
@@ -45,7 +45,7 @@ void AdminLogin::Index(Context *c, Path, Args)
             Authentication *auth = c->plugin<Authentication*>();
             CStringHash userinfo;
             userinfo["username"] = username;
-            userinfo["userpass"] = password;
+            userinfo["pass"] = password;
             qDebug() << Q_FUNC_INFO << auth;
 
             // Authenticate
@@ -64,5 +64,5 @@ void AdminLogin::Index(Context *c, Path, Args)
 
     c->stash()["username"] = username;
     c->stash()["no_wrapper"] = "1";
-    c->stash()["template"] = "admin/login.html";
+    c->stash()["template"] = "login.html";
 }

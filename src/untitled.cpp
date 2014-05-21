@@ -35,6 +35,7 @@
 #include "root.h"
 #include "admin.h"
 #include "adminlogin.h"
+#include "adminposts.h"
 #include "adminsetup.h"
 #include "blog.h"
 
@@ -49,18 +50,20 @@ Untitled::~Untitled()
 
 bool Untitled::init()
 {
-    registerController(new Root);
-    registerController(new Admin);
     if (qEnvironmentVariableIsSet("SETUP")) {
         registerController(new AdminSetup);
+    } else {
+        registerController(new Root);
+        registerController(new Admin);
+        registerController(new AdminLogin);
+        registerController(new AdminPosts);
+        registerController(new Blog);
     }
-    registerController(new AdminLogin);
-    registerController(new Blog);
 
     AuthStoreSql *storeSql = new AuthStoreSql;
 
     CredentialPassword *password = new CredentialPassword;
-    password->setPasswordField(QLatin1String("userpass"));
+    password->setPasswordField(QLatin1String("pass"));
     password->setPasswordType(CredentialPassword::Hashed);
     password->setHashType(QCryptographicHash::Sha256);
 

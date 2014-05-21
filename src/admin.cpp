@@ -43,17 +43,18 @@ bool Admin::Auto(Context *ctx)
     qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
 
     if (*ctx->controller() == "AdminLogin" ||
-            *ctx->controller() == "AdminSetup" ||
             ctx->actionName() == "logout") {
         return true;
     }
 
     Authentication *auth = ctx->plugin<Authentication*>();
     if (auth && !auth->userExists()) {
-        qDebug() << "*** Admin::Auto() User not found forwarding to /admin/login";
-        ctx->forward(QLatin1String("/admin/login/Index"));
+        qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
+        ctx->forward(QLatin1String("/.admin/login/index"));
         return false;
     }
+
+    ctx->setObjectName("Untitled");
 
     ctx->stash()["adminbase"] = true;
 

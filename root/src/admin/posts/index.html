@@ -14,9 +14,9 @@
     <tbody>
     {% for post in posts %}
       <tr>
-      <td><a href="/.admin/edit/{{ post.id }}">{{ post.title }}</a></td>
+      <td><a href="/.admin/posts/edit/{{ post.id }}">{{ post.title }}</a></td>
         <td>{{ post.author }}</td>
-        <td>{{ post.created }}</td>
+        <td>{{ post.modified }}</td>
       </tr>
     {% endfor %}
     </tbody>

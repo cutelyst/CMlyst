@@ -1,5 +1,7 @@
 #include "adminposts.h"
 
+#include "root.h"
+
 #include <Cutelyst/Plugin/authentication.h>
 
 #include <QSqlQuery>
@@ -15,6 +17,21 @@ AdminPosts::AdminPosts(QObject *parent) :
 
 void AdminPosts::index(Context *ctx, Controller::Path, Controller::Args)
 {
+    QSqlQuery query;
+    query.prepare("SELECT p.id, p.title, u.username AS author, p.modified "
+                  "FROM u_posts p, u_users u "
+                  "WHERE p.user_id = u.id "
+                  "ORDER BY 2");
+    if (!query.exec()) {
+        ctx->stash()["error_msg"] = query.lastError().text();
+        return;
+    } else if (query.size() == 0){
+        ctx->res()->redirect("/setup");
+        return;
+    }
+
+    ctx->stash()["posts"] = Root::sqlQueryToStash(&query);
+
     ctx->stash()["template"] = "posts/index.html";
 }
 

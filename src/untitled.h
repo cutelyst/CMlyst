@@ -33,6 +33,8 @@ public:
 
     bool init();
 
+    bool postFork();
+
 public slots:
     void loop();
 };

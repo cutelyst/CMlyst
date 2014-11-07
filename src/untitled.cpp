@@ -86,6 +86,13 @@ bool Untitled::init()
         return false;
     }
 
+    return true;
+}
+
+bool Untitled::postFork()
+{
+//    qCritical() << "PostgreSQL driver not available" << QCoreApplication::applicationPid();
+
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("untitled");
@@ -94,7 +101,7 @@ bool Untitled::init()
         qDebug() << "Failed to open database";
         qDebug() << db.lastError().databaseText();
         qDebug() << db.lastError().driverText();
-//        return false;
+        return false;
     }
 //    QTimer::singleShot(1000, this, SLOT(loop()));
 

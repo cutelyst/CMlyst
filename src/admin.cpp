@@ -50,7 +50,7 @@ bool Admin::Auto(Context *ctx)
     Authentication *auth = ctx->plugin<Authentication*>();
     if (auth && !auth->userExists()) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        ctx->forward(QLatin1String("/.admin/login/index"));
+        ctx->forward(".admin/login/index");
         return false;
     }
 

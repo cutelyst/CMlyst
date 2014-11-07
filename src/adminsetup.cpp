@@ -25,11 +25,11 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
 {
     qDebug() << Q_FUNC_INFO;
     if (ctx->req()->method() == "POST") {
-        QMultiHash<QString, QString> param = ctx->req()->param();
-        QString email = ctx->req()->param().value(QLatin1String("email"));
-        QString username = ctx->req()->param().value(QLatin1String("username"));
-        QString password = ctx->req()->param().value(QLatin1String("password"));
-        QString password2 = ctx->req()->param().value(QLatin1String("password2"));
+        ParamsMultiMap param = ctx->req()->param();
+        QString email = param.value(QLatin1String("email"));
+        QString username = param.value(QLatin1String("username"));
+        QString password = param.value(QLatin1String("password"));
+        QString password2 = param.value(QLatin1String("password2"));
         ctx->stash()["username"] = username;
         ctx->stash()["email"] = email;
 
@@ -52,7 +52,7 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             }
@@ -66,11 +66,11 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
 
 void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Controller::Args)
 {
-    QMultiHash<QString, QString> param = ctx->req()->param();
-    QString email = ctx->req()->param().value(QLatin1String("email"));
-    QString username = ctx->req()->param().value(QLatin1String("username"));
-    QString password = ctx->req()->param().value(QLatin1String("password"));
-    QString password2 = ctx->req()->param().value(QLatin1String("password2"));
+    ParamsMultiMap param = ctx->req()->param();
+    QString email = param.value(QLatin1String("email"));
+    QString username = param.value(QLatin1String("username"));
+    QString password = param.value(QLatin1String("password"));
+    QString password2 = param.value(QLatin1String("password2"));
     ctx->stash()["username"] = username;
     ctx->stash()["email"] = email;
 
@@ -82,7 +82,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
             ctx->stash()["error_msg"] = query.lastError().text();
             return;
         } else if (query.size() == 0){
-            ctx->res()->redirect("/");
+            ctx->res()->redirect(ctx->uriFor("/"));
             return;
         } else if (query.next()){
             ctx->stash()["username"] = query.value("username");
@@ -92,7 +92,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
 
     if (ctx->req()->method() == "POST") {
         if (password == password2) {
-            if (ctx->req()->param().value("password").isEmpty()) {
+            if (param.value("password").isEmpty()) {
                 QSqlQuery query;
                 query.prepare("UPDATE u_users SET (username, email) "
                               "= (:username, :email) WHERE id = :id");
@@ -102,7 +102,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             } else if (password.size() < 10) {
@@ -122,7 +122,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             }
@@ -144,7 +144,7 @@ void AdminSetup::remove_user(Context *ctx, const QString &id, Controller::Local,
         return;
     }
 
-    ctx->res()->redirect("/");
+    ctx->res()->redirect(ctx->uriFor("/"));
 }
 
 void AdminSetup::status(Context *ctx, Controller::Path)

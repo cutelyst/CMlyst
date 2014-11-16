@@ -25,13 +25,14 @@
 class Untitled : public Cutelyst::Application
 {
     Q_OBJECT
-    Q_PLUGIN_METADATA(IID "org.cutelyst.Untitled")
-    Q_INTERFACES(Cutelyst::Application)
+    CUTELYST_APPLICATION(IID "org.cutelyst.Untitled")
 public:
-    explicit Untitled(QObject *parent = 0);
+    Q_INVOKABLE explicit Untitled(QObject *parent = 0);
     ~Untitled();
 
     bool init();
+
+    bool postFork();
 
 public slots:
     void loop();

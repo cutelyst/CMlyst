@@ -54,7 +54,7 @@ void Root::End(Context *c)
     qDebug() << "*** Root::End()";
 //    c->stash()["template"] = "/home/daniel/code/untitled/root/src/login.html";
 
-    m_view->process(c);
+    m_view->render(c);
 }
 
 QVariant Root::sqlQueryToStash(QSqlQuery *query, bool singleRow)
@@ -101,4 +101,22 @@ void Root::bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &par
             ++it;
         }
     }
+}
+
+void Root::create(Context *ctx, Controller::Args, ActionREST *action)
+{
+    qDebug() << Q_FUNC_INFO;
+    if (action) {
+        qDebug() << Q_FUNC_INFO << "action pointer not 0";
+    }
+}
+
+void Root::create_POST(Context *ctx)
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void Root::create_GET(Context *ctx)
+{
+    qDebug() << Q_FUNC_INFO;
 }

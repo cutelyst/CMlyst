@@ -39,6 +39,8 @@
 #include "adminsetup.h"
 #include "blog.h"
 
+#include <QThread>
+
 Untitled::Untitled(QObject *parent) :
     Cutelyst::Application(parent)
 {
@@ -74,7 +76,7 @@ bool Untitled::init()
     QObject::connect(this, &Application::registerPlugins,
                 [=](Context *ctx) {
 
-        ctx->registerPlugin(new Session);
+//        ctx->registerPlugin(new Session);
 
         Authentication *auth = new Authentication;
         auth->addRealm(realm);
@@ -86,16 +88,24 @@ bool Untitled::init()
         return false;
     }
 
+    return true;
+}
+
+bool Untitled::postFork()
+{
+//    qCritical() << "postFork" << QCoreApplication::applicationPid() << qApp->thread()->currentThread();
+
+
     QSqlDatabase db;
     db = QSqlDatabase::addDatabase("QPSQL");
     db.setDatabaseName("untitled");
 
-    if (!db.open()) {
-        qDebug() << "Failed to open database";
-        qDebug() << db.lastError().databaseText();
-        qDebug() << db.lastError().driverText();
+//    if (!db.open()) {
+//        qDebug() << "Failed to open database";
+//        qDebug() << db.lastError().databaseText();
+//        qDebug() << db.lastError().driverText();
 //        return false;
-    }
+//    }
 //    QTimer::singleShot(1000, this, SLOT(loop()));
 
     return true;

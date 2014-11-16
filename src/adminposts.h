@@ -19,8 +19,9 @@ public:
 
 public slots:
     void index(Cutelyst::Context *ctx, Path, Args);
+    void create(Context *ctx, Controller::Args);
 
-    void create(Cutelyst::Context *ctx, Args);
+    void mySLOT();
 
 };
 

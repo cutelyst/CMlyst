@@ -62,3 +62,9 @@ void AdminPosts::create(Context *ctx, Controller::Args)
     ctx->stash()["content"] = content;
     ctx->stash()["template"] = "posts/create.html";
 }
+
+
+void AdminPosts::mySLOT()
+{
+
+}

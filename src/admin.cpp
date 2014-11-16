@@ -40,7 +40,7 @@ Admin::Admin()
 
 bool Admin::Auto(Context *ctx)
 {
-    qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
+//    qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
 
     if (*ctx->controller() == "AdminLogin" ||
             ctx->actionName() == "logout") {
@@ -50,7 +50,7 @@ bool Admin::Auto(Context *ctx)
     Authentication *auth = ctx->plugin<Authentication*>();
     if (auth && !auth->userExists()) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        ctx->forward(QLatin1String("/.admin/login/index"));
+        ctx->forward("/.admin/login/index");
         return false;
     }
 
@@ -70,5 +70,5 @@ void Admin::notFound(Context *ctx, Controller::Path)
 void Admin::End(Context *ctx)
 {
     qDebug() << "*** Admin::End()";
-    m_view->process(ctx);
+    m_view->render(ctx);
 }

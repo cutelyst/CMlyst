@@ -56,6 +56,22 @@ body {
     
     <div class="container">
 
+<form method="post" action="/.admin/login" enctype="multipart/form-data">
+<input type="file" name="fileA">
+<input type="text" class="form-control" name="username" placeholder="Login" value="login do usuario" >
+<input type="file" name="fileB">
+  <input type="submit">
+</form>
+
+<form method="post" action="/.admin/login">
+<input type="text" class="form-control" name="username" placeholder="Login" value="login do usuario" >
+<textarea name="area51" rows="4" cols="50">
+At w3schools.com you will learn how to
+NEWLINE make a website. We offer free tutorials in all
+NEWLINE web development technologies.
+</textarea>  <input type="submit">
+</form>
+
       <form class="form-signin" method="post" action="/.admin/login">
         <h2 class="form-signin-heading">Untitled Login</h2>
         {% if error_msg %}

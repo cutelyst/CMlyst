@@ -28,9 +28,9 @@ class Blog : public Controller
 {
     Q_OBJECT
 
-    Q_CLASSINFO("Namespace", "")
+    C_NAMESPACE("")
 public:
-    explicit Blog(QObject *parent = 0);
+    Blog();
 
     Q_INVOKABLE void index(Context *ctx, Path, Args);
 

@@ -25,11 +25,11 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
 {
     qDebug() << Q_FUNC_INFO;
     if (ctx->req()->method() == "POST") {
-        QMultiHash<QString, QString> param = ctx->req()->param();
-        QString email = ctx->req()->param().value(QLatin1String("email"));
-        QString username = ctx->req()->param().value(QLatin1String("username"));
-        QString password = ctx->req()->param().value(QLatin1String("password"));
-        QString password2 = ctx->req()->param().value(QLatin1String("password2"));
+        ParamsMultiMap param = ctx->req()->param();
+        QString email = param.value(QLatin1String("email"));
+        QString username = param.value(QLatin1String("username"));
+        QString password = param.value(QLatin1String("password"));
+        QString password2 = param.value(QLatin1String("password2"));
         ctx->stash()["username"] = username;
         ctx->stash()["email"] = email;
 
@@ -66,11 +66,11 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
 
 void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Controller::Args)
 {
-    QMultiHash<QString, QString> param = ctx->req()->param();
-    QString email = ctx->req()->param().value(QLatin1String("email"));
-    QString username = ctx->req()->param().value(QLatin1String("username"));
-    QString password = ctx->req()->param().value(QLatin1String("password"));
-    QString password2 = ctx->req()->param().value(QLatin1String("password2"));
+    ParamsMultiMap param = ctx->req()->param();
+    QString email = param.value(QLatin1String("email"));
+    QString username = param.value(QLatin1String("username"));
+    QString password = param.value(QLatin1String("password"));
+    QString password2 = param.value(QLatin1String("password2"));
     ctx->stash()["username"] = username;
     ctx->stash()["email"] = email;
 
@@ -92,7 +92,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
 
     if (ctx->req()->method() == "POST") {
         if (password == password2) {
-            if (ctx->req()->param().value("password").isEmpty()) {
+            if (param.value("password").isEmpty()) {
                 QSqlQuery query;
                 query.prepare("UPDATE u_users SET (username, email) "
                               "= (:username, :email) WHERE id = :id");
@@ -166,5 +166,5 @@ void AdminSetup::status(Context *ctx, Controller::Path)
 
 void AdminSetup::End(Context *ctx)
 {
-    m_view->process(ctx);
+    m_view->render(ctx);
 }

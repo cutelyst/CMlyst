@@ -36,10 +36,11 @@ public:
     Admin();
 
 public slots:
-    bool Auto(Context *ctx);
 
     void notFound(Context *ctx, Path);
 
+private slots:
+    bool Auto(Context *ctx);
     void End(Context *ctx);
 
 private:

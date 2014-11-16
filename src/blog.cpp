@@ -19,8 +19,7 @@
 
 #include "blog.h"
 
-Blog::Blog(QObject *parent) :
-    Controller(parent)
+Blog::Blog()
 {
 }
 

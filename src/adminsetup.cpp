@@ -52,7 +52,7 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             }
@@ -82,7 +82,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
             ctx->stash()["error_msg"] = query.lastError().text();
             return;
         } else if (query.size() == 0){
-            ctx->res()->redirect("/");
+            ctx->res()->redirect(ctx->uriFor("/"));
             return;
         } else if (query.next()){
             ctx->stash()["username"] = query.value("username");
@@ -102,7 +102,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             } else if (password.size() < 10) {
@@ -122,7 +122,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
                 if (!query.exec()) {
                     ctx->stash()["error_msg"] = query.lastError().text();
                 } else {
-                    ctx->res()->redirect("/");
+                    ctx->res()->redirect(ctx->uriFor("/"));
                     return;
                 }
             }
@@ -144,7 +144,7 @@ void AdminSetup::remove_user(Context *ctx, const QString &id, Controller::Local,
         return;
     }
 
-    ctx->res()->redirect("/");
+    ctx->res()->redirect(ctx->uriFor("/"));
 }
 
 void AdminSetup::status(Context *ctx, Controller::Path)

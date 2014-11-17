@@ -12,7 +12,7 @@ class View;
 class AdminSetup : public Controller
 {
     Q_OBJECT
-    Q_CLASSINFO(C_NAMESPACE, "")
+    C_NAMESPACE("")
 public:
     explicit AdminSetup(QObject *parent = 0);
 

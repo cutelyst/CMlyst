@@ -12,7 +12,7 @@ class View;
 class AdminPosts : public Controller
 {
     Q_OBJECT
-    Q_CLASSINFO(C_NAMESPACE, ".admin/posts")
+    C_NAMESPACE(".admin/posts")
     Q_CLASSINFO("create_Path", "new")
 public:
     explicit AdminPosts(QObject *parent = 0);

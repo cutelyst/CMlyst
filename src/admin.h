@@ -31,7 +31,7 @@ class View;
 class Admin : public Controller
 {
     Q_OBJECT
-    Q_CLASSINFO(C_NAMESPACE, ".admin")
+    C_NAMESPACE(".admin")
 public:
     Admin();
 

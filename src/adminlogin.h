@@ -27,7 +27,7 @@ using namespace Cutelyst;
 class AdminLogin : public Controller
 {
     Q_OBJECT
-    Q_CLASSINFO(C_NAMESPACE, ".admin/login")
+    C_NAMESPACE(".admin/login")
 public:
     explicit AdminLogin(QObject *parent = 0);
 

@@ -19,8 +19,8 @@
 
 #include "adminlogin.h"
 
-#include <Cutelyst/Plugin/Session>
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/Session>
+#include <Cutelyst/Plugins/authentication.h>
 
 #include <QCryptographicHash>
 #include <QFile>
@@ -32,52 +32,12 @@
 
 #include <QDebug>
 
-using namespace Plugin;
-
 AdminLogin::AdminLogin(QObject *parent)
 {
 }
 
-void AdminLogin::index(Context *c, Controller::Path, Controller::Args)
+void AdminLogin::index(Context *c)
 {
-//    qCritical() << "AdminLogin::Index thread" << c << thread()->currentThreadId();
-
-//    c->req()->contentType();
-
-//    QTimer timeout;
-
-//    QThread *test = new QThread(this);
-//    test->start();
-
-//    QEventLoop loop;
-//    connect(&timeout, SIGNAL(timeout()), &loop, SLOT(quit()));
-
-//    timeout.start(5000);
-//    loop.exec();
-//    c->req()->body()->readAll();
-//    Session *session = c->plugin<Session*>();
-//    session->setValue("chave", "senha");
-//    c->res()->body().append(session->value("chave").toByteArray());
-    c->res()->body() = "Hello World!\n";
-    qDebug() << c->req()->headers().authorization();
-    qDebug() << c->req()->headers().authorizationBasic();
-    qDebug() << Q_FUNC_INFO << c->req()->headers().authorizationBasicPair();
-//    c->res()->body() = "<pre>Hello World!\n" + c->req()->uri().url().toLatin1() + "</pre>";
-
-//    c->res()->setContentType("text/html; charset=utf-8");
-    c->detach();
-     qDebug() << Q_FUNC_INFO << 1;
-    return;
-
-//    qDebug() << "AdminLogin::Index" << c;
-//    qDebug() << "AdminLogin headers" << c->req()->headers();
-//    qDebug() << "AdminLogin content type" << c->req()->contentType();
-//    qDebug() << "AdminLogin content encoding" << c->req()->contentEncoding();
-//    qDebug() << "AdminLogin:: upload body size" << c->req()->body()->size();
-//    qDebug() << "AdminLogin:: upload body pos" << c->req()->body()->pos();
-//    qDebug() << "AdminLogin:: upload body sequential" << c->req()->body()->isSequential();
-//    qDebug() << "AdminLogin:: upload body readAll" << c->req()->body()->readAll();
-
     QString username = c->req()->param().value(QLatin1String("username"));
     if (c->req()->method() == "POST") {
         QString password = c->req()->param().value(QLatin1String("password"));

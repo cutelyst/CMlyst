@@ -5,10 +5,6 @@
 
 using namespace Cutelyst;
 
-namespace Cutelyst {
-class View;
-}
-
 class AdminPosts : public Controller
 {
     Q_OBJECT
@@ -17,9 +13,12 @@ class AdminPosts : public Controller
 public:
     explicit AdminPosts(QObject *parent = 0);
 
-public slots:
-    void index(Cutelyst::Context *ctx, Path, Args);
-    void create(Context *ctx, Controller::Args);
+public:
+    C_ATTR(index, :Path :Args)
+    void index(Cutelyst::Context *ctx);
+
+    C_ATTR(create, :Local)
+    void create(Context *ctx);
 
     void mySLOT();
 

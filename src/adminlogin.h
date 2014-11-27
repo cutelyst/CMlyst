@@ -31,8 +31,9 @@ class AdminLogin : public Controller
 public:
     explicit AdminLogin(QObject *parent = 0);
 
-public slots:
-    void index(Cutelyst::Context *c, Path, Args);
+public:
+    C_ATTR(index, :Path :Args)
+    void index(Cutelyst::Context *c);
 };
 
 #endif // ADMINLOGIN_H

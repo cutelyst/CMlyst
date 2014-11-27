@@ -2,20 +2,18 @@
 
 #include "root.h"
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
-
-using namespace Plugin;
 
 AdminPosts::AdminPosts(QObject *parent) :
     Controller(parent)
 {
 }
 
-void AdminPosts::index(Context *ctx, Controller::Path, Controller::Args)
+void AdminPosts::index(Context *ctx)
 {
     QSqlQuery query;
     query.prepare("SELECT p.id, p.title, u.username AS author, p.modified "
@@ -35,7 +33,7 @@ void AdminPosts::index(Context *ctx, Controller::Path, Controller::Args)
     ctx->stash()["template"] = "posts/index.html";
 }
 
-void AdminPosts::create(Context *ctx, Controller::Args)
+void AdminPosts::create(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
     QString title = ctx->req()->param().value("title");

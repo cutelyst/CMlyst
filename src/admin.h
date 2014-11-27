@@ -35,9 +35,9 @@ class Admin : public Controller
 public:
     Admin();
 
-public slots:
-
-    void notFound(Context *ctx, Path);
+public:
+    C_ATTR(notFound, :Path)
+    void notFound(Context *ctx);
 
 private slots:
     bool Auto(Context *ctx);

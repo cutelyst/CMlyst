@@ -21,7 +21,6 @@
 #define ROOT_H
 
 #include <Cutelyst/Controller>
-#include <Cutelyst/Actions/actionrest.h>
 
 #include <QSqlQuery>
 
@@ -40,20 +39,15 @@ public:
     Root();
     ~Root();
 
-public slots:
-    void notFound(Context *c, Path);
+public:
+    C_ATTR(notFound, :Path)
+    void notFound(Context *c);
 
     static QVariant sqlQueryToStash(QSqlQuery *query, bool singleRow = false);
     static void bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &params, bool htmlEscaped = true);
 
-
-    void create(Cutelyst::Context *ctx, Args, ActionREST*);
-
-    void create_POST(Cutelyst::Context *ctx);
-
-
-private slots:
-    void create_GET(Cutelyst::Context *ctx);
+    C_ATTR(create, :Local )
+    void create(Cutelyst::Context *ctx);
 
 private slots:
     void End(Context *c);

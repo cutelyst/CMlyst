@@ -20,15 +20,13 @@
 #include "admin.h"
 
 #include <Cutelyst/Context>
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/view.h>
 
 #include <QTimer>
 #include <QSqlRecord>
 #include <QStringBuilder>
 #include <QDebug>
-
-using namespace Plugin;
 
 Admin::Admin()
 {
@@ -61,7 +59,7 @@ bool Admin::Auto(Context *ctx)
     return true;
 }
 
-void Admin::notFound(Context *ctx, Controller::Path)
+void Admin::notFound(Context *ctx)
 {
     ctx->stash()[QLatin1String("template")] = "404.html";
     ctx->res()->setStatus(404);

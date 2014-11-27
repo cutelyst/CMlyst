@@ -32,17 +32,18 @@ class Blog : public Controller
 public:
     Blog();
 
-    Q_INVOKABLE void index(Context *ctx, Path, Args);
+    C_ATTR(index, :Local)
+    void index(Context *ctx);
 
-    Q_INVOKABLE void page(Context *ctx, const QString &pageName, Path, Args);
+    C_ATTR(page, :Path)
+    void page(Context *ctx, const QString &pageName);
 
-    Q_INVOKABLE void blog(Context *ctx,
-                          const QString &year,
-                          const QString &month,
-                          const QString &day,
-                          const QString &postName,
-                          Path,
-                          Args);
+    C_ATTR(blog, :Path)
+    void blog(Context *ctx,
+              const QString &year,
+              const QString &month,
+              const QString &day,
+              const QString &postName);
 };
 
 #endif // BLOG_H

@@ -20,11 +20,11 @@
 #include "untitled.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Plugin/StaticSimple>
-#include <Cutelyst/Plugin/Session>
-#include <Cutelyst/Plugin/authentication.h>
-#include <Cutelyst/Plugin/Authentication/credentialpassword.h>
-#include <Cutelyst/Plugin/Authentication/minimal.h>
+#include <Cutelyst/Plugins/StaticSimple>
+#include <Cutelyst/Plugins/Session>
+#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/credentialpassword.h>
+#include <Cutelyst/Plugins/Authentication/minimal.h>
 
 #include <QtSql/QSqlDatabase>
 #include <QSqlError>

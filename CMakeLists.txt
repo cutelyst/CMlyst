@@ -9,9 +9,6 @@ find_package(Qt5 COMPONENTS
 )
 find_package(CutelystQt5 REQUIRED)
 
-set(CMAKE_BUILD_TYPE "Debug")
-
-
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)
 # As moc files are generated in the binary dir, tell CMake

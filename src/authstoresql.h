@@ -1,10 +1,9 @@
 #ifndef AUTHSTORESQL_H
 #define AUTHSTORESQL_H
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 
 using namespace Cutelyst;
-using namespace Cutelyst::Plugin;
 
 class AuthStoreSql : public Authentication::Store
 {

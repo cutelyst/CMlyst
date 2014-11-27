@@ -20,15 +20,13 @@
 #include "root.h"
 
 #include <Cutelyst/Context>
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/view.h>
 
 #include <QTimer>
 #include <QSqlRecord>
 #include <QStringBuilder>
 #include <QDebug>
-
-using namespace Plugin;
 
 Root::Root()
 {
@@ -43,7 +41,7 @@ Root::~Root()
 {
 }
 
-void Root::notFound(Context *c, Controller::Path)
+void Root::notFound(Context *c)
 {
     c->stash()[QLatin1String("template")] = "404.html";
     c->res()->setStatus(404);
@@ -103,20 +101,7 @@ void Root::bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &par
     }
 }
 
-void Root::create(Context *ctx, Controller::Args, ActionREST *action)
-{
-    qDebug() << Q_FUNC_INFO;
-    if (action) {
-        qDebug() << Q_FUNC_INFO << "action pointer not 0";
-    }
-}
-
-void Root::create_POST(Context *ctx)
-{
-    qDebug() << Q_FUNC_INFO;
-}
-
-void Root::create_GET(Context *ctx)
+void Root::create(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
 }

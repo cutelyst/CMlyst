@@ -32,8 +32,8 @@ target_link_libraries(untitled
 # TODO install to a place where uWSGI Cutelyst plugin searches for
 install(TARGETS untitled DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 
-add_executable(untitled-app  ${untitled_SRCS} main.cpp)
-qt5_use_modules(untitled-app Core Network Sql)
-target_link_libraries(untitled-app
-    ${CutelystQt5_LIBRARY}
-)
+#add_executable(untitled-app  ${untitled_SRCS} main.cpp)
+#qt5_use_modules(untitled-app Core Network Sql)
+#target_link_libraries(untitled-app
+#    ${CutelystQt5_LIBRARY}
+#)

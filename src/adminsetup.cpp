@@ -2,15 +2,13 @@
 
 #include "root.h"
 
-#include <Cutelyst/Plugin/authentication.h>
+#include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/view.h>
 
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QCryptographicHash>
 #include <QDebug>
-
-using namespace Cutelyst::Plugin;
 
 AdminSetup::AdminSetup(QObject *parent) :
     Controller(parent)
@@ -21,7 +19,7 @@ AdminSetup::AdminSetup(QObject *parent) :
     m_view->setWrapper("wrapper.html");
 }
 
-void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
+void AdminSetup::setup(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
     if (ctx->req()->method() == "POST") {
@@ -64,7 +62,7 @@ void AdminSetup::setup(Context *ctx, Controller::Local, Controller::Args)
     ctx->stash()[QLatin1String("template")] = "setup.html";
 }
 
-void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Controller::Args)
+void AdminSetup::edit(Context *ctx, const QString &id)
 {
     ParamsMultiMap param = ctx->req()->param();
     QString email = param.value(QLatin1String("email"));
@@ -134,7 +132,7 @@ void AdminSetup::edit(Context *ctx, const QString &id, Controller::Local, Contro
     ctx->stash()[QLatin1String("template")] = "setup.html";
 }
 
-void AdminSetup::remove_user(Context *ctx, const QString &id, Controller::Local, Controller::Args)
+void AdminSetup::remove_user(Context *ctx, const QString &id)
 {
     QSqlQuery query;
     query.prepare("DELETE FROM u_users WHERE id = :id");
@@ -147,7 +145,7 @@ void AdminSetup::remove_user(Context *ctx, const QString &id, Controller::Local,
     ctx->res()->redirect(ctx->uriFor("/"));
 }
 
-void AdminSetup::status(Context *ctx, Controller::Path)
+void AdminSetup::status(Context *ctx)
 {
     ctx->stash()[QLatin1String("template")] = "setupStatus.html";
 

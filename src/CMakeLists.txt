@@ -5,6 +5,11 @@ include_directories(
 
 # Our sources
 set(untitled_SRCS
+    ../libCMS/page.cpp
+    ../libCMS/page_p.h
+    ../libCMS/engine.cpp
+    ../libCMS/engine_p.h
+    ../libCMS/fileengine.cpp
     root.cpp
     admin.cpp
     adminsetup.cpp

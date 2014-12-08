@@ -20,11 +20,12 @@
 #include "untitled.h"
 
 #include <Cutelyst/Application>
+#include <Cutelyst/View>
 #include <Cutelyst/Plugins/StaticSimple>
 #include <Cutelyst/Plugins/Session>
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
-#include <Cutelyst/Plugins/Authentication/minimal.h>
+#include <Cutelyst/Plugins/Authentication/htpasswd.h>
 
 #include <QtSql/QSqlDatabase>
 #include <QSqlError>
@@ -52,24 +53,33 @@ Untitled::~Untitled()
 
 bool Untitled::init()
 {
+    View *view = new View("Grantlee", this);
+    view->setTemplateExtension(".html");
+    view->setWrapper("wrapper.html");
+
     if (qEnvironmentVariableIsSet("SETUP")) {
+        view->setIncludePath("/home/daniel/code/untitled/root/src/admin");
+
         registerController(new AdminSetup);
     } else {
+        view->setIncludePath("/home/daniel/code/untitled/root/src");
+
         registerController(new Root);
         registerController(new Admin);
         registerController(new AdminLogin);
         registerController(new AdminPosts);
         registerController(new Blog);
     }
+    registerView(view);
 
-    AuthStoreSql *storeSql = new AuthStoreSql;
+    StoreHtpasswd *store = new StoreHtpasswd("htpasswd");
 
     CredentialPassword *password = new CredentialPassword;
     password->setPasswordField(QLatin1String("pass"));
     password->setPasswordType(CredentialPassword::Hashed);
     password->setHashType(QCryptographicHash::Sha256);
 
-    Authentication::Realm *realm = new Authentication::Realm(storeSql, password);
+    Authentication::Realm *realm = new Authentication::Realm(store, password);
 
     registerPlugin(new StaticSimple("/home/daniel/code/untitled/root"));
 

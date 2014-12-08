@@ -62,7 +62,19 @@ QString Page::path() const
 void Page::setPath(const QString &path)
 {
     Q_D(Page);
-    d->path = path;
+    d->path = readablePath(path);
+}
+
+QString Page::author() const
+{
+    Q_D(const Page);
+    return d->author;
+}
+
+void Page::setAuthor(const QString &author)
+{
+    Q_D(Page);
+    d->author = author;
 }
 
 QByteArray Page::content() const
@@ -99,4 +111,9 @@ void Page::setTags(const QStringList &tags)
 {
     Q_D(Page);
     d->tags = tags;
+}
+
+QString Page::readablePath(const QString &path)
+{
+    return path.simplified().replace(QLatin1Char(' '), QLatin1String("_"));
 }

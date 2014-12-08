@@ -31,10 +31,6 @@
 Root::Root()
 {
     qDebug() << Q_FUNC_INFO;
-    m_view = new View("Grantlee", this);
-    m_view->setIncludePath("/home/daniel/code/untitled/root/src");
-    m_view->setTemplateExtension(".html");
-    m_view->setWrapper("wrapper.html");
 }
 
 Root::~Root()
@@ -50,9 +46,6 @@ void Root::notFound(Context *c)
 void Root::End(Context *c)
 {
     qDebug() << "*** Root::End()";
-//    c->stash()["template"] = "/home/daniel/code/untitled/root/src/login.html";
-
-    m_view->render(c);
 }
 
 QVariant Root::sqlQueryToStash(QSqlQuery *query, bool singleRow)

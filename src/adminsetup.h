@@ -5,10 +5,6 @@
 
 using namespace Cutelyst;
 
-namespace Cutelyst {
-class View;
-}
-
 class AdminSetup : public Controller
 {
     Q_OBJECT
@@ -29,10 +25,8 @@ public:
     C_ATTR(status, :Path)
     void status(Context *ctx);
 
+    C_ATTR(End, :Private :ActionClass(RenderView))
     void End(Context *ctx);
-
-private:
-    View *m_view;
 };
 
 #endif // ADMINSETUP_H

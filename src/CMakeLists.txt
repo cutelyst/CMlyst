@@ -10,6 +10,7 @@ set(untitled_SRCS
     ../libCMS/engine.cpp
     ../libCMS/engine_p.h
     ../libCMS/fileengine.cpp
+    ../libCMS/fileengine_p.h
     root.cpp
     admin.cpp
     adminsetup.cpp

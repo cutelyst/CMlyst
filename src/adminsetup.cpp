@@ -3,6 +3,7 @@
 #include "root.h"
 
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/htpasswd.h>
 #include <Cutelyst/view.h>
 
 #include <QSqlQuery>
@@ -13,10 +14,6 @@
 AdminSetup::AdminSetup(QObject *parent) :
     Controller(parent)
 {
-    m_view = new View("Grantlee", this);
-    m_view->setIncludePath("/home/daniel/code/untitled/root/src/admin");
-    m_view->setTemplateExtension(".html");
-    m_view->setWrapper("wrapper.html");
 }
 
 void AdminSetup::setup(Context *ctx)
@@ -41,18 +38,13 @@ void AdminSetup::setup(Context *ctx)
                 hash.addData(password.toUtf8());
                 password =  hash.result().toHex();
 
-                QSqlQuery query;
-                query.prepare("INSERT INTO u_users (username, pass, email) "
-                              "VALUES (:username, :pass, :email)");
-                query.bindValue(":username", username);
-                query.bindValue(":pass", password);
-                query.bindValue(":email", email);
-                if (!query.exec()) {
-                    ctx->stash()["error_msg"] = query.lastError().text();
-                } else {
-                    ctx->res()->redirect(ctx->uriFor("/"));
-                    return;
-                }
+                Authentication::Realm *realm = auth->realm();
+                StoreHtpasswd *store = static_cast<StoreHtpasswd*>(realm->store());
+                store->addUser({
+                                   {"username", username},
+                                   {"password", password},
+                                   {"email", email}
+                               });
             }
         } else {
             ctx->stash()["error_msg"] = tr("The two password didn't match");
@@ -164,5 +156,5 @@ void AdminSetup::status(Context *ctx)
 
 void AdminSetup::End(Context *ctx)
 {
-    m_view->render(ctx);
+    qDebug() << "*** AdminSetup::End()";
 }

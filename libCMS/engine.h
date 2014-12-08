@@ -15,12 +15,12 @@ public:
 
     bool init(const QHash<QString, QString> &settings);
 
-    virtual Page *getPage(const QString &path) const;
+    virtual Page *getPage(const QString &path);
 
     virtual Page *getPageToEdit(const QString &path) const;
     virtual bool savePage(Page *page);
 
-    virtual QList<Page *> listPages() const;
+    virtual QList<Page *> listPages();
 
 protected:
     EnginePrivate *d_ptr;

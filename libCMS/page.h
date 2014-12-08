@@ -40,6 +40,9 @@ public:
     QString path() const;
     void setPath(const QString &path);
 
+    QString author() const;
+    void setAuthor(const QString &author);
+
     QByteArray content() const;
     void setContent(const QByteArray &body);
 
@@ -48,6 +51,8 @@ public:
 
     QStringList tags() const;
     void setTags(const QStringList &tags);
+
+    static QString readablePath(const QString &path);
 
 protected:
     PagePrivate *d_ptr;

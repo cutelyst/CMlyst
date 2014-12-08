@@ -26,15 +26,10 @@
 
 using namespace Cutelyst;
 
-namespace Cutelyst {
-class View;
-}
-
 class Root : public Controller
 {
     Q_OBJECT
     C_NAMESPACE("")
-    Q_CLASSINFO("create_Path", "new")
 public:
     Root();
     ~Root();
@@ -46,14 +41,11 @@ public:
     static QVariant sqlQueryToStash(QSqlQuery *query, bool singleRow = false);
     static void bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &params, bool htmlEscaped = true);
 
-    C_ATTR(create, :Local )
+    C_ATTR(create, :Local :Path('new'))
     void create(Cutelyst::Context *ctx);
 
 private slots:
     void End(Context *c);
-
-private:
-    View *m_view;
 };
 
 #endif // ROOT_H

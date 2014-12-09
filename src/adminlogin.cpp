@@ -45,7 +45,7 @@ void AdminLogin::index(Context *c)
             Authentication *auth = c->plugin<Authentication*>();
             CStringHash userinfo;
             userinfo["username"] = username;
-            userinfo["pass"] = password;
+            userinfo["password"] = password;
             qDebug() << Q_FUNC_INFO << auth;
 
             // Authenticate

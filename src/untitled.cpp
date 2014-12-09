@@ -75,7 +75,7 @@ bool Untitled::init()
     StoreHtpasswd *store = new StoreHtpasswd("htpasswd");
 
     CredentialPassword *password = new CredentialPassword;
-    password->setPasswordField(QLatin1String("pass"));
+    password->setPasswordField(QLatin1String("password"));
     password->setPasswordType(CredentialPassword::Hashed);
     password->setHashType(QCryptographicHash::Sha256);
 
@@ -86,7 +86,7 @@ bool Untitled::init()
     QObject::connect(this, &Application::registerPlugins,
                 [=](Context *ctx) {
 
-//        ctx->registerPlugin(new Session);
+        ctx->registerPlugin(new Session);
 
         Authentication *auth = new Authentication;
         auth->addRealm(realm);

@@ -22,8 +22,6 @@
 
 #include <Cutelyst/Controller>
 
-#include <QSqlQuery>
-
 using namespace Cutelyst;
 
 class Root : public Controller
@@ -37,9 +35,6 @@ public:
 public:
     C_ATTR(notFound, :Path)
     void notFound(Context *c);
-
-    static QVariant sqlQueryToStash(QSqlQuery *query, bool singleRow = false);
-    static void bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &params, bool htmlEscaped = true);
 
     C_ATTR(create, :Local :Path('new'))
     void create(Cutelyst::Context *ctx);

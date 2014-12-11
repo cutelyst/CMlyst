@@ -23,8 +23,6 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/view.h>
 
-#include <QTimer>
-#include <QSqlRecord>
 #include <QStringBuilder>
 #include <QDebug>
 
@@ -46,52 +44,6 @@ void Root::notFound(Context *c)
 void Root::End(Context *c)
 {
     qDebug() << "*** Root::End()";
-}
-
-QVariant Root::sqlQueryToStash(QSqlQuery *query, bool singleRow)
-{
-    int colunas = query->record().count();
-    // send column headers
-    QStringList cols;
-    for (int j = 0; j < colunas; ++j) {
-        cols << query->record().fieldName(j);
-    }
-
-    QList<QVariantHash> lines;
-    while (query->next()) {
-        QVariantHash line;
-        for (int j = 0; j < colunas; ++j) {
-            line.insert(cols.at(j),
-                        query->value(j));
-        }
-
-        if (singleRow) {
-            return line;
-        }
-        lines << line;
-    }
-
-    if (singleRow) {
-        return QVariant();
-    }
-
-    return qVariantFromValue(lines);
-}
-
-void Root::bindToQuery(QSqlQuery *query, const QMultiHash<QString, QString> &params, bool htmlEscaped)
-{
-    QMultiHash<QString, QString>::ConstIterator it = params.constBegin();
-    if (htmlEscaped) {
-        while (it != params.constEnd()) {
-            query->bindValue(QLatin1Char(':') % it.key(), it.value().toHtmlEscaped());
-            ++it;
-        }
-    } else {
-        while (it != params.constEnd()) {
-            query->bindValue(QLatin1Char(':') % it.key(), it.value());
-            ++it;
-        }
-    }
 }
 
 void Root::create(Context *ctx)

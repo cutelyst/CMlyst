@@ -31,11 +31,6 @@ public:
     ~Untitled();
 
     bool init();
-
-    bool postFork();
-
-public slots:
-    void loop();
 };
 
 #endif // UNTITLED_H

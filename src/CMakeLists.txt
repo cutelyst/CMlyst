@@ -17,7 +17,6 @@ set(untitled_SRCS
     adminlogin.cpp
     adminposts.cpp
     blog.cpp
-    authstoresql.cpp
     untitled.cpp
 )
 
@@ -28,7 +27,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 add_library(untitled SHARED ${untitled_SRCS})
 
 # Link to Qt modules
-qt5_use_modules(untitled Core Network Sql)
+qt5_use_modules(untitled Core Network)
 
 # Link to Cutelyst
 target_link_libraries(untitled

@@ -23,8 +23,6 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/view.h>
 
-#include <QTimer>
-#include <QSqlRecord>
 #include <QStringBuilder>
 #include <QDebug>
 

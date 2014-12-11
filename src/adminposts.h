@@ -19,9 +19,6 @@ public:
 
     C_ATTR(create, :Local)
     void create(Context *ctx);
-
-    void mySLOT();
-
 };
 
 #endif // ADMINPOSTS_H

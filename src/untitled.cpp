@@ -27,9 +27,7 @@
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 
-#include <QtSql/QSqlDatabase>
-#include <QSqlError>
-#include <QTimer>
+#include <QStandardPaths>
 
 #include "authstoresql.h"
 
@@ -39,8 +37,6 @@
 #include "adminposts.h"
 #include "adminsetup.h"
 #include "blog.h"
-
-#include <QThread>
 
 Untitled::Untitled(QObject *parent) :
     Cutelyst::Application(parent)
@@ -93,35 +89,6 @@ bool Untitled::init()
         ctx->registerPlugin(auth);
     });
 
-    if (!QSqlDatabase::drivers().contains("QPSQL")) {
-        qCritical() << "PostgreSQL driver not available";
-        return false;
-    }
-
+    qDebug() << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
     return true;
-}
-
-bool Untitled::postFork()
-{
-//    qCritical() << "postFork" << QCoreApplication::applicationPid() << qApp->thread()->currentThread();
-
-
-    QSqlDatabase db;
-    db = QSqlDatabase::addDatabase("QPSQL");
-    db.setDatabaseName("untitled");
-
-//    if (!db.open()) {
-//        qDebug() << "Failed to open database";
-//        qDebug() << db.lastError().databaseText();
-//        qDebug() << db.lastError().driverText();
-//        return false;
-//    }
-//    QTimer::singleShot(1000, this, SLOT(loop()));
-
-    return true;
-}
-
-void Untitled::loop()
-{
-    qDebug() << Q_FUNC_INFO << QCoreApplication::applicationPid();
 }

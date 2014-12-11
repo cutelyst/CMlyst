@@ -24,7 +24,6 @@
 
 #include <QCryptographicHash>
 #include <QFile>
-#include <QSqlQuery>
 #include <QEventLoop>
 #include <QTimer>
 #include <QThread>

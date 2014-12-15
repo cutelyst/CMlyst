@@ -25,6 +25,8 @@
 
 #include "page.h"
 
+namespace CMS {
+
 class PagePrivate
 {
 public:
@@ -36,6 +38,8 @@ public:
     QStringList tags;
     QDateTime modified;
 };
+
+}
 
 #endif // PAGE_P_H
 

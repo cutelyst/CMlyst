@@ -5,6 +5,7 @@ include_directories(
 
 # Our sources
 set(untitled_SRCS
+    ${TEMPLATES_SRC}
     ../libCMS/page.cpp
     ../libCMS/page_p.h
     ../libCMS/engine.cpp

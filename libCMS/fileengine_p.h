@@ -6,12 +6,17 @@
 
 #include "fileengine.h"
 
+namespace CMS {
+
 class FileEnginePrivate
 {
 public:
     QDir rootPath;
+    QDir pagesPath;
     QHash<QString, Page*> pages;
 };
+
+}
 
 #endif // FILEENGINE_P_H
 

@@ -26,27 +26,62 @@
 #include <QStringBuilder>
 #include <QDebug>
 
+#include "../libCMS/fileengine.h"
+#include "../libCMS/page.h"
+
 Root::Root()
 {
     qDebug() << Q_FUNC_INFO;
+
+    m_view = new View("Grantlee", this);
+    m_view->setTemplateExtension(".html");
+    m_view->setWrapper("wrapper.html");
+
+    m_view->setIncludePath("/home/daniel/code/untitled/root/src");
 }
 
 Root::~Root()
 {
 }
 
-void Root::notFound(Context *c)
-{
-    c->stash()[QLatin1String("template")] = "404.html";
-    c->res()->setStatus(404);
-}
+//void Root::notFound(Context *c)
+//{
+//    c->stash()[QLatin1String("template")] = "404.html";
+//    c->res()->setStatus(404);
+//}
 
 void Root::End(Context *c)
 {
     qDebug() << "*** Root::End()";
+//    m_view->render(c);
 }
 
-void Root::create(Context *ctx)
+void Root::page(Cutelyst::Context *ctx)
 {
-    qDebug() << Q_FUNC_INFO;
+    qDebug() << "*** Root::page()";
+
+    CMS::FileEngine *engine = new CMS::FileEngine;
+    engine->init({
+                     {"root", qgetenv("CMS_ROOT_PATH")}
+                 });
+
+    QString path;
+
+    path = ctx->request()->path();
+    if (path.at(0) == QChar('/')) {
+        path.remove(0, 1);
+    }
+    qDebug() << "path" << path;
+
+    CMS::Page *page = engine->getPage(path);
+    qDebug() << "page" << page;
+    if (!page) {
+        ctx->stash()[QLatin1String("template")] = "404.html";
+        ctx->res()->setStatus(404);
+        delete engine;
+        return;
+    }
+
+    ctx->stash()["template"] = "404.html";
+    ctx->stash()["page"] = QVariant::fromValue(page);
 }

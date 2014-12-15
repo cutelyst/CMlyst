@@ -3,6 +3,10 @@
 #include "root.h"
 
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Application>
+
+#include "../libCMS/fileengine.h"
+#include "../libCMS/page.h"
 
 #include <QDebug>
 
@@ -34,12 +38,37 @@ void AdminPosts::index(Context *ctx)
 void AdminPosts::create(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
-    QString title = ctx->req()->param().value("title");
-    QString content = ctx->req()->param().value("content");
+    ParamsMultiMap params = ctx->request()->bodyParam();
+    QString title = params.value("title");
+    QString path = params.value("path");
+    QString content = params.value("content");
     if (ctx->req()->method() == "POST") {
         Authentication *auth = ctx->plugin<Authentication*>();
 
-        qDebug() << title << content;
+        qDebug() << title;
+        qDebug() << path;
+        qDebug() << content;
+
+
+        CMS::FileEngine *engine = new CMS::FileEngine;
+        engine->init({
+                         {"root", qgetenv("CMS_ROOT_PATH")}
+                     });
+
+        CMS::Page *page = engine->getPageToEdit(path);
+        page->setContent(content.toUtf8());
+        page->setName(title);
+        qDebug() << page->path();
+
+        bool ret = engine->savePage(page);
+        if (ret) {
+            ctx->stash()["status"] = "Page saved";
+        }
+
+        qDebug() << "saved" << ret;
+
+
+
 //        QSqlQuery query;
 //        query.prepare("INSERT INTO u_posts (user_id, title, content) "
 //                      "VALUES (:user_id, :title, :content)");
@@ -55,6 +84,7 @@ void AdminPosts::create(Context *ctx)
     }
 
     ctx->stash()["title"] = title;
+    ctx->stash()["path"] = path;
     ctx->stash()["content"] = content;
     ctx->stash()["template"] = "posts/create.html";
 }

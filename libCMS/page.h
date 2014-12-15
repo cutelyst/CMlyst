@@ -22,6 +22,8 @@
 
 #include <QObject>
 
+namespace CMS {
+
 class PagePrivate;
 class Page : public QObject
 {
@@ -57,5 +59,7 @@ public:
 protected:
     PagePrivate *d_ptr;
 };
+
+}
 
 #endif // CMS_PAGE_H

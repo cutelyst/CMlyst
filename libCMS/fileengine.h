@@ -5,6 +5,8 @@
 
 #include "engine.h"
 
+namespace CMS {
+
 class FileEnginePrivate;
 class FileEngine : public Engine
 {
@@ -29,5 +31,7 @@ public:
 protected:
     FileEnginePrivate *d_ptr;
 };
+
+}
 
 #endif // FILEENGINE_H

@@ -28,10 +28,10 @@ void Blog::index(Context *ctx)
 
 }
 
-void Blog::page(Context *ctx, const QString &pageName)
-{
+//void Blog::page(Context *ctx, const QString &pageName)
+//{
 
-}
+//}
 
 void Blog::blog(Context *ctx, const QString &year, const QString &month, const QString &day, const QString &postName)
 {

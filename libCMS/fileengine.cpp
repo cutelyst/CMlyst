@@ -6,6 +6,9 @@
 #include <QSettings>
 #include <QDateTime>
 #include <QHash>
+#include <QDebug>
+
+using namespace CMS;
 
 FileEngine::FileEngine() :
     d_ptr(new FileEnginePrivate)
@@ -20,7 +23,19 @@ FileEngine::~FileEngine()
 bool FileEngine::init(const QHash<QString, QString> &settings)
 {
     Q_D(FileEngine);
-    d->rootPath = settings["root"];
+
+    QString root = settings["root"];
+    if (root.isEmpty()) {
+        root = QDir::currentPath();
+    }
+    d->rootPath = root;
+    d->pagesPath = root + "/pages";
+
+    if (!d->pagesPath.exists() &&
+            !d->pagesPath.mkpath(d->pagesPath.absolutePath())) {
+        qWarning() << "Failed to create pages path" << d->pagesPath.absolutePath();
+        return false;
+    }
     return true;
 }
 
@@ -29,7 +44,7 @@ Page *FileEngine::getPage(const QString &path)
     Q_D(FileEngine);
     QHash<QString, Page*>::const_iterator it = d->pages.constFind(path);
     if (it != d->pages.constEnd()) {
-        QFileInfo fileInfo(d->rootPath.absoluteFilePath(path));
+        QFileInfo fileInfo(d->pagesPath.absoluteFilePath(path));
         if (it.value()->modified() == fileInfo.lastModified()) {
             return it.value();
         }
@@ -59,7 +74,7 @@ Page *FileEngine::loadPage(const QString &path) const
 {
     Q_D(const FileEngine);
 
-    QString file = d->rootPath.absoluteFilePath(path);
+    QString file = d->pagesPath.absoluteFilePath(path);
     QFileInfo fileInfo(file);
     if (fileInfo.exists()) {
         QSettings data(file, QSettings::IniFormat);
@@ -80,7 +95,7 @@ bool FileEngine::savePage(Page *page)
 {
     Q_D(FileEngine);
 
-    QString file = d->rootPath.absoluteFilePath(page->path());
+    QString file = d->pagesPath.absoluteFilePath(page->path());
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
     data.setValue("Modified", page->modified());
@@ -98,7 +113,7 @@ QList<Page *> FileEngine::listPages()
     Q_D(const FileEngine);
 
     QList<Page *> ret;
-    QDirIterator it(d->rootPath, QDirIterator::Subdirectories);
+    QDirIterator it(d->pagesPath, QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString path = it.next();
         Page *page = getPage(path);

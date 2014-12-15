@@ -33,14 +33,18 @@ public:
     ~Root();
 
 public:
-    C_ATTR(notFound, :Path)
-    void notFound(Context *c);
+//    C_ATTR(notFound, :Path)
+//    void notFound(Context *c);
 
-    C_ATTR(create, :Local :Path('new'))
-    void create(Cutelyst::Context *ctx);
+    C_ATTR(page, :Path)
+    void page(Cutelyst::Context *ctx);
 
-private slots:
+private:
+    C_ATTR(End, :ActionClass(RenderView))
     void End(Context *c);
+
+private:
+    View *m_view;
 };
 
 #endif // ROOT_H

@@ -9,7 +9,6 @@ class AdminPosts : public Controller
 {
     Q_OBJECT
     C_NAMESPACE(".admin/posts")
-    Q_CLASSINFO("create_Path", "new")
 public:
     explicit AdminPosts(QObject *parent = 0);
 
@@ -17,7 +16,7 @@ public:
     C_ATTR(index, :Path :Args)
     void index(Cutelyst::Context *ctx);
 
-    C_ATTR(create, :Local)
+    C_ATTR(create, :Path(new) :Local)
     void create(Context *ctx);
 };
 

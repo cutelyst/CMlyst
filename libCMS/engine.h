@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+namespace CMS {
+
 class Page;
 class EnginePrivate;
 class Engine : public QObject
@@ -25,5 +27,7 @@ public:
 protected:
     EnginePrivate *d_ptr;
 };
+
+}
 
 #endif // ENGINE_H

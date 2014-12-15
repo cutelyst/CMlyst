@@ -35,8 +35,8 @@ public:
     C_ATTR(index, :Local)
     void index(Context *ctx);
 
-    C_ATTR(page, :Path)
-    void page(Context *ctx, const QString &pageName);
+//    C_ATTR(page, :Path)
+//    void page(Context *ctx, const QString &pageName);
 
     C_ATTR(blog, :Path)
     void blog(Context *ctx,

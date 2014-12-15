@@ -39,8 +39,12 @@ public:
     C_ATTR(notFound, :Path)
     void notFound(Context *ctx);
 
+    C_ATTR(logout, :Local)
+    void logout(Context *ctx);
+
 private slots:
     bool Auto(Context *ctx);
+
     void End(Context *ctx);
 
 private:

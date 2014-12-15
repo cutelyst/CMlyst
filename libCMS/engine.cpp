@@ -1,5 +1,7 @@
 #include "engine.h"
 
+using namespace CMS;
+
 Engine::Engine(QObject *parent) : QObject(parent)
 {
 

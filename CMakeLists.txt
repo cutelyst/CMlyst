@@ -18,6 +18,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Build time config definitions
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
+file(GLOB_RECURSE TEMPLATES_SRC root/*)
+
 include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}

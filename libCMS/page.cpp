@@ -19,6 +19,8 @@
 
 #include "page_p.h"
 
+using namespace CMS;
+
 Page::Page() :
     d_ptr(new PagePrivate)
 {
@@ -115,5 +117,5 @@ void Page::setTags(const QStringList &tags)
 
 QString Page::readablePath(const QString &path)
 {
-    return path.simplified().replace(QLatin1Char(' '), QLatin1String("_"));
+    return path.simplified().replace(QLatin1Char(' '), QLatin1String("-"));
 }

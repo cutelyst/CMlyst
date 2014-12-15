@@ -25,10 +25,14 @@
 
 #include "page.h"
 
+namespace CMS {
+
 class EnginePrivate
 {
 public:
     QHash<QString, Page*> pages;
 };
+
+}
 
 #endif // ENGINE_P_H

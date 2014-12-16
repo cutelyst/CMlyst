@@ -12,7 +12,6 @@ class AdminSetup : public Controller
 public:
     explicit AdminSetup(QObject *parent = 0);
 
-public:
     C_ATTR(setup, :Local :Args)
     void setup(Context *ctx);
 

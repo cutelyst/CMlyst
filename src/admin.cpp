@@ -21,17 +21,12 @@
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/authentication.h>
-#include <Cutelyst/view.h>
 
 #include <QStringBuilder>
 #include <QDebug>
 
 Admin::Admin()
 {
-    m_view = new View("Grantlee", this);
-    m_view->setIncludePath("/home/daniel/code/untitled/root/src/admin");
-    m_view->setTemplateExtension(".html");
-    m_view->setWrapper("wrapper.html");
 }
 
 bool Admin::Auto(Context *ctx)
@@ -65,8 +60,8 @@ void Admin::notFound(Context *ctx)
 
 void Admin::End(Context *ctx)
 {
+    Q_UNUSED(ctx)
     qDebug() << "*** Admin::End()";
-    m_view->render(ctx);
 }
 
 void Admin::logout(Cutelyst::Context *ctx)

@@ -35,6 +35,7 @@
 #include "admin.h"
 #include "adminlogin.h"
 #include "adminposts.h"
+#include "adminpages.h"
 #include "adminsetup.h"
 #include "blog.h"
 
@@ -52,21 +53,25 @@ bool Untitled::init()
     View *view = new View("Grantlee", this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
+    view->setIncludePath("/home/daniel/code/untitled/root/src");
+    registerView(view);
+
+    View *adminView = new View("Grantlee", this);
+    adminView->setTemplateExtension(".html");
+    adminView->setWrapper("wrapper.html");
+    adminView->setIncludePath("/home/daniel/code/untitled/root/src/admin");
+    registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {
-        view->setIncludePath("/home/daniel/code/untitled/root/src/admin");
-
         registerController(new AdminSetup);
     } else {
-        view->setIncludePath("/home/daniel/code/untitled/root/src");
-
         registerController(new Root);
         registerController(new Admin);
         registerController(new AdminLogin);
         registerController(new AdminPosts);
+        registerController(new AdminPages);
         registerController(new Blog);
     }
-    registerView(view);
 
     StoreHtpasswd *store = new StoreHtpasswd("htpasswd");
 

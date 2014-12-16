@@ -1,6 +1,6 @@
-<h2 class="sub-header">Posts</h2>
+<h2 class="sub-header">{% ifequal post_type "page" %}Pages{% else %}Posts{% endifequal %}</h2>
 
-<a href="/.admin/posts/new">Add New</a>
+<a href="/.admin/{% ifequal post_type "page" %}pages{% else %}posts{% endifequal %}/new">Add New</a>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -14,7 +14,10 @@
     <tbody>
     {% for post in posts %}
       <tr>
-      <td><a href="/.admin/posts/edit/{{ post.id }}">{{ post.title }}</a></td>
+        <td>
+          <a href="/.admin/{% ifequal post_type "page" %}pages{% else %}posts{% endifequal %}/edit/{{ post.path }}">{{ post.name }}</a>
+          {{ post.path }}
+        </td>
         <td>{{ post.author }}</td>
         <td>{{ post.modified }}</td>
       </tr>

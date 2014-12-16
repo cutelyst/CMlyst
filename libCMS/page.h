@@ -21,6 +21,8 @@
 #define CMS_PAGE_H
 
 #include <QObject>
+#include <QDateTime>
+#include <QStringList>
 
 namespace CMS {
 
@@ -29,6 +31,12 @@ class Page : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Page)
+    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
+    Q_PROPERTY(QString path READ path WRITE setPath)
+    Q_PROPERTY(QString author READ author WRITE setAuthor)
+    Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
+    Q_PROPERTY(QStringList tags READ tags WRITE setTags)
 public:
     Page();
     virtual ~Page();

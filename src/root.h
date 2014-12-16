@@ -41,10 +41,7 @@ public:
 
 private:
     C_ATTR(End, :ActionClass(RenderView))
-    void End(Context *c);
-
-private:
-    View *m_view;
+    void End(Context *ctx);
 };
 
 #endif // ROOT_H

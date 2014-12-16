@@ -24,10 +24,6 @@
 
 using namespace Cutelyst;
 
-namespace Cutelyst {
-class View;
-}
-
 class Admin : public Controller
 {
     Q_OBJECT
@@ -35,7 +31,6 @@ class Admin : public Controller
 public:
     Admin();
 
-public:
     C_ATTR(notFound, :Path)
     void notFound(Context *ctx);
 
@@ -45,10 +40,9 @@ public:
 private slots:
     bool Auto(Context *ctx);
 
-    void End(Context *ctx);
-
 private:
-    View *m_view;
+    C_ATTR(End, :ActionClass(RenderView) :View(admin))
+    void End(Context *ctx);
 };
 
 #endif // ADMIN_H

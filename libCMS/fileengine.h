@@ -13,7 +13,7 @@ class FileEngine : public Engine
     Q_OBJECT
     Q_DECLARE_PRIVATE(FileEngine)
 public:
-    FileEngine();
+    explicit FileEngine(QObject *parent = 0);
     ~FileEngine();
 
     bool init(const QHash<QString, QString> &settings);

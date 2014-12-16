@@ -58,10 +58,14 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li {% ifequal ctx.controllerName "Dashboard" %}class="active"{% endifequal %}>
-              <a href="/.admin/dasboard">Dashboard</a></li>
-
+              <a href="/.admin/dasboard">Dashboard</a>
+            </li>
             <li {% ifequal ctx.controllerName "AdminPosts" %}class="active"{% endifequal %}>
-              <a href="/.admin/posts">Posts</a></li>
+              <a href="/.admin/posts">Posts</a>
+            </li>
+            <li {% ifequal ctx.controllerName "AdminPages" %}class="active"{% endifequal %}>
+              <a href="/.admin/pages">Pages</a>
+            </li>
           </ul>
       </div><!--/.nav-collapse -->
     </div>

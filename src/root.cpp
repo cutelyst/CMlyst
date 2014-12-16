@@ -21,7 +21,6 @@
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/authentication.h>
-#include <Cutelyst/view.h>
 
 #include <QStringBuilder>
 #include <QDebug>
@@ -32,12 +31,6 @@
 Root::Root()
 {
     qDebug() << Q_FUNC_INFO;
-
-    m_view = new View("Grantlee", this);
-    m_view->setTemplateExtension(".html");
-    m_view->setWrapper("wrapper.html");
-
-    m_view->setIncludePath("/home/daniel/code/untitled/root/src");
 }
 
 Root::~Root()
@@ -50,10 +43,10 @@ Root::~Root()
 //    c->res()->setStatus(404);
 //}
 
-void Root::End(Context *c)
+void Root::End(Context *ctx)
 {
+    Q_UNUSED(ctx)
     qDebug() << "*** Root::End()";
-//    m_view->render(c);
 }
 
 void Root::page(Cutelyst::Context *ctx)

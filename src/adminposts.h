@@ -12,9 +12,8 @@ class AdminPosts : public Controller
 public:
     explicit AdminPosts(QObject *parent = 0);
 
-public:
     C_ATTR(index, :Path :Args)
-    void index(Cutelyst::Context *ctx);
+    void index(Context *ctx);
 
     C_ATTR(create, :Path(new) :Local)
     void create(Context *ctx);

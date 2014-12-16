@@ -31,7 +31,6 @@ class AdminLogin : public Controller
 public:
     explicit AdminLogin(QObject *parent = 0);
 
-public:
     C_ATTR(index, :Path :Args)
     void index(Cutelyst::Context *c);
 };

@@ -10,7 +10,8 @@
 
 using namespace CMS;
 
-FileEngine::FileEngine() :
+FileEngine::FileEngine(QObject *parent) :
+    Engine(parent),
     d_ptr(new FileEnginePrivate)
 {
 }
@@ -79,7 +80,9 @@ Page *FileEngine::loadPage(const QString &path) const
     if (fileInfo.exists()) {
         QSettings data(file, QSettings::IniFormat);
         Page *page = new Page;
-        page->setPath(path);
+        QString localPath = path;
+        localPath = localPath.remove(0, d->pagesPath.path().length());
+        page->setPath(localPath);
         page->setName(data.value("Name").toString());
         page->setAuthor(data.value("Author").toString());
         page->setModified(data.value("Modified").toDateTime());
@@ -87,6 +90,8 @@ Page *FileEngine::loadPage(const QString &path) const
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());
         return page;
+    } else {
+        qDebug() << "FileEngine file not found" << file;
     }
     return 0;
 }
@@ -113,9 +118,14 @@ QList<Page *> FileEngine::listPages()
     Q_D(const FileEngine);
 
     QList<Page *> ret;
-    QDirIterator it(d->pagesPath, QDirIterator::Subdirectories);
+    qDebug() << "listpages:" << d->pagesPath.path();
+
+    QDirIterator it(d->pagesPath.path(),
+                    QDir::Files | QDir::NoDotAndDotDot,
+                    QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString path = it.next();
+        qDebug() << "listpages:" << path;
         Page *page = getPage(path);
         if (page) {
             ret.append(page);

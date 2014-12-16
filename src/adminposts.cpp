@@ -17,6 +17,7 @@ AdminPosts::AdminPosts(QObject *parent) :
 
 void AdminPosts::index(Context *ctx)
 {
+    ctx->stash()["post_type"] = "post";
 //    QSqlQuery query;
 //    query.prepare("SELECT p.id, p.title, u.username AS author, p.modified "
 //                  "FROM u_posts p, u_users u "
@@ -31,12 +32,13 @@ void AdminPosts::index(Context *ctx)
 //    }
 
 //    ctx->stash()["posts"] = Root::sqlQueryToStash(&query);
-
+qDebug() << ctx->request()->path() << ctx->req()->args();
     ctx->stash()["template"] = "posts/index.html";
 }
 
 void AdminPosts::create(Context *ctx)
 {
+    ctx->stash()["post_type"] = "post";
     qDebug() << Q_FUNC_INFO;
     ParamsMultiMap params = ctx->request()->bodyParam();
     QString title = params.value("title");
@@ -50,7 +52,7 @@ void AdminPosts::create(Context *ctx)
         qDebug() << content;
 
 
-        CMS::FileEngine *engine = new CMS::FileEngine;
+        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
         engine->init({
                          {"root", qgetenv("CMS_ROOT_PATH")}
                      });

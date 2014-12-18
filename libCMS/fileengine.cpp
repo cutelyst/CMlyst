@@ -2,6 +2,7 @@
 
 #include "page.h"
 
+#include <QRegularExpression>
 #include <QDirIterator>
 #include <QSettings>
 #include <QDateTime>
@@ -43,6 +44,7 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
 Page *FileEngine::getPage(const QString &path)
 {
     Q_D(FileEngine);
+
     QHash<QString, Page*>::const_iterator it = d->pages.constFind(path);
     if (it != d->pages.constEnd()) {
         QFileInfo fileInfo(d->pagesPath.absoluteFilePath(path));
@@ -61,11 +63,14 @@ Page *FileEngine::getPage(const QString &path)
 
 Page *FileEngine::getPageToEdit(const QString &path) const
 {
-    QString normPath = Page::readablePath(path);
+    QString normPath = path;
+    if (normPath.isEmpty()) {
+        normPath = QStringLiteral("/");
+    }
+
     Page *page = loadPage(normPath);
     if (!page) {
         page = new Page;
-        page->setPath(normPath);
     }
 
     return page;
@@ -75,18 +80,33 @@ Page *FileEngine::loadPage(const QString &path) const
 {
     Q_D(const FileEngine);
 
-    QString file = d->pagesPath.absoluteFilePath(path);
+    QString normPath = path;
+    qDebug() << "getPageToEdit" << path;
+    normPath.remove(QRegularExpression("^/"));
+    qDebug() << "getPageToEdit" << normPath;
+    if (normPath.isEmpty()) {
+        normPath = QStringLiteral("index.page");
+    } else {
+        normPath.append(QStringLiteral(".page"));
+    }
+    qDebug() << "getPageToEdit" << normPath;
+
+
+    QString file = d->pagesPath.absoluteFilePath(normPath);
     QFileInfo fileInfo(file);
     if (fileInfo.exists()) {
         QSettings data(file, QSettings::IniFormat);
         Page *page = new Page;
-        QString localPath = path;
-        localPath = localPath.remove(0, d->pagesPath.path().length());
-        page->setPath(localPath);
+
+        // TODO save local path
+//        QString localPath = path;
+//        localPath = localPath.remove(0, d->pagesPath.path().length());
+        page->setPath(path);
+
         page->setName(data.value("Name").toString());
         page->setAuthor(data.value("Author").toString());
         page->setModified(data.value("Modified").toDateTime());
-        page->setContent(data.value("Content").toByteArray());
+        page->setContent(data.value("Content").toString());
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());
         return page;
@@ -100,7 +120,15 @@ bool FileEngine::savePage(Page *page)
 {
     Q_D(FileEngine);
 
-    QString file = d->pagesPath.absoluteFilePath(page->path());
+    QString path = page->path();
+    path.remove(QRegularExpression("^/"));
+    if (path.isEmpty()) {
+        path = QStringLiteral("index.page");
+    } else {
+        path.append(QStringLiteral(".page"));
+    }
+
+    QString file = d->pagesPath.absoluteFilePath(path);
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
     data.setValue("Modified", page->modified());
@@ -109,6 +137,7 @@ bool FileEngine::savePage(Page *page)
     data.setValue("NavigationLabel", page->navigationLabel());
     data.setValue("Tags", page->tags());
     data.sync();
+    qDebug() << "save page" << file;
     // if it's not writable we can't save the page
     return data.isWritable();
 }
@@ -126,7 +155,17 @@ QList<Page *> FileEngine::listPages()
     while (it.hasNext()) {
         QString path = it.next();
         qDebug() << "listpages:" << path;
-        Page *page = getPage(path);
+        QString relpath = d->pagesPath.relativeFilePath(path);
+        qDebug() << "listpages relative:" << d->pagesPath.relativeFilePath(path);
+        if (relpath == QLatin1String("index.page")) {
+            relpath = QStringLiteral("/");
+        } else {
+            relpath.remove(QRegularExpression(".page$"));
+            relpath.prepend(QStringLiteral("/"));
+        }
+//        if ()
+        qDebug() << "listpages relative ok:" << relpath;
+        Page *page = getPage(relpath);
         if (page) {
             ret.append(page);
         }

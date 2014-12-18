@@ -34,7 +34,7 @@ public:
     QString navigationLabel;
     QString path;
     QString author;
-    QByteArray content;
+    QString content;
     QStringList tags;
     QDateTime modified;
 };

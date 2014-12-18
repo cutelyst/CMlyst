@@ -53,8 +53,8 @@ public:
     QString author() const;
     void setAuthor(const QString &author);
 
-    QByteArray content() const;
-    void setContent(const QByteArray &body);
+    QString content() const;
+    void setContent(const QString &body);
 
     QDateTime modified() const;
     void setModified(const QDateTime &dateTime);

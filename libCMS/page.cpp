@@ -79,13 +79,13 @@ void Page::setAuthor(const QString &author)
     d->author = author;
 }
 
-QByteArray Page::content() const
+QString Page::content() const
 {
     Q_D(const Page);
     return d->content;
 }
 
-void Page::setContent(const QByteArray &body)
+void Page::setContent(const QString &body)
 {
     Q_D(Page);
     d->content = body;

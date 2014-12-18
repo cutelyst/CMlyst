@@ -53,7 +53,7 @@ void AdminPages::create(Context *ctx)
                      });
 
         CMS::Page *page = engine->getPageToEdit(path);
-        page->setContent(content.toUtf8());
+        page->setContent(content);
         page->setName(title);
         qDebug() << page->path();
 
@@ -82,17 +82,23 @@ void AdminPages::edit(Context *ctx)
                  });
 
     QStringList args = ctx->request()->args();
-    args.removeFirst();
     QString path = args.join(QLatin1Char('/'));
+    QString title;
+    QString content;
+
     qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
     CMS::Page *page = engine->getPageToEdit(path);
-    QString title = page->name();
-    QString content = page->content();
+    qDebug() << Q_FUNC_INFO << page;
+
+    if (page) {
+        path = page->path();
+        title = page->name();
+        content = page->content();
+    }
 
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->request()->bodyParam();
         title = params.value("title");
-        path = params.value("path");
         content = params.value("content");
 
         Authentication *auth = ctx->plugin<Authentication*>();
@@ -102,11 +108,11 @@ void AdminPages::edit(Context *ctx)
         qDebug() << content;
 
 
-        if (path != params.value("path")) {
+        if (page->path() != params.value("path")) {
             qDebug() << "not yet supported";
         }
 
-        page->setContent(content.toUtf8());
+        page->setContent(content);
         page->setName(title);
         qDebug() << page->path();
 

@@ -36,6 +36,7 @@
 #include "adminlogin.h"
 #include "adminposts.h"
 #include "adminpages.h"
+#include "adminsettings.h"
 #include "adminsetup.h"
 #include "blog.h"
 
@@ -53,7 +54,7 @@ bool Untitled::init()
     View *view = new View("Grantlee", this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
-    view->setIncludePath("/home/daniel/code/untitled/root/src");
+    view->setIncludePath("/home/daniel/code/untitled/root/src/themes/default");
     registerView(view);
 
     View *adminView = new View("Grantlee", this);
@@ -70,6 +71,7 @@ bool Untitled::init()
         registerController(new AdminLogin);
         registerController(new AdminPosts);
         registerController(new AdminPages);
+        registerController(new AdminSettings);
         registerController(new Blog);
     }
 

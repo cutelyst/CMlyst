@@ -23,6 +23,7 @@
 #include <Cutelyst/Plugins/authentication.h>
 
 #include <QStringBuilder>
+#include <QSettings>
 #include <QDebug>
 
 #include "../libCMS/fileengine.h"
@@ -66,6 +67,14 @@ void Root::page(Cutelyst::Context *ctx)
     }
     qDebug() << "path" << path;
 
+    QSettings settings("site.conf", QSettings::IniFormat);
+    settings.beginGroup("General");
+    ctx->stash({
+                   {"title", settings.value("title")},
+                   {"tagline", settings.value("tagline")}
+               });
+    settings.endGroup();
+
     CMS::Page *page = engine->getPage(path);
     qDebug() << "page" << page;
     if (!page) {
@@ -75,6 +84,9 @@ void Root::page(Cutelyst::Context *ctx)
         return;
     }
 
-    ctx->stash()["template"] = "404.html";
-    ctx->stash()["page"] = QVariant::fromValue(page);
+    ctx->stash({
+                   {"title", page->name()},
+                   {"template", "page.html"},
+                   {"page", QVariant::fromValue(page)}
+               });
 }

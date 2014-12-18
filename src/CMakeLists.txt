@@ -18,6 +18,7 @@ set(untitled_SRCS
     adminlogin.cpp
     adminposts.cpp
     adminpages.cpp
+    adminsettings.cpp
     blog.cpp
     untitled.cpp
 )

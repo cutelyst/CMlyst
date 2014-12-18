@@ -39,17 +39,6 @@
           </button>
           <a class="navbar-brand" href="/.admin">{{ ctx.objectName }}</a>
         </div>
-        <div class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="/.admin/">Dashboard</a></li>
-            <li><a href="">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
-          </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
-        </div>
       </div>
     </div>
 
@@ -57,14 +46,17 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li {% ifequal ctx.controllerName "Dashboard" %}class="active"{% endifequal %}>
+            <li{% ifequal ctx.controllerName "Dashboard" %} class="active"{% endifequal %}>
               <a href="/.admin/dasboard">Dashboard</a>
             </li>
-            <li {% ifequal ctx.controllerName "AdminPosts" %}class="active"{% endifequal %}>
+            <li{% ifequal ctx.controllerName "AdminPosts" %} class="active"{% endifequal %}>
               <a href="/.admin/posts">Posts</a>
             </li>
-            <li {% ifequal ctx.controllerName "AdminPages" %}class="active"{% endifequal %}>
+            <li{% ifequal ctx.controllerName "AdminPages" %} class="active"{% endifequal %}>
               <a href="/.admin/pages">Pages</a>
+            </li>
+            <li{% ifequal ctx.controllerName "AdminSettings" %} class="active"{% endifequal %}>
+              <a href="/.admin/settings">Settings</a>
             </li>
           </ul>
       </div><!--/.nav-collapse -->

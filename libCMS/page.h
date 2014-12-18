@@ -35,6 +35,7 @@ class Page : public QObject
     Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
     Q_PROPERTY(QString path READ path WRITE setPath)
     Q_PROPERTY(QString author READ author WRITE setAuthor)
+    Q_PROPERTY(QString content READ content WRITE setContent)
     Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
     Q_PROPERTY(QStringList tags READ tags WRITE setTags)
 public:

@@ -18,21 +18,8 @@ AdminPosts::AdminPosts(QObject *parent) :
 void AdminPosts::index(Context *ctx)
 {
     ctx->stash()["post_type"] = "post";
-//    QSqlQuery query;
-//    query.prepare("SELECT p.id, p.title, u.username AS author, p.modified "
-//                  "FROM u_posts p, u_users u "
-//                  "WHERE p.user_id = u.id "
-//                  "ORDER BY 2");
-//    if (!query.exec()) {
-//        ctx->stash()["error_msg"] = query.lastError().text();
-//        return;
-//    } else if (query.size() == 0){
-//        ctx->res()->redirect("/setup");
-//        return;
-//    }
 
-//    ctx->stash()["posts"] = Root::sqlQueryToStash(&query);
-qDebug() << ctx->request()->path() << ctx->req()->args();
+    qDebug() << ctx->request()->path() << ctx->req()->args();
     ctx->stash()["template"] = "posts/index.html";
 }
 
@@ -54,7 +41,7 @@ void AdminPosts::create(Context *ctx)
 
         CMS::FileEngine *engine = new CMS::FileEngine(ctx);
         engine->init({
-                         {"root", qgetenv("CMS_ROOT_PATH")}
+                         {"root", ctx->config("DataLocation").toString()}
                      });
 
         CMS::Page *page = engine->getPageToEdit(path);

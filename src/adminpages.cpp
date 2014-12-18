@@ -22,7 +22,7 @@ void AdminPages::index(Context *ctx)
 
     CMS::FileEngine *engine = new CMS::FileEngine(ctx);
     engine->init({
-                     {"root", qgetenv("CMS_ROOT_PATH")}
+                     {"root", ctx->config("DataLocation").toString()}
                  });
     QList<CMS::Page *> pages = engine->listPages();
     ctx->stash()["posts"] = QVariant::fromValue(pages);
@@ -49,7 +49,7 @@ void AdminPages::create(Context *ctx)
 
         CMS::FileEngine *engine = new CMS::FileEngine(ctx);
         engine->init({
-                         {"root", qgetenv("CMS_ROOT_PATH")}
+                         {"root", ctx->config("DataLocation").toString()}
                      });
 
         CMS::Page *page = engine->getPageToEdit(path);
@@ -78,7 +78,7 @@ void AdminPages::edit(Context *ctx)
 
     CMS::FileEngine *engine = new CMS::FileEngine(ctx);
     engine->init({
-                     {"root", qgetenv("CMS_ROOT_PATH")}
+                     {"root", ctx->config("DataLocation").toString()}
                  });
 
     QStringList args = ctx->request()->args();

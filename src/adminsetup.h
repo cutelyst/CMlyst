@@ -24,7 +24,7 @@ public:
     C_ATTR(status, :Path)
     void status(Context *ctx);
 
-    C_ATTR(End, :Private :ActionClass(RenderView))
+    C_ATTR(End, :Private :ActionClass(RenderView) :View(admin))
     void End(Context *ctx);
 };
 

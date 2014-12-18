@@ -28,6 +28,7 @@
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 
 #include <QStandardPaths>
+#include <QDir>
 
 #include "authstoresql.h"
 
@@ -54,13 +55,22 @@ bool Untitled::init()
     View *view = new View("Grantlee", this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
-    view->setIncludePath("/home/daniel/code/untitled/root/src/themes/default");
+
+    QDir dataDir = config("DataLocation", QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
+    if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
+        qCritical() << "Could not create DataLocation" << dataDir.absolutePath();
+        return false;
+    }
+    setConfig("DataLocation", dataDir.absolutePath());
+
+    QDir rootDir = config("RootLocation", QDir::currentPath()).toString();
+    view->setIncludePath(rootDir.absoluteFilePath("src/themes/default"));
     registerView(view);
 
     View *adminView = new View("Grantlee", this);
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
-    adminView->setIncludePath("/home/daniel/code/untitled/root/src/admin");
+    adminView->setIncludePath(rootDir.absoluteFilePath("src/admin"));
     registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {
@@ -75,7 +85,7 @@ bool Untitled::init()
         registerController(new Blog);
     }
 
-    StoreHtpasswd *store = new StoreHtpasswd("htpasswd");
+    StoreHtpasswd *store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
 
     CredentialPassword *password = new CredentialPassword;
     password->setPasswordField(QLatin1String("password"));
@@ -84,7 +94,7 @@ bool Untitled::init()
 
     Authentication::Realm *realm = new Authentication::Realm(store, password);
 
-    registerPlugin(new StaticSimple("/home/daniel/code/untitled/root"));
+    registerPlugin(new StaticSimple(rootDir.absolutePath()));
 
     QObject::connect(this, &Application::registerPlugins,
                 [=](Context *ctx) {
@@ -96,6 +106,6 @@ bool Untitled::init()
         ctx->registerPlugin(auth);
     });
 
-    qDebug() << QStandardPaths::standardLocations(QStandardPaths::DataLocation);
+    qDebug() << rootDir.absoluteFilePath("src/admin");
     return true;
 }

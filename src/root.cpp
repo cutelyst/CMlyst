@@ -24,6 +24,7 @@
 
 #include <QStringBuilder>
 #include <QSettings>
+#include <QDir>
 #include <QDebug>
 
 #include "../libCMS/fileengine.h"
@@ -54,9 +55,10 @@ void Root::page(Cutelyst::Context *ctx)
 {
     qDebug() << "*** Root::page()";
 
+    QDir dataDir = ctx->config("DataLocation").toString();
     CMS::FileEngine *engine = new CMS::FileEngine;
     engine->init({
-                     {"root", qgetenv("CMS_ROOT_PATH")}
+                     {"root", dataDir.absolutePath()}
                  });
 
     QString path;
@@ -65,9 +67,9 @@ void Root::page(Cutelyst::Context *ctx)
     if (path.at(0) == QChar('/')) {
         path.remove(0, 1);
     }
-    qDebug() << "path" << path;
+    qDebug() << "path" << path << dataDir.absolutePath();
 
-    QSettings settings("site.conf", QSettings::IniFormat);
+    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
     settings.beginGroup("General");
     ctx->stash({
                    {"title", settings.value("title")},

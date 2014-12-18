@@ -1,6 +1,7 @@
 #include "adminsettings.h"
 
 #include <QSettings>
+#include <QDir>
 
 AdminSettings::AdminSettings(QObject *parent) :
     Controller(parent)
@@ -10,7 +11,8 @@ AdminSettings::AdminSettings(QObject *parent) :
 
 void AdminSettings::index(Context *ctx)
 {
-    QSettings settings("site.conf", QSettings::IniFormat);
+    QDir dataDir = ctx->config("DataLocation").toString();
+    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
     settings.beginGroup("General");
 
     if (ctx->req()->method() == "POST") {

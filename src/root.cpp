@@ -54,6 +54,7 @@ void Root::End(Context *ctx)
 void Root::page(Cutelyst::Context *ctx)
 {
     qDebug() << "*** Root::page()";
+    qDebug() << "*** Admin::Auto()" << ctx->req()->path() << ctx->req()->base();
 
     QDir dataDir = ctx->config("DataLocation").toString();
     CMS::FileEngine *engine = new CMS::FileEngine;

@@ -32,6 +32,7 @@ Admin::Admin()
 bool Admin::Auto(Context *ctx)
 {
 //    qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
+    qDebug() << "*** Admin::Auto()" << ctx->req()->path() << ctx->req()->base();
 
     if (*ctx->controller() == "AdminLogin" ||
             ctx->actionName() == "logout") {
@@ -41,7 +42,7 @@ bool Admin::Auto(Context *ctx)
     Authentication *auth = ctx->plugin<Authentication*>();
     if (auth && !auth->userExists()) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        ctx->res()->redirect(ctx->uriFor("/.admin/login/index"));
+        ctx->res()->redirect(ctx->uriForAction("/.admin/login/index"));
         return false;
     }
 

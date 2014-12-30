@@ -1,0 +1,34 @@
+<h2 class="sub-header">Media Library</h2>
+
+<form class="form-horizontal" enctype="multipart/form-data" method="post" action="media/upload">
+  <div class="form-group">
+    <input class="col-sm-4" type="file" name="file" accept="image/*">
+    <input class="col-sm-2" type="submit" value="Upload">
+  </div>
+</form>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>File</th>
+        <th>Author</th>
+        <th>Date</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for file in files %}
+      <tr>
+        <td>
+          <a href="/.admin/media/">
+            <img width="75" height="60" src="{{ file.url }}" class="attachment-80x60" alt="{{ file.name }}" />
+          </a>
+          {{ file.name }}
+        </td>
+        <td>{{ file.author }}</td>
+        <td>{{ file.modified }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

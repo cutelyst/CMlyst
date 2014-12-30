@@ -35,13 +35,13 @@ AdminLogin::AdminLogin(QObject *parent)
 {
 }
 
-void AdminLogin::index(Context *c)
+void AdminLogin::index(Context *ctx)
 {
-    QString username = c->req()->param().value(QLatin1String("username"));
-    if (c->req()->method() == "POST") {
-        QString password = c->req()->param().value(QLatin1String("password"));
+    QString username = ctx->req()->param().value(QLatin1String("username"));
+    if (ctx->req()->method() == "POST") {
+        QString password = ctx->req()->param().value(QLatin1String("password"));
         if (!username.isEmpty() && !password.isEmpty()) {
-            Authentication *auth = c->plugin<Authentication*>();
+            Authentication *auth = ctx->plugin<Authentication*>();
             CStringHash userinfo;
             userinfo["username"] = username;
             userinfo["password"] = password;
@@ -51,17 +51,17 @@ void AdminLogin::index(Context *c)
             bool succeed = auth && !auth->authenticate(userinfo).isNull();
             if (succeed) {
                 qDebug() << Q_FUNC_INFO << username << "is now Logged in";
-                c->res()->redirect(c->uriFor("/.admin"));
+                ctx->res()->redirect(ctx->uriFor("/.admin"));
 
                 return;
             } else {
-                c->stash()["error_msg"] = trUtf8("Wrong password or username");
+                ctx->stash()["error_msg"] = trUtf8("Wrong password or username");
                 qDebug() << Q_FUNC_INFO << username << "user or password invalid";
             }
         }
     }
 
-    c->stash()["username"] = username;
-    c->stash()["no_wrapper"] = "1";
-    c->stash()["template"] = "login.html";
+    ctx->stash()["username"] = username;
+    ctx->stash()["no_wrapper"] = "1";
+    ctx->stash()["template"] = "login.html";
 }

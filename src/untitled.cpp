@@ -37,6 +37,7 @@
 #include "adminlogin.h"
 #include "adminposts.h"
 #include "adminpages.h"
+#include "adminmedia.h"
 #include "adminsettings.h"
 #include "adminsetup.h"
 #include "blog.h"
@@ -81,6 +82,7 @@ bool Untitled::init()
         registerController(new AdminLogin);
         registerController(new AdminPosts);
         registerController(new AdminPages);
+        registerController(new AdminMedia);
         registerController(new AdminSettings);
         registerController(new Blog);
     }
@@ -94,7 +96,16 @@ bool Untitled::init()
 
     Authentication::Realm *realm = new Authentication::Realm(store, password);
 
-    registerPlugin(new StaticSimple(rootDir.absolutePath()));
+    StaticSimple *staticSimple = new StaticSimple;
+    staticSimple->setIncludePaths({
+                                      rootDir.absolutePath(),
+                                      dataDir.absolutePath()
+                                  });
+    staticSimple->setDirs({
+                              "static",
+                              ".media"
+                          });
+    registerPlugin(staticSimple);
 
     QObject::connect(this, &Application::registerPlugins,
                 [=](Context *ctx) {
@@ -106,6 +117,9 @@ bool Untitled::init()
         ctx->registerPlugin(auth);
     });
 
-    qDebug() << rootDir.absoluteFilePath("src/admin");
+    qDebug() << "Root location" << rootDir.absolutePath();
+    qDebug() << "Root Admin location" << rootDir.absoluteFilePath("src/admin");
+    qDebug() << "Data location" << dataDir.absolutePath();
+
     return true;
 }

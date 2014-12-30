@@ -17,22 +17,27 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef ADMINSETTINGS_H
-#define ADMINSETTINGS_H
+#ifndef ADMINMEDIA_H
+#define ADMINMEDIA_H
 
+#include <QObject>
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
-class AdminSettings : public Controller
+class AdminMedia : public Controller
 {
     Q_OBJECT
-    C_NAMESPACE(".admin/settings")
+    C_NAMESPACE(".admin/media")
 public:
-    explicit AdminSettings(QObject *parent = 0);
+    explicit AdminMedia(QObject *parent = 0);
+    ~AdminMedia();
 
     C_ATTR(index, :Path :Args)
-    void index(Context *ctx);
+    void index(Cutelyst::Context *ctx);
+
+    C_ATTR(upload, :Local :Args)
+    void upload(Cutelyst::Context *ctx);
 };
 
-#endif // ADMINSETTINGS_H
+#endif // ADMINMEDIA_H

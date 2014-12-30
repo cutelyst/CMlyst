@@ -32,7 +32,7 @@ public:
     explicit AdminLogin(QObject *parent = 0);
 
     C_ATTR(index, :Path :Args)
-    void index(Cutelyst::Context *c);
+    void index(Cutelyst::Context *ctx);
 };
 
 #endif // ADMINLOGIN_H

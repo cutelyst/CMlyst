@@ -32,8 +32,8 @@ bool Engine::savePage(Page *page)
     return false;
 }
 
-QList<Page *> Engine::listPages()
+QList<Page *> Engine::listPages(int depth)
 {
+    Q_UNUSED(depth)
     return QList<Page *>();
-
 }

@@ -70,7 +70,7 @@ void Root::End(Context *ctx)
 void Root::page(Cutelyst::Context *ctx)
 {
     qDebug() << "*** Root::page()";
-    qDebug() << "*** Admin::Auto()" << ctx->req()->path() << ctx->req()->base();
+    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
     QDir dataDir = ctx->config("DataLocation").toString();
     CMS::FileEngine *engine = new CMS::FileEngine;
@@ -86,11 +86,14 @@ void Root::page(Cutelyst::Context *ctx)
     }
     qDebug() << "path" << path << dataDir.absolutePath();
 
+    QList<CMS::Page *> toppages = engine->listPages(1);
+
     QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
     settings.beginGroup("General");
     ctx->stash({
                    {"title", settings.value("title")},
-                   {"tagline", settings.value("tagline")}
+                   {"tagline", settings.value("tagline")},
+                   {"toppages", QVariant::fromValue(toppages)}
                });
     settings.endGroup();
 
@@ -104,7 +107,6 @@ void Root::page(Cutelyst::Context *ctx)
     }
 
     ctx->stash({
-                   {"title", page->name()},
                    {"template", "page.html"},
                    {"page", QVariant::fromValue(page)}
                });

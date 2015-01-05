@@ -22,7 +22,11 @@ public:
     virtual Page *getPageToEdit(const QString &path) const;
     virtual bool savePage(Page *page);
 
-    virtual QList<Page *> listPages();
+    /**
+     * Returns the available pages,
+     * when depth is -1 all pages are listed
+     */
+    virtual QList<Page *> listPages(int depth = -1);
 
 protected:
     EnginePrivate *d_ptr;

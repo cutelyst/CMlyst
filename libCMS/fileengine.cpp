@@ -71,6 +71,7 @@ Page *FileEngine::getPageToEdit(const QString &path) const
     Page *page = loadPage(normPath);
     if (!page) {
         page = new Page;
+        page->setPath(normPath);
     }
 
     return page;
@@ -129,6 +130,7 @@ bool FileEngine::savePage(Page *page)
     }
 
     QString file = d->pagesPath.absoluteFilePath(path);
+    qDebug() << "save Page" << page->path() << path;
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
     data.setValue("Modified", page->modified());
@@ -142,7 +144,7 @@ bool FileEngine::savePage(Page *page)
     return data.isWritable();
 }
 
-QList<Page *> FileEngine::listPages()
+QList<Page *> FileEngine::listPages(int depth)
 {
     Q_D(const FileEngine);
 
@@ -155,8 +157,13 @@ QList<Page *> FileEngine::listPages()
     while (it.hasNext()) {
         QString path = it.next();
         qDebug() << "listpages:" << path;
+
         QString relpath = d->pagesPath.relativeFilePath(path);
-        qDebug() << "listpages relative:" << d->pagesPath.relativeFilePath(path);
+        qDebug() << "listpages relative:" << relpath;
+        if (depth != -1 && relpath.count(QChar('/')) > depth) {
+            continue;
+        }
+
         if (relpath == QLatin1String("index.page")) {
             relpath = QStringLiteral("/");
         } else {

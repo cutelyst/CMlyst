@@ -14,7 +14,7 @@
     <link href="/static/dist/css/bootstrap.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="/static/themes/default/blog.css" rel="stylesheet">
+    <link href="/static/themes/default-dark/blog.css" rel="stylesheet">
 
     <!-- Just for debugging purposes. Don't actually copy this line! -->
     <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
@@ -31,9 +31,11 @@
     <div class="blog-masthead">
       <div class="container">
         <nav class="blog-nav">
-        {% for toppage in toppages %}
-          <a class="blog-nav-item" href="{{ ctx.request.base }}{{ toppage.path }}">{{ toppage.name }}</a>
-        {% endfor %}
+          <a class="blog-nav-item active" href="#">Home Dark</a>
+          <a class="blog-nav-item" href="#">New features</a>
+          <a class="blog-nav-item" href="#">Press</a>
+          <a class="blog-nav-item" href="#">New hires</a>
+          <a class="blog-nav-item" href="#">About</a>
         </nav>
       </div>
     </div>
@@ -45,6 +47,14 @@
       </div>
 
     </div><!-- /.container -->
+
+    <div class="blog-footer">
+      <p>Blog template built for <a href="http://getbootstrap.com">Bootstrap</a> by <a href="https://twitter.com/mdo">@mdo</a>.</p>
+      <p>
+        <a href="#">Back to top</a>
+      </p>
+    </div>
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

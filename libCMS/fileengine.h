@@ -26,7 +26,7 @@ public:
 
     virtual bool savePage(Page *page);
 
-    virtual QList<Page *> listPages();
+    virtual QList<Page *> listPages(int depth = -1);
 
 protected:
     FileEnginePrivate *d_ptr;

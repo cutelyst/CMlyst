@@ -20,7 +20,7 @@
 #include "untitled.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/View>
+#include <Cutelyst/Plugins/viewengine.h>
 #include <Cutelyst/Plugins/StaticSimple>
 #include <Cutelyst/Plugins/Session>
 #include <Cutelyst/Plugins/authentication.h>
@@ -53,7 +53,7 @@ Untitled::~Untitled()
 
 bool Untitled::init()
 {
-    View *view = new View("Grantlee", this);
+    ViewEngine *view = new ViewEngine("Grantlee", this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
 
@@ -68,7 +68,7 @@ bool Untitled::init()
     view->setIncludePath(rootDir.absoluteFilePath("src/themes/default"));
     registerView(view);
 
-    View *adminView = new View("Grantlee", this);
+    ViewEngine *adminView = new ViewEngine("Grantlee", this);
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
     adminView->setIncludePath(rootDir.absoluteFilePath("src/admin"));

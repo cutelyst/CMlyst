@@ -65,13 +65,15 @@ bool Untitled::init()
     setConfig("DataLocation", dataDir.absolutePath());
 
     QDir rootDir = config("RootLocation", QDir::currentPath()).toString();
+    setConfig("RootLocation", rootDir.absolutePath());
+
     view->setIncludePath(rootDir.absoluteFilePath("src/themes/default"));
     registerView(view);
 
     ViewEngine *adminView = new ViewEngine("Grantlee", this);
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
-    adminView->setIncludePath(rootDir.absoluteFilePath("src/admin"));
+    adminView->setIncludePath(rootDir.absoluteFilePath("admin"));
     registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {

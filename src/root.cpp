@@ -21,6 +21,7 @@
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/viewengine.h>
 
 #include <QStringBuilder>
 #include <QSettings>
@@ -48,7 +49,22 @@ Root::~Root()
 void Root::End(Context *ctx)
 {
     Q_UNUSED(ctx)
-    qDebug() << "*** Root::End()";
+    qDebug() << "*** Root::End()" << ctx->view();
+
+    QDir rootDir = ctx->config("RootLocation").toString();
+    QDir dataDir = ctx->config("DataLocation").toString();
+    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+    settings.beginGroup("General");
+
+    QString themePath;
+    themePath = rootDir.absoluteFilePath(QLatin1String("themes/") % settings.value("theme", "default").toString());
+
+    ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
+    // Check if theme path changed
+    if (view->includePath() != themePath) {
+        view->setIncludePath(themePath);
+    }
+
 }
 
 void Root::page(Cutelyst::Context *ctx)

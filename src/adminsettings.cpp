@@ -40,11 +40,18 @@ void AdminSettings::index(Context *ctx)
         settings.setValue("tagline", params.value("tagline"));
         settings.setValue("theme", params.value("theme"));
     }
+
+    QDir rootDir = ctx->config("RootLocation").toString();
+    QDir themesDir = rootDir.absoluteFilePath("themes");
+    QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
+                                             QDir::Name | QDir:: IgnoreCase);
+
     ctx->stash({
                    {"template", "settings/index.html"},
                    {"title", settings.value("title")},
                    {"tagline", settings.value("tagline")},
-                   {"currentTheme", settings.value("theme")}
+                   {"currentTheme", settings.value("theme")},
+                   {"themes", themes}
                });
 
 

@@ -16,7 +16,7 @@
       <tr>
         <td>
           <a href="/.admin/{% ifequal post_type "page" %}pages{% else %}posts{% endifequal %}/edit/{{ post.path }}">{{ post.name }}</a>
-          {{ post.path }}
+          /{{ post.path }}
         </td>
         <td>{{ post.author }}</td>
         <td>{{ post.modified }}</td>

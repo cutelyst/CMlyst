@@ -63,15 +63,10 @@ Page *FileEngine::getPage(const QString &path)
 
 Page *FileEngine::getPageToEdit(const QString &path) const
 {
-    QString normPath = path;
-    if (normPath.isEmpty()) {
-        normPath = QStringLiteral("/");
-    }
-
-    Page *page = loadPage(normPath);
+    Page *page = loadPage(path);
     if (!page) {
         page = new Page;
-        page->setPath(normPath);
+        page->setPath(path);
     }
 
     return page;
@@ -159,18 +154,17 @@ QList<Page *> FileEngine::listPages(int depth)
         qDebug() << "listpages:" << path;
 
         QString relpath = d->pagesPath.relativeFilePath(path);
-        qDebug() << "listpages relative:" << relpath;
+        qDebug() << "listpages relative:" << relpath << depth << relpath.count(QChar('/'));
         if (depth != -1 && relpath.count(QChar('/')) > depth) {
             continue;
         }
 
         if (relpath == QLatin1String("index.page")) {
-            relpath = QStringLiteral("/");
+            relpath = QString();
         } else {
             relpath.remove(QRegularExpression(".page$"));
-            relpath.prepend(QStringLiteral("/"));
         }
-//        if ()
+
         qDebug() << "listpages relative ok:" << relpath;
         Page *page = getPage(relpath);
         if (page) {

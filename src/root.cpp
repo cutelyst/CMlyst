@@ -86,7 +86,7 @@ void Root::page(Cutelyst::Context *ctx)
     }
     qDebug() << "path" << path << dataDir.absolutePath();
 
-    QList<CMS::Page *> toppages = engine->listPages(1);
+    QList<CMS::Page *> toppages = engine->listPages(0);
 
     QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
     settings.beginGroup("General");

@@ -4,7 +4,7 @@ include_directories(
 )
 
 # Our sources
-set(untitled_SRCS
+set(cmlyst_SRCS
     ${TEMPLATES_SRC}
     ../libCMS/page.cpp
     ../libCMS/page_p.h
@@ -21,28 +21,22 @@ set(untitled_SRCS
     adminmedia.cpp
     adminsettings.cpp
     blog.cpp
-    untitled.cpp
+    cmlyst.cpp
 )
 
 # C++11 rocks!
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 
 # Create the application
-add_library(untitled SHARED ${untitled_SRCS})
+add_library(cmlyst SHARED ${cmlyst_SRCS})
 
 # Link to Qt modules
-qt5_use_modules(untitled Core Network)
+qt5_use_modules(cmlyst Core Network)
 
 # Link to Cutelyst
-target_link_libraries(untitled
+target_link_libraries(cmlyst
     ${CutelystQt5_LIBRARY}
 )
 
 # TODO install to a place where uWSGI Cutelyst plugin searches for
-install(TARGETS untitled DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
-
-#add_executable(untitled-app  ${untitled_SRCS} main.cpp)
-#qt5_use_modules(untitled-app Core Network Sql)
-#target_link_libraries(untitled-app
-#    ${CutelystQt5_LIBRARY}
-#)
+install(TARGETS cmlyst DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)

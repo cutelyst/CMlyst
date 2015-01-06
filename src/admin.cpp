@@ -46,7 +46,7 @@ bool Admin::Auto(Context *ctx)
         return false;
     }
 
-    ctx->setObjectName("Untitled");
+    ctx->setObjectName("CMlyst");
 
     ctx->stash()["adminbase"] = true;
 

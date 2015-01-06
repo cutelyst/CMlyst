@@ -12,8 +12,12 @@
   <div class="form-group">
     <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
     <script>
-        tinymce.init({menubar: false,
-                      selector:'textarea'});
+        tinymce.init({
+            menubar: false,
+            selector:'textarea',
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
+            plugins: "code",
+            });
     </script>
     <textarea name="content">{{ content }}</textarea>
   </div>

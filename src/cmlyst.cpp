@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,7 +17,7 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#include "untitled.h"
+#include "cmlyst.h"
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Plugins/viewengine.h>
@@ -42,16 +42,16 @@
 #include "adminsetup.h"
 #include "blog.h"
 
-Untitled::Untitled(QObject *parent) :
+CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
 {
 }
 
-Untitled::~Untitled()
+CMlyst::~CMlyst()
 {
 }
 
-bool Untitled::init()
+bool CMlyst::init()
 {
     ViewEngine *view = new ViewEngine("Grantlee", this);
     view->setTemplateExtension(".html");

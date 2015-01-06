@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,20 +17,20 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef UNTITLED_H
-#define UNTITLED_H
+#ifndef CMLYST_H
+#define CMLYST_H
 
 #include <Cutelyst/Application>
 
-class Untitled : public Cutelyst::Application
+class CMlyst : public Cutelyst::Application
 {
     Q_OBJECT
-    CUTELYST_APPLICATION(IID "org.cutelyst.Untitled")
+    CUTELYST_APPLICATION(IID "org.cutelyst.CMlyst")
 public:
-    Q_INVOKABLE explicit Untitled(QObject *parent = 0);
-    ~Untitled();
+    Q_INVOKABLE explicit CMlyst(QObject *parent = 0);
+    ~CMlyst();
 
     bool init();
 };
 
-#endif // UNTITLED_H
+#endif // CMLYST_H

@@ -32,7 +32,7 @@
       <div class="container">
         <nav class="blog-nav">
         {% for toppage in toppages %}
-          <a class="blog-nav-item" href="{{ ctx.request.base }}{{ toppage.path }}">{{ toppage.name }}</a>
+          <a class="blog-nav-item{% ifequal ctx.request.path toppage.path %} active{% endifequal %}" href="{{ ctx.request.base }}{{ toppage.path }}">{{ toppage.name }}</a>
         {% endfor %}
         </nav>
       </div>

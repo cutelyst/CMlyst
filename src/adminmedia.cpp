@@ -88,7 +88,7 @@ void AdminMedia::upload(Context *ctx)
 
     // TODO this is NOT working...
     QFile link(ctx->config("DataLocation").toString() % QLatin1String("/.media"));
-    if (!link.exists() && !QFile::link(mediaDir.absolutePath(), mediaDir.absolutePath())) {
+    if (!link.exists() && !QFile::link(QStringLiteral("media"), link.fileName())) {
         qWarning() << "Could not create link media directory" << mediaDir.absolutePath() << link.fileName();
         ctx->response()->redirect(ctx->uriForNoArgs(actionFor("index"), {
                                                         {"error_msg", "Failed to save file"}

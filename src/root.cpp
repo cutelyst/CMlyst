@@ -65,6 +65,7 @@ void Root::End(Context *ctx)
         view->setIncludePath(themePath);
     }
 
+    ctx->stash()["basetheme"] = ctx->uriFor("/static/" + settings.value("theme", "default").toString().toLatin1()).toString();
 }
 
 void Root::page(Cutelyst::Context *ctx)

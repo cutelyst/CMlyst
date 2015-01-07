@@ -43,6 +43,9 @@ public:
 
     C_ATTR(menus_new, :Path(menus/new))
     void menus_new(Context *ctx);
+
+    C_ATTR(menus_edit, :Path(menus/edit))
+    void menus_edit(Context *ctx, const QString &id);
 };
 
 #endif // ADMINAPPEARANCE_H

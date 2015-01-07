@@ -167,3 +167,42 @@ void AdminAppearance::menus_new(Context *ctx)
                });
 }
 
+void AdminAppearance::menus_edit(Context *ctx, const QString &id)
+{
+    QDir dataDir = ctx->config("DataLocation").toString();
+    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+
+    if (ctx->req()->method() == "POST") {
+
+        ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+    } else {
+        settings.beginGroup("Menus");
+        if (!settings.childGroups().contains(id)) {
+            ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+            return;
+        }
+
+        QVariantHash menu;
+        settings.beginGroup(id);
+        menu.insert("name", settings.value("Name"));
+        menu.insert("autoaddtoppages", settings.value("AutoAddTopPages"));
+        settings.endGroup();
+
+        QList<QVariantHash> items;
+        int size = settings.beginReadArray(id);
+        for (int i = 0; i < size; ++i) {
+            settings.setArrayIndex(i);
+            QVariantHash item;
+            item.insert("url", settings.value("url"));
+            item.insert("text", settings.value("text"));
+            items.append(item);
+        }
+        settings.endArray();
+        menu.insert("items", QVariant::fromValue(items));
+        ctx->stash({
+                       {"template", "appearance/menus_new.html"},
+                       {"menu", QVariant::fromValue(menu)}
+                   });
+    }
+}
+

@@ -160,7 +160,7 @@ QList<Page *> FileEngine::listPages(int depth)
         }
 
         if (relpath == QLatin1String("index.page")) {
-            relpath = QString();
+            relpath = QStringLiteral("");
         } else {
             relpath.remove(QRegularExpression(".page$"));
         }

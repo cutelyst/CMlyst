@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,34 +17,32 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef ROOT_H
-#define ROOT_H
+#ifndef ADMINAPPEARANCE_H
+#define ADMINAPPEARANCE_H
 
 #include <Cutelyst/Controller>
 
 using namespace Cutelyst;
 
-class Root : public Controller
+class AdminAppearance : public Controller
 {
     Q_OBJECT
-    C_NAMESPACE("")
+    C_NAMESPACE(".admin/appearance")
 public:
-    Root();
-    ~Root();
+    explicit AdminAppearance(QObject *parent = 0);
+    ~AdminAppearance();
 
-public:
-//    C_ATTR(notFound, :Path)
-//    void notFound(Context *c);
+    C_ATTR(index, :Path :Args)
+    void index(Context *ctx);
 
-    C_ATTR(page, :Path)
-    void page(Cutelyst::Context *ctx);
+    C_ATTR(menus, :Local :Args)
+    void menus(Context *ctx);
 
-private slots:
-    bool Auto(Context *ctx);
+    C_ATTR(menus_remove, :Path(menus/remove))
+    void menus_remove(Context *ctx, const QString &id);
 
-private:
-    C_ATTR(End, :ActionClass(RenderView))
-    void End(Context *ctx);
+    C_ATTR(menus_new, :Path(menus/new))
+    void menus_new(Context *ctx);
 };
 
-#endif // ROOT_H
+#endif // ADMINAPPEARANCE_H

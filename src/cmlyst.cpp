@@ -35,6 +35,7 @@
 #include "root.h"
 #include "admin.h"
 #include "adminlogin.h"
+#include "adminappearance.h"
 #include "adminposts.h"
 #include "adminpages.h"
 #include "adminmedia.h"
@@ -82,6 +83,7 @@ bool CMlyst::init()
         registerController(new Root);
         registerController(new Admin);
         registerController(new AdminLogin);
+        registerController(new AdminAppearance);
         registerController(new AdminPosts);
         registerController(new AdminPages);
         registerController(new AdminMedia);

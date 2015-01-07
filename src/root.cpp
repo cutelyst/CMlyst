@@ -75,7 +75,7 @@ void Root::page(Cutelyst::Context *ctx)
     qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
     QDir dataDir = ctx->config("DataLocation").toString();
-    CMS::FileEngine *engine = new CMS::FileEngine;
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
     engine->init({
                      {"root", dataDir.absolutePath()}
                  });
@@ -90,14 +90,9 @@ void Root::page(Cutelyst::Context *ctx)
 
     QList<CMS::Page *> toppages = engine->listPages(0);
 
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-    settings.beginGroup("General");
     ctx->stash({
-                   {"title", settings.value("title")},
-                   {"tagline", settings.value("tagline")},
                    {"toppages", QVariant::fromValue(toppages)}
                });
-    settings.endGroup();
 
     CMS::Page *page = engine->getPage(path);
     qDebug() << "page" << page;
@@ -111,5 +106,22 @@ void Root::page(Cutelyst::Context *ctx)
     ctx->stash({
                    {"template", "page.html"},
                    {"page", QVariant::fromValue(page)}
+               });
+}
+
+bool Root::Auto(Context *ctx)
+{
+    QObject *site = new QObject(ctx);
+
+    QDir dataDir = ctx->config("DataLocation").toString();
+    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+
+    settings.beginGroup("General");
+    site->setProperty("title", settings.value("title"));
+    site->setProperty("tagline", settings.value("tagline"));
+    settings.endGroup();
+
+    ctx->stash({
+                   {"site", QVariant::fromValue(site)}
                });
 }

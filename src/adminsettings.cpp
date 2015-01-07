@@ -32,8 +32,8 @@ void AdminSettings::index(Context *ctx)
 {
     QDir dataDir = ctx->config("DataLocation").toString();
     QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-    settings.beginGroup("General");
 
+    settings.beginGroup("General");
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->request()->bodyParam();
         settings.setValue("title", params.value("title"));
@@ -53,8 +53,5 @@ void AdminSettings::index(Context *ctx)
                    {"currentTheme", settings.value("theme")},
                    {"themes", themes}
                });
-
-
-
     settings.endGroup();
 }

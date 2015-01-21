@@ -64,7 +64,7 @@ void AdminMedia::index(Context *ctx)
         hash.insert("name", fileInfo.fileName());
         hash.insert("modified", fileInfo.lastModified().toString());
         hash.insert("author", fileInfo.owner());
-        hash.insert("url", ctx->uriFor(urlPath.toLatin1()).toString());
+        hash.insert("url", ctx->uriFor(urlPath).toString());
         filesHash.append(hash);
     }
     qDebug() << filesHash;

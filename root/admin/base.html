@@ -67,8 +67,8 @@
 
     <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 
-      {% if status_msg %}<span class="message">{{ status_msg }}</span>{% endif %}
-      {% if error_msg %}<span class="error">{{ error_msg }}</span>{% endif %}
+      {% if status_msg %}<div class="alert alert-info" role="alert">{{ status_msg }}</div>{% endif %}
+      {% if error_msg %}<div class="alert alert-danger" role="alert">{{ error_msg }}</div>{% endif %}
       <div id="content-body">
         {% include template %}
       </div>

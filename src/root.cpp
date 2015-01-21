@@ -54,7 +54,7 @@ void Root::End(Context *ctx)
     QDir rootDir = ctx->config("RootLocation").toString();
     QDir dataDir = ctx->config("DataLocation").toString();
     QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-    settings.beginGroup("General");
+    settings.beginGroup(QStringLiteral("Main"));
 
     QString themePath;
     themePath = rootDir.absoluteFilePath(QLatin1String("themes/") % settings.value("theme", "default").toString());
@@ -65,7 +65,7 @@ void Root::End(Context *ctx)
         view->setIncludePath(themePath);
     }
 
-    QByteArray staticTheme = "/static/themes/" + settings.value("theme", "default").toString().toLatin1();
+    QString staticTheme = QLatin1String("/static/themes/") % settings.value("theme", "default").toString();
     ctx->stash()["basetheme"] = ctx->uriFor(staticTheme).toString();
 }
 

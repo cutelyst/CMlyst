@@ -21,9 +21,15 @@
 #define ROOT_H
 
 #include <Cutelyst/Controller>
+#include <QDir>
 
 using namespace Cutelyst;
 
+namespace CMS {
+class Engine;
+}
+
+class QSettings;
 class Root : public Controller
 {
     Q_OBJECT
@@ -42,9 +48,16 @@ public:
 private slots:
     bool Auto(Context *ctx);
 
+protected:
+    void init(Application *app);
+
 private:
     C_ATTR(End, :ActionClass(RenderView))
     void End(Context *ctx);
+
+    CMS::Engine *m_engine;
+    QSettings *m_settings;
+    QDir m_rootDir;
 };
 
 #endif // ROOT_H

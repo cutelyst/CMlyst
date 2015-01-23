@@ -19,13 +19,13 @@
 
 #include "root.h"
 
+#include <Cutelyst/Application>
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Plugins/viewengine.h>
 
 #include <QStringBuilder>
 #include <QSettings>
-#include <QDir>
 #include <QDebug>
 
 #include "../libCMS/fileengine.h"
@@ -49,15 +49,13 @@ Root::~Root()
 void Root::End(Context *ctx)
 {
     Q_UNUSED(ctx)
-    qDebug() << "*** Root::End()" << ctx->view();
+//    qDebug() << "*** Root::End()" << ctx->view();
 
-    QDir rootDir = ctx->config("RootLocation").toString();
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-    settings.beginGroup(QStringLiteral("Main"));
+    m_settings->beginGroup(QStringLiteral("Main"));
+    const QString &theme = m_settings->value("theme", "default").toString();
+    m_settings->endGroup();
 
-    QString themePath;
-    themePath = rootDir.absoluteFilePath(QLatin1String("themes/") % settings.value("theme", "default").toString());
+    const QString &themePath = m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme);
 
     ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
     // Check if theme path changed
@@ -65,41 +63,47 @@ void Root::End(Context *ctx)
         view->setIncludePath(themePath);
     }
 
-    QString staticTheme = QLatin1String("/static/themes/") % settings.value("theme", "default").toString();
+    QString staticTheme = QLatin1String("/static/themes/") % theme;
     ctx->stash()["basetheme"] = ctx->uriFor(staticTheme).toString();
+}
+
+void Root::init(Application *app)
+{
+    QDir dataDir = app->config("DataLocation").toString();
+    m_rootDir = app->config("RootLocation").toString();
+
+    CMS::FileEngine *engine = new CMS::FileEngine(this);
+    engine->init({
+                     {"root", dataDir.absolutePath()}
+                 });
+    m_engine = engine;
+
+    m_settings = new QSettings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 }
 
 void Root::page(Cutelyst::Context *ctx)
 {
-    qDebug() << "*** Root::page()";
-    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
-
-    QDir dataDir = ctx->config("DataLocation").toString();
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", dataDir.absolutePath()}
-                 });
+//    qDebug() << "*** Root::page()";
+//    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
     QString path;
-
     path = ctx->request()->path();
     if (path.at(0) == QChar('/')) {
         path.remove(0, 1);
     }
-    qDebug() << "path" << path << dataDir.absolutePath();
+//    qDebug() << "path" << path;
 
-    QList<CMS::Page *> toppages = engine->listPages(0);
+    QList<CMS::Page *> toppages = m_engine->listPages(0);
 
     ctx->stash({
                    {"toppages", QVariant::fromValue(toppages)}
                });
 
-    CMS::Page *page = engine->getPage(path);
-    qDebug() << "page" << page;
+    CMS::Page *page = m_engine->getPage(path);
+//    qDebug() << "page" << page;
     if (!page) {
         ctx->stash()[QLatin1String("template")] = "404.html";
         ctx->res()->setStatus(404);
-        delete engine;
         return;
     }
 
@@ -113,15 +117,14 @@ bool Root::Auto(Context *ctx)
 {
     QObject *site = new QObject(ctx);
 
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-
-    settings.beginGroup("General");
-    site->setProperty("title", settings.value("title"));
-    site->setProperty("tagline", settings.value("tagline"));
-    settings.endGroup();
+    m_settings->beginGroup("General");
+    site->setProperty("title", m_settings->value("title"));
+    site->setProperty("tagline", m_settings->value("tagline"));
+    m_settings->endGroup();
 
     ctx->stash({
                    {"site", QVariant::fromValue(site)}
                });
+
+    return true;
 }

@@ -7,6 +7,7 @@
 #include <QSettings>
 #include <QDateTime>
 #include <QHash>
+#include <QStringBuilder>
 #include <QDebug>
 
 using namespace CMS;
@@ -31,7 +32,7 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
         root = QDir::currentPath();
     }
     d->rootPath = root;
-    d->pagesPath = root + "/pages";
+    d->pagesPath = root % QLatin1String("/pages");
 
     if (!d->pagesPath.exists() &&
             !d->pagesPath.mkpath(d->pagesPath.absolutePath())) {
@@ -77,15 +78,15 @@ Page *FileEngine::loadPage(const QString &path) const
     Q_D(const FileEngine);
 
     QString normPath = path;
-    qDebug() << "getPageToEdit" << path;
+//    qDebug() << "getPageToEdit" << path;
     normPath.remove(QRegularExpression("^/"));
-    qDebug() << "getPageToEdit" << normPath;
+//    qDebug() << "getPageToEdit" << normPath;
     if (normPath.isEmpty()) {
         normPath = QStringLiteral("index.page");
     } else {
         normPath.append(QStringLiteral(".page"));
     }
-    qDebug() << "getPageToEdit" << normPath;
+//    qDebug() << "getPageToEdit" << normPath;
 
 
     QString file = d->pagesPath.absoluteFilePath(normPath);
@@ -125,7 +126,7 @@ bool FileEngine::savePage(Page *page)
     }
 
     QString file = d->pagesPath.absoluteFilePath(path);
-    qDebug() << "save Page" << page->path() << path;
+//    qDebug() << "save Page" << page->path() << path;
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
     data.setValue("Modified", page->modified());
@@ -134,7 +135,7 @@ bool FileEngine::savePage(Page *page)
     data.setValue("NavigationLabel", page->navigationLabel());
     data.setValue("Tags", page->tags());
     data.sync();
-    qDebug() << "save page" << file;
+//    qDebug() << "save page" << file;
     // if it's not writable we can't save the page
     return data.isWritable();
 }
@@ -144,17 +145,17 @@ QList<Page *> FileEngine::listPages(int depth)
     Q_D(const FileEngine);
 
     QList<Page *> ret;
-    qDebug() << "listpages:" << d->pagesPath.path();
+//    qDebug() << "listpages:" << d->pagesPath.path();
 
     QDirIterator it(d->pagesPath.path(),
                     QDir::Files | QDir::NoDotAndDotDot,
                     QDirIterator::Subdirectories);
     while (it.hasNext()) {
         QString path = it.next();
-        qDebug() << "listpages:" << path;
+//        qDebug() << "listpages:" << path;
 
         QString relpath = d->pagesPath.relativeFilePath(path);
-        qDebug() << "listpages relative:" << relpath << depth << relpath.count(QChar('/'));
+//        qDebug() << "listpages relative:" << relpath << depth << relpath.count(QChar('/'));
         if (depth != -1 && relpath.count(QChar('/')) > depth) {
             continue;
         }
@@ -165,7 +166,7 @@ QList<Page *> FileEngine::listPages(int depth)
             relpath.remove(QRegularExpression(".page$"));
         }
 
-        qDebug() << "listpages relative ok:" << relpath;
+//        qDebug() << "listpages relative ok:" << relpath;
         Page *page = getPage(relpath);
         if (page) {
             ret.append(page);

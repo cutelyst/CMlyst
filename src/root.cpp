@@ -78,6 +78,7 @@ void Root::init(Application *app)
                  });
     m_engine = engine;
 
+    m_settingsInfo.setFile(dataDir.absoluteFilePath("site.conf"));
     m_settings = new QSettings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 }
 
@@ -86,29 +87,36 @@ void Root::page(Cutelyst::Context *ctx)
 //    qDebug() << "*** Root::page()";
 //    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
-    QString path;
-    path = ctx->request()->path();
-    if (path.at(0) == QChar('/')) {
-        path.remove(0, 1);
-    }
-//    qDebug() << "path" << path;
+    Response *res = ctx->res();
+    Request *req = ctx->req();
 
-    QList<CMS::Page *> toppages = m_engine->listPages(0);
-
-    ctx->stash({
-                   {"toppages", QVariant::fromValue(toppages)}
-               });
-
-    CMS::Page *page = m_engine->getPage(path);
-//    qDebug() << "page" << page;
+    // Find the desired page
+    CMS::Page *page = m_engine->getPage(req->path());
     if (!page) {
         ctx->stash()[QLatin1String("template")] = "404.html";
-        ctx->res()->setStatus(404);
+        res->setStatus(404);
         return;
     }
 
+    // See if the page has changed, if the settings have changed
+    // and have a newer date use that instead
+    QDateTime currentDateTime = qMax(page->modified(), m_settingsInfo.lastModified());
+    QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
+    if (clientDate.isValid()) {
+        if (currentDateTime == clientDate && currentDateTime.isValid()) {
+            res->setStatus(Response::NotModified);
+            return;
+        }
+    }
+    res->headers().setLastModified(currentDateTime);
+
+    // Get a list of top pages
+    // TODO replace with menu
+    QList<CMS::Page *> toppages = m_engine->listPages(0);
+
     ctx->stash({
                    {"template", "page.html"},
+                   {"toppages", QVariant::fromValue(toppages)},
                    {"page", QVariant::fromValue(page)}
                });
 }

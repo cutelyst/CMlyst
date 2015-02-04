@@ -102,7 +102,13 @@ Page *FileEngine::loadPage(const QString &path) const
 
         page->setName(data.value("Name").toString());
         page->setAuthor(data.value("Author").toString());
-        page->setModified(data.value("Modified").toDateTime());
+        QDateTime modified = data.value("Modified").toDateTime();
+        if (modified.isValid()) {
+        } else {
+            modified = fileInfo.lastModified();
+        }
+        page->setModified(modified);
+
         page->setContent(data.value("Content").toString());
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());

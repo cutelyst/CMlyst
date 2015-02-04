@@ -30,6 +30,7 @@
 
 #include "../libCMS/fileengine.h"
 #include "../libCMS/page.h"
+#include "../libCMS/menu.h"
 
 Root::Root()
 {
@@ -90,6 +91,21 @@ void Root::page(Cutelyst::Context *ctx)
     Response *res = ctx->res();
     Request *req = ctx->req();
 
+//    CMS::Menu *menu = new CMS::Menu("teste", ctx);
+//    menu->appendEntry("foo", "http://foo");
+//    menu->appendEntry("bar", "http://bar");
+//    menu->setLocations({"main"});
+//    qDebug() << menu->name();
+//    m_engine->saveMenu(menu);
+
+//    CMS::Menu *menu2 = new CMS::Menu("bla", ctx);
+//    menu2->appendEntry("foo2", "http://foo2");
+//    menu2->appendEntry("bar2", "http://bar2");
+//    menu2->setLocations({"bottom"});
+//    m_engine->saveMenu(menu2);
+
+//    qDebug() << m_engine->menus();
+
     // Find the desired page
     CMS::Page *page = m_engine->getPage(req->path());
     if (!page) {
@@ -100,8 +116,8 @@ void Root::page(Cutelyst::Context *ctx)
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-    QDateTime currentDateTime = qMax(page->modified(), m_settingsInfo.lastModified());
-    QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
+    const QDateTime &currentDateTime = qMax(page->modified(), m_settingsInfo.lastModified());
+    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid()) {
         if (currentDateTime == clientDate && currentDateTime.isValid()) {
             res->setStatus(Response::NotModified);
@@ -110,28 +126,26 @@ void Root::page(Cutelyst::Context *ctx)
     }
     res->headers().setLastModified(currentDateTime);
 
-    // Get a list of top pages
-    // TODO replace with menu
-    QList<CMS::Page *> toppages = m_engine->listPages(0);
-
     ctx->stash({
                    {"template", "page.html"},
-                   {"toppages", QVariant::fromValue(toppages)},
+                   {"menus", QVariant::fromValue(m_engine->menuLocations())},
                    {"page", QVariant::fromValue(page)}
                });
 }
 
 bool Root::Auto(Context *ctx)
 {
-    QObject *site = new QObject(ctx);
+    QVariantHash site;
 
-    m_settings->beginGroup("General");
-    site->setProperty("title", m_settings->value("title"));
-    site->setProperty("tagline", m_settings->value("tagline"));
+    m_settings->beginGroup(QStringLiteral("General"));
+    site.insert(QStringLiteral("title"),
+                m_settings->value(QStringLiteral("title")));
+    site.insert(QStringLiteral("tagline"),
+                m_settings->value(QStringLiteral("tagline")));
     m_settings->endGroup();
 
     ctx->stash({
-                   {"site", QVariant::fromValue(site)}
+                   {"site", site}
                });
 
     return true;

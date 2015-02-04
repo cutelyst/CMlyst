@@ -1,0 +1,27 @@
+<h2 class="sub-header">{% ifequal post_type "page" %}Add New Page{% else %}Add New Post{% endifequal %}</h2>
+
+<form method="post" class="form" role="form" autocomplete="off">
+  <div class="form-group">
+    <label class="control-label" for="title">Title</label>
+    <input type="text" class="form-control" name="title" id="title" placeholder="Enter title here" value="{{ title }}" required>
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="path">Path</label> {{ ctx.req.base }}
+    <input type="text" class="form-control" name="path" id="path" value="{{ path }}">
+  </div>
+  <div class="form-group">
+    <script src="//tinymce.cachefly.net/4.0/tinymce.min.js"></script>
+    <script>
+        tinymce.init({
+            menubar: false,
+            selector:'textarea',
+            toolbar1: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image | code",
+            plugins: "code",
+            });
+    </script>
+    <textarea name="content">{{ content }}</textarea>
+  </div>
+  <div class="form-group">
+    <button type="submit" name="submit" value="Submit" class="btn">Publish</button>
+  </div>
+</form>

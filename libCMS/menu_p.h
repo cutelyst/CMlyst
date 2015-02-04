@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
+ *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,58 +17,26 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef CMS_PAGE_H
-#define CMS_PAGE_H
+#ifndef MENU_P_H
+#define MENU_P_H
 
-#include <QObject>
-#include <QDateTime>
+#include <QUrl>
 #include <QStringList>
+
+#include "menu.h"
 
 namespace CMS {
 
-class PagePrivate;
-class Page : public QObject
+class MenuPrivate
 {
-    Q_OBJECT
-    Q_DECLARE_PRIVATE(Page)
-    Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
-    Q_PROPERTY(QString path READ path WRITE setPath)
-    Q_PROPERTY(QString author READ author WRITE setAuthor)
-    Q_PROPERTY(QString content READ content WRITE setContent)
-    Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
-    Q_PROPERTY(QStringList tags READ tags WRITE setTags)
 public:
-    Page();
-    virtual ~Page();
-
-    QString name() const;
-    void setName(const QString &name);
-
-    QString navigationLabel() const;
-    void setNavigationLabel(const QString &label);
-
-    QString path() const;
-    void setPath(const QString &path);
-
-    QString author() const;
-    void setAuthor(const QString &author);
-
-    QString content() const;
-    void setContent(const QString &body);
-
-    QDateTime modified() const;
-    void setModified(const QDateTime &dateTime);
-
-    QStringList tags() const;
-    void setTags(const QStringList &tags);
-
-    static QString readablePath(const QString &path);
-
-protected:
-    PagePrivate *d_ptr;
+    bool autoAddPages = false;
+    QString name;
+    QStringList locations;
+    QList<QVariantHash> urls;
 };
 
 }
 
-#endif // CMS_PAGE_H
+#endif // MENU_P_H
+

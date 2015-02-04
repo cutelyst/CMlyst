@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
+ *   Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,34 +17,73 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef FILEENGINE_P_H
-#define FILEENGINE_P_H
+#include "menu_p.h"
 
-#include <QDir>
-#include <QHash>
-#include <QSettings>
-#include <QFileInfo>
-#include <QDateTime>
+#include <QVariantHash>
 
-#include "fileengine.h"
+using namespace CMS;
 
-namespace CMS {
-
-class FileEnginePrivate
+Menu::Menu(const QString &name, QObject *parent) : QObject(parent)
+  , d_ptr(new MenuPrivate)
 {
-public:
-    QDir rootPath;
-    QDir pagesPath;
-    QSettings *menuSettings;
-    QFileInfo menuSettingsInfo;
-    QHash<QString, Page*> pages;
-    QDateTime menusDT;
-    QHash<QString, CMS::Menu *> menus;
-    QDateTime menuLocationsDT;
-    QHash<QString, CMS::Menu *> menuLocations;
-};
-
+    Q_D(Menu);
+    d->name = name;
 }
 
-#endif // FILEENGINE_P_H
+Menu::~Menu()
+{
+    delete d_ptr;
+}
+
+QString Menu::name() const
+{
+    Q_D(const Menu);
+    return d->name;
+}
+
+bool Menu::autoAddPages() const
+{
+    Q_D(const Menu);
+    return d->autoAddPages;
+}
+
+void Menu::setAutoAddPages(bool enable)
+{
+    Q_D(Menu);
+    d->autoAddPages = enable;
+}
+
+QStringList Menu::locations() const
+{
+    Q_D(const Menu);
+    return d->locations;
+}
+
+void Menu::setLocations(const QStringList &locations)
+{
+    Q_D(Menu);
+    d->locations = locations;
+}
+
+void Menu::appendEntry(const QString &text, const QString &url, const QString &attr)
+{
+    Q_D(Menu);
+    d->urls.append({
+                       {"text", text},
+                       {"url", url},
+                       {"attr", attr}
+                   });
+}
+
+QList<QVariantHash> Menu::entries() const
+{
+    Q_D(const Menu);
+    return d->urls;
+}
+
+void Menu::setEntries(const QList<QVariantHash> &entries)
+{
+    Q_D(Menu);
+    d->urls = entries;
+}
 

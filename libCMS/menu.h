@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
+ *   Copyright (C) 2015 Daniel Nicoletti <dantti12@gmail.com>              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -17,58 +17,39 @@
  *   Boston, MA 02110-1301, USA.                                           *
  ***************************************************************************/
 
-#ifndef CMS_PAGE_H
-#define CMS_PAGE_H
+#ifndef MENU_H
+#define MENU_H
 
 #include <QObject>
-#include <QDateTime>
-#include <QStringList>
 
 namespace CMS {
 
-class PagePrivate;
-class Page : public QObject
+class MenuPrivate;
+class Menu : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(Page)
-    Q_PROPERTY(QString name READ name WRITE setName)
-    Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
-    Q_PROPERTY(QString path READ path WRITE setPath)
-    Q_PROPERTY(QString author READ author WRITE setAuthor)
-    Q_PROPERTY(QString content READ content WRITE setContent)
-    Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
-    Q_PROPERTY(QStringList tags READ tags WRITE setTags)
+    Q_DECLARE_PRIVATE(Menu)
+    Q_PROPERTY(QList<QVariantHash> entries READ entries)
 public:
-    Page();
-    virtual ~Page();
+    explicit Menu(const QString &name, QObject *parent = 0);
+    ~Menu();
 
     QString name() const;
-    void setName(const QString &name);
 
-    QString navigationLabel() const;
-    void setNavigationLabel(const QString &label);
+    bool autoAddPages() const;
+    void setAutoAddPages(bool enable);
 
-    QString path() const;
-    void setPath(const QString &path);
+    QStringList locations() const;
+    void setLocations(const QStringList &locations);
 
-    QString author() const;
-    void setAuthor(const QString &author);
-
-    QString content() const;
-    void setContent(const QString &body);
-
-    QDateTime modified() const;
-    void setModified(const QDateTime &dateTime);
-
-    QStringList tags() const;
-    void setTags(const QStringList &tags);
-
-    static QString readablePath(const QString &path);
+    void appendEntry(const QString &text, const QString &url, const QString &attr = QString());
+    virtual QList<QVariantHash> entries() const;
+    virtual void setEntries(const QList<QVariantHash> &entries);
 
 protected:
-    PagePrivate *d_ptr;
+    MenuPrivate *d_ptr;
 };
 
 }
 
-#endif // CMS_PAGE_H
+#endif // MENU_H

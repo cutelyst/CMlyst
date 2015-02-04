@@ -1,0 +1,28 @@
+<h2 class="sub-header">Menus</h2>
+
+<a href="/.admin/appearance/menus/new">Add New</a>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Locations</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for menu in menus %}
+      <tr>
+        <td>
+          <a href="/.admin/appearance/menus/edit/{{menu.id}}">{{menu.name}}</a>
+        </td>
+        <td>{{menu.locations}}</td>
+        <td>
+          <a href="/.admin/appearance/menus/remove/{{menu.id}}">Remove</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>

@@ -21,6 +21,7 @@
 #include "menu.h"
 
 #include <QStringList>
+#include <QDateTime>
 
 using namespace CMS;
 
@@ -97,4 +98,9 @@ bool Engine::saveMenus(const QList<Menu *> &menus)
     }
 
     return true;
+}
+
+QDateTime Engine::lastModified()
+{
+    return QDateTime();
 }

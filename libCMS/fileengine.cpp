@@ -339,3 +339,9 @@ bool FileEngine::saveMenu(Menu *menu)
 
     return d->menuSettings->isWritable();
 }
+
+QDateTime FileEngine::lastModified()
+{
+    Q_D(FileEngine);
+    return d->menuSettingsInfo.lastModified();
+}

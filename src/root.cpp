@@ -79,7 +79,6 @@ void Root::init(Application *app)
                  });
     m_engine = engine;
 
-    m_settingsInfo.setFile(dataDir.absoluteFilePath("site.conf"));
     m_settings = new QSettings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 }
 
@@ -116,7 +115,7 @@ void Root::page(Cutelyst::Context *ctx)
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-    const QDateTime &currentDateTime = qMax(page->modified(), m_settingsInfo.lastModified());
+    const QDateTime &currentDateTime = qMax(page->modified(), m_engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid()) {
         if (currentDateTime == clientDate && currentDateTime.isValid()) {
@@ -137,7 +136,7 @@ bool Root::Auto(Context *ctx)
 {
     QVariantHash site;
 
-    m_settings->beginGroup(QStringLiteral("General"));
+    m_settings->beginGroup(QStringLiteral("Main"));
     site.insert(QStringLiteral("title"),
                 m_settings->value(QStringLiteral("title")));
     site.insert(QStringLiteral("tagline"),

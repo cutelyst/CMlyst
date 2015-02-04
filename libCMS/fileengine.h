@@ -53,6 +53,8 @@ public:
 
     virtual bool saveMenu(Menu *menu);
 
+    virtual QDateTime lastModified();
+
 protected:
     FileEnginePrivate *d_ptr;
 };

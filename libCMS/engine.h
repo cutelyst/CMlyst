@@ -56,6 +56,8 @@ public:
     virtual bool saveMenu(Menu *menu);
     bool saveMenus(const QList<Menu *> &menus);
 
+    virtual QDateTime lastModified();
+
 protected:
     EnginePrivate *d_ptr;
 };

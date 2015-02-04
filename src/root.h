@@ -57,7 +57,6 @@ private:
 
     CMS::Engine *m_engine;
     QSettings *m_settings;
-    QFileInfo m_settingsInfo;
     QDir m_rootDir;
 };
 

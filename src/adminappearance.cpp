@@ -19,6 +19,8 @@
 
 #include "adminappearance.h"
 
+#include "../libCMS/fileengine.h"
+
 #include <QDir>
 #include <QSettings>
 
@@ -101,6 +103,11 @@ void AdminAppearance::index(Context *ctx)
 
 void AdminAppearance::menus(Context *ctx)
 {
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+    engine->init({
+                     {"root", ctx->config("DataLocation").toString()}
+                 });
+
     QDir dataDir = ctx->config("DataLocation").toString();
     QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 

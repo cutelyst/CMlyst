@@ -29,7 +29,6 @@ namespace CMS {
 class Engine;
 }
 
-class QSettings;
 class Root : public Controller
 {
     Q_OBJECT
@@ -56,7 +55,6 @@ private:
     void End(Context *ctx);
 
     CMS::Engine *m_engine;
-    QSettings *m_settings;
     QDir m_rootDir;
 };
 

@@ -19,7 +19,8 @@
 
 #include "adminsettings.h"
 
-#include <QSettings>
+#include "../libCMS/fileengine.h"
+
 #include <QDir>
 
 AdminSettings::AdminSettings(QObject *parent) :
@@ -30,21 +31,22 @@ AdminSettings::AdminSettings(QObject *parent) :
 
 void AdminSettings::index(Context *ctx)
 {
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+    engine->init({
+                     {"root", ctx->config("DataLocation").toString()}
+                 });
 
-    if (!settings.isWritable()) {
+    if (!engine->settingsIsWritable()) {
         ctx->stash({
                        {"error_msg", "Settings file is read only!"}
                    });
     }
 
-    settings.beginGroup(QStringLiteral("Main"));
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->request()->bodyParam();
-        settings.setValue("title", params.value("title"));
-        settings.setValue("tagline", params.value("tagline"));
-        settings.setValue("theme", params.value("theme"));
+        engine->setSettingsValue("title", params.value("title"));
+        engine->setSettingsValue("tagline", params.value("tagline"));
+        engine->setSettingsValue("theme", params.value("theme"));
     }
 
     QDir rootDir = ctx->config("RootLocation").toString();
@@ -54,10 +56,9 @@ void AdminSettings::index(Context *ctx)
 
     ctx->stash({
                    {"template", "settings/index.html"},
-                   {"title", settings.value("title")},
-                   {"tagline", settings.value("tagline")},
-                   {"currentTheme", settings.value("theme")},
+                   {"title", engine->settingsValue("title")},
+                   {"tagline", engine->settingsValue("tagline")},
+                   {"currentTheme", engine->settingsValue("theme")},
                    {"themes", themes}
                });
-    settings.endGroup();
 }

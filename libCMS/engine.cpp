@@ -104,3 +104,26 @@ QDateTime Engine::lastModified()
 {
     return QDateTime();
 }
+
+bool Engine::settingsIsWritable()
+{
+    return false;
+}
+
+QHash<QString, QString> Engine::settings()
+{
+    return QHash<QString, QString>();
+}
+
+QString Engine::settingsValue(const QString &key, const QString &defaultValue)
+{
+    Q_UNUSED(key)
+    return defaultValue;
+}
+
+bool Engine::setSettingsValue(const QString &key, const QString &value)
+{
+    Q_UNUSED(key)
+    Q_UNUSED(value)
+    return false;
+}

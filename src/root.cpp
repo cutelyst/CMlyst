@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -25,7 +25,6 @@
 #include <Cutelyst/Plugins/viewengine.h>
 
 #include <QStringBuilder>
-#include <QSettings>
 #include <QDebug>
 
 #include "../libCMS/fileengine.h"
@@ -52,9 +51,7 @@ void Root::End(Context *ctx)
     Q_UNUSED(ctx)
 //    qDebug() << "*** Root::End()" << ctx->view();
 
-    m_settings->beginGroup(QStringLiteral("Main"));
-    const QString &theme = m_settings->value("theme", "default").toString();
-    m_settings->endGroup();
+    const QString &theme = m_engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
 
     const QString &themePath = m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme);
 
@@ -78,8 +75,6 @@ void Root::init(Application *app)
                      {"root", dataDir.absolutePath()}
                  });
     m_engine = engine;
-
-    m_settings = new QSettings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 }
 
 void Root::page(Cutelyst::Context *ctx)
@@ -134,17 +129,8 @@ void Root::page(Cutelyst::Context *ctx)
 
 bool Root::Auto(Context *ctx)
 {
-    QVariantHash site;
-
-    m_settings->beginGroup(QStringLiteral("Main"));
-    site.insert(QStringLiteral("title"),
-                m_settings->value(QStringLiteral("title")));
-    site.insert(QStringLiteral("tagline"),
-                m_settings->value(QStringLiteral("tagline")));
-    m_settings->endGroup();
-
     ctx->stash({
-                   {"site", site}
+                   {"cms", QVariant::fromValue(m_engine->settings())}
                });
 
     return true;

@@ -35,8 +35,10 @@ class FileEnginePrivate
 public:
     QDir rootPath;
     QDir pagesPath;
-    QSettings *menuSettings;
-    QFileInfo menuSettingsInfo;
+    QSettings *settings;
+    QFileInfo settingsInfo;
+    QDateTime mainSettingsDT;
+    QHash<QString, QString> mainSettings;
     QHash<QString, Page*> pages;
     QDateTime menusDT;
     QHash<QString, CMS::Menu *> menus;

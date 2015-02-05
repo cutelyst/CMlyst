@@ -53,14 +53,20 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
     }
     d->rootPath = root;
     d->pagesPath = root % QLatin1String("/pages");
-    d->menuSettingsInfo = d->rootPath.absoluteFilePath("site.conf");
-    d->menuSettings = new QSettings(d->menuSettingsInfo.absoluteFilePath(), QSettings::IniFormat);
+    d->settingsInfo = d->rootPath.absoluteFilePath("site.conf");
+    d->settings = new QSettings(d->settingsInfo.absoluteFilePath(), QSettings::IniFormat);
 
     if (!d->pagesPath.exists() &&
             !d->pagesPath.mkpath(d->pagesPath.absolutePath())) {
         qWarning() << "Failed to create pages path" << d->pagesPath.absolutePath();
         return false;
     }
+
+    if (!d->settings->isWritable()) {
+        qWarning() << "Settings file is not writable!" << d->settingsInfo.absoluteFilePath();
+        return false;
+    }
+
     return true;
 }
 
@@ -211,40 +217,40 @@ QHash<QString, CMS::Menu *> FileEngine::menus()
 {
     Q_D(FileEngine);
 
-    const QDateTime &settingsDT = d->menuSettingsInfo.lastModified();
+    const QDateTime &settingsDT = d->settingsInfo.lastModified();
     if (settingsDT == d->menusDT) {
         return d->menus;
     }
 
-    d->menuSettings->beginGroup("Menus");
+    d->settings->beginGroup("Menus");
 
     QHash<QString, CMS::Menu *> menus;
-    foreach (const QString &menu, d->menuSettings->childGroups()) {
-        d->menuSettings->beginGroup(menu);
+    foreach (const QString &menu, d->settings->childGroups()) {
+        d->settings->beginGroup(menu);
         Menu *obj = new Menu(menu);
 
-        obj->setLocations(d->menuSettings->value("Locations").toStringList());
-        obj->setAutoAddPages(d->menuSettings->value("AutoAddPages").toBool());
+        obj->setLocations(d->settings->value("Locations").toStringList());
+        obj->setAutoAddPages(d->settings->value("AutoAddPages").toBool());
 
         QList<QVariantHash> urls;
-        int size = d->menuSettings->beginReadArray("urls");
+        int size = d->settings->beginReadArray("urls");
         for (int i = 0; i < size; ++i) {
-            d->menuSettings->setArrayIndex(i);
+            d->settings->setArrayIndex(i);
             QVariantHash data;
             // TODO read all data
-            data.insert("text", d->menuSettings->value("text"));
-            data.insert("url", d->menuSettings->value("url"));
-            data.insert("attr", d->menuSettings->value("attr"));
+            data.insert("text", d->settings->value("text"));
+            data.insert("url", d->settings->value("url"));
+            data.insert("attr", d->settings->value("attr"));
             urls.append(data);
         }
-        d->menuSettings->endArray();
+        d->settings->endArray();
         obj->setEntries(urls);
 
         menus.insert(menu, obj);
-        d->menuSettings->endGroup();
+        d->settings->endGroup();
     }
 
-    d->menuSettings->endGroup();
+    d->settings->endGroup();
 
     // Cache the result
     d->menus = menus;
@@ -257,19 +263,19 @@ QHash<QString, Menu *> FileEngine::menuLocations()
 {
     Q_D(FileEngine);
 
-    const QDateTime &settingsDT = d->menuSettingsInfo.lastModified();
+    const QDateTime &settingsDT = d->settingsInfo.lastModified();
     if (settingsDT == d->menuLocationsDT) {
         return d->menuLocations;
     }
 
-    d->menuSettings->beginGroup("Menus");
+    d->settings->beginGroup(QStringLiteral("Menus"));
 
     QHash<QString, CMS::Menu *> menus;
-    foreach (const QString &menu, d->menuSettings->childGroups()) {
-        d->menuSettings->beginGroup(menu);
+    foreach (const QString &menu, d->settings->childGroups()) {
+        d->settings->beginGroup(menu);
         Menu *obj = new Menu(menu);
 
-        const QStringList &locations = d->menuSettings->value("Locations").toStringList();
+        const QStringList &locations = d->settings->value("Locations").toStringList();
         bool added = false;
         Q_FOREACH (const QString &location, locations) {
             if (!menus.contains(location)) {
@@ -279,33 +285,33 @@ QHash<QString, Menu *> FileEngine::menuLocations()
         }
 
         if (!added) {
-            d->menuSettings->endGroup();
+            d->settings->endGroup();
             delete obj;
             continue;
         }
 
         obj->setLocations(locations);
-        obj->setAutoAddPages(d->menuSettings->value("AutoAddPages").toBool());
+        obj->setAutoAddPages(d->settings->value("AutoAddPages").toBool());
 
         QList<QVariantHash> urls;
-        int size = d->menuSettings->beginReadArray("urls");
+        int size = d->settings->beginReadArray("urls");
         for (int i = 0; i < size; ++i) {
-            d->menuSettings->setArrayIndex(i);
+            d->settings->setArrayIndex(i);
             QVariantHash data;
             // TODO read all data
-            data.insert("text", d->menuSettings->value("text"));
-            data.insert("url", d->menuSettings->value("url"));
-            data.insert("attr", d->menuSettings->value("attr"));
+            data.insert("text", d->settings->value("text"));
+            data.insert("url", d->settings->value("url"));
+            data.insert("attr", d->settings->value("attr"));
             urls.append(data);
         }
-        d->menuSettings->endArray();
+        d->settings->endArray();
         obj->setEntries(urls);
 
         menus.insert(menu, obj);
-        d->menuSettings->endGroup();
+        d->settings->endGroup();
     }
 
-    d->menuSettings->endGroup();
+    d->settings->endGroup();
 
     // Cache the result
     d->menuLocations = menus;
@@ -318,30 +324,70 @@ bool FileEngine::saveMenu(Menu *menu)
 {
     Q_D(const FileEngine);
 
-    d->menuSettings->beginGroup("Menus");
-    d->menuSettings->beginGroup(menu->name());
+    d->settings->beginGroup(QStringLiteral("Menus"));
+    d->settings->beginGroup(menu->name());
 
-    d->menuSettings->setValue("AutoAddPages", menu->autoAddPages());
-    d->menuSettings->setValue("Locations", menu->locations());
+    d->settings->setValue("AutoAddPages", menu->autoAddPages());
+    d->settings->setValue("Locations", menu->locations());
 
     QList<QVariantHash> urls = menu->entries();
-    d->menuSettings->beginWriteArray("urls", urls.size());
+    d->settings->beginWriteArray("urls", urls.size());
     for (int i = 0; i < urls.size(); ++i) {
-        d->menuSettings->setArrayIndex(i);
+        d->settings->setArrayIndex(i);
         // TODO save all values
-        d->menuSettings->setValue("text", urls.at(i).value("text"));
-        d->menuSettings->setValue("url", urls.at(i).value("url"));
+        d->settings->setValue("text", urls.at(i).value("text"));
+        d->settings->setValue("url", urls.at(i).value("url"));
     }
-    d->menuSettings->endArray();
+    d->settings->endArray();
 
-    d->menuSettings->endGroup();
-    d->menuSettings->endGroup(); // Menus
+    d->settings->endGroup();
+    d->settings->endGroup(); // Menus
 
-    return d->menuSettings->isWritable();
+    return d->settings->isWritable();
 }
 
 QDateTime FileEngine::lastModified()
 {
     Q_D(FileEngine);
-    return d->menuSettingsInfo.lastModified();
+    return d->settingsInfo.lastModified();
+}
+
+bool FileEngine::settingsIsWritable()
+{
+    Q_D(FileEngine);
+    return d->settings->isWritable();
+}
+
+QHash<QString, QString> FileEngine::settings()
+{
+    Q_D(FileEngine);
+    if (d->mainSettingsDT != d->settingsInfo.lastModified()) {
+        QHash<QString, QString> ret;
+        d->settings->beginGroup(QStringLiteral("Main"));
+        Q_FOREACH (const QString &key, d->settings->allKeys()) {
+            ret.insert(key, d->settings->value(key).toString());
+        }
+        d->settings->endGroup();
+        d->mainSettings = ret;
+    }
+
+    return d->mainSettings;
+}
+
+QString FileEngine::settingsValue(const QString &key, const QString &defaultValue)
+{
+    Q_D(FileEngine);
+    d->settings->beginGroup(QStringLiteral("Main"));
+    const QString &ret = d->settings->value(key, defaultValue).toString();
+    d->settings->endGroup();
+    return ret;
+}
+
+bool FileEngine::setSettingsValue(const QString &key, const QString &value)
+{
+    Q_D(FileEngine);
+    d->settings->beginGroup(QStringLiteral("Main"));
+    d->settings->setValue(key, value);
+    d->settings->endGroup();
+    return d->settings->isWritable();
 }

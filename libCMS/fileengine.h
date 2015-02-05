@@ -55,6 +55,11 @@ public:
 
     virtual QDateTime lastModified();
 
+    virtual bool settingsIsWritable();
+    virtual QHash<QString, QString> settings();
+    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
+    virtual bool setSettingsValue(const QString &key, const QString &value);
+
 protected:
     FileEnginePrivate *d_ptr;
 };

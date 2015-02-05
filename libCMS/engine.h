@@ -25,6 +25,8 @@
 
 namespace CMS {
 
+typedef QHash<QString, QString> StringHash;
+
 class Page;
 class Menu;
 class EnginePrivate;
@@ -32,6 +34,7 @@ class Engine : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Engine)
+    Q_PROPERTY(StringHash settings READ settings)
 public:
     explicit Engine(QObject *parent = 0);
     virtual ~Engine();
@@ -57,6 +60,11 @@ public:
     bool saveMenus(const QList<Menu *> &menus);
 
     virtual QDateTime lastModified();
+
+    virtual bool settingsIsWritable();
+    virtual QHash<QString, QString> settings();
+    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
+    virtual bool setSettingsValue(const QString &key, const QString &value);
 
 protected:
     EnginePrivate *d_ptr;

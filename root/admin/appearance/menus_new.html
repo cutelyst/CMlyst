@@ -1,4 +1,4 @@
-<h2 class="sub-header">Add New Menu</h2>
+<h2 class="sub-header">{% if editing %}Edit{% else %}Add New{% endif %} Menu</h2>
 
 <form method="post" class="form" role="form" autocomplete="off">
   <div class="form-group">
@@ -22,7 +22,7 @@
         <td>{{entry.text}}</td>
         <td><a href="{{entry.url}}">{{entry.url}}</a></td>
         <td>
-          <a href="/.admin/appearance/menus/remove/{{entry.id}}">Remove</a>
+          <a href="remove/{{entry.id}}">Remove</a>
           <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Up</a>
           <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Down</a>
         </td>

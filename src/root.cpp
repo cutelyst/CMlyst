@@ -82,6 +82,10 @@ void Root::page(Cutelyst::Context *ctx)
 //    qDebug() << "*** Root::page()";
 //    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
+    ctx->stash({
+                   {"cms", QVariant::fromValue(m_engine->settings())}
+               });
+
     Response *res = ctx->res();
     Request *req = ctx->req();
 
@@ -125,13 +129,4 @@ void Root::page(Cutelyst::Context *ctx)
                    {"menus", QVariant::fromValue(m_engine->menuLocations())},
                    {"page", QVariant::fromValue(page)}
                });
-}
-
-bool Root::Auto(Context *ctx)
-{
-    ctx->stash({
-                   {"cms", QVariant::fromValue(m_engine->settings())}
-               });
-
-    return true;
 }

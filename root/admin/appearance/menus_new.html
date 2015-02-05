@@ -3,9 +3,37 @@
 <form method="post" class="form" role="form" autocomplete="off">
   <div class="form-group">
     <label class="control-label" for="title">Name</label>
-    <input type="text" class="form-control" name="name" id="name" required>
+    <input type="text" class="form-control" name="name" id="name" value="{{ menu.name }}" required>
   </div>
+
+{% if editing %}
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Url</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for entry in menu.entries %}
+      <tr>
+        <td>{{entry.text}}</td>
+        <td><a href="{{entry.url}}">{{entry.url}}</a></td>
+        <td>
+          <a href="/.admin/appearance/menus/remove/{{entry.id}}">Remove</a>
+          <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Up</a>
+          <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Down</a>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
   <div class="form-group">
-    <button type="submit" name="submit" value="Submit" class="btn">Publish</button>
+    <button type="submit" name="submit" value="Submit" class="btn">Save</button>
   </div>
 </form>

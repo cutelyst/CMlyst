@@ -15,11 +15,11 @@
     {% for menu in menus %}
       <tr>
         <td>
-          <a href="/.admin/appearance/menus/edit/{{menu.id}}">{{menu.name}}</a>
+          <a href="/.admin/appearance/menus/edit/{{menu.name}}">{{menu.name}}</a>
         </td>
-        <td>{{menu.locations}}</td>
+        <td>{% for location in menu.locations %} {{ location }}{% endfor %}</td>
         <td>
-          <a href="/.admin/appearance/menus/remove/{{menu.id}}">Remove</a>
+          <a href="/.admin/appearance/menus/remove/{{menu.name}}">Remove</a>
         </td>
       </tr>
     {% endfor %}

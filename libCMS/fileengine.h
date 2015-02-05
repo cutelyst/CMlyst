@@ -48,10 +48,11 @@ public:
 
     virtual QList<Page *> listPages(int depth = -1);
 
-    virtual QHash<QString, Menu *> menus();
+    virtual QList<Menu *> menus();
     virtual QHash<QString, Menu *> menuLocations();
 
-    virtual bool saveMenu(Menu *menu);
+    virtual bool saveMenu(Menu *menu, bool replace);
+    virtual bool removeMenu(const QString &name);
 
     virtual QDateTime lastModified();
 

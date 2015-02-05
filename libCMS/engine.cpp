@@ -61,38 +61,53 @@ QList<Page *> Engine::listPages(int depth)
     return QList<Page *>();
 }
 
-QHash<QString, Menu *> Engine::menus()
+QList<Menu *> Engine::menus()
 {
-    return QHash<QString, Menu *>();
+    return QList<Menu *>();
+}
+
+Menu *Engine::menu(const QString &name)
+{
+    Q_FOREACH (Menu *menu, menus()) {
+        if (menu->name() == name) {
+            return menu;
+        }
+    }
+    return 0;
 }
 
 QHash<QString, Menu *> Engine::menuLocations()
 {
     QHash<QString, Menu *> ret;
 
-    const QHash<QString, Menu *> &allMenus = menus();
-    QHash<QString, Menu *>::ConstIterator it = allMenus.constBegin();
-    while (it != allMenus.constEnd()) {
-        Menu *menu = it.value();
+    Q_FOREACH (Menu *menu, menus()) {
         Q_FOREACH (const QString &location, menu->locations()) {
-            ret.insert(location, menu);
+            if (!ret.contains(location)) {
+                ret.insert(location, menu);
+            }
         }
-        ++it;
     }
 
     return ret;
 }
 
-bool Engine::saveMenu(Menu *menu)
+bool Engine::saveMenu(Menu *menu, bool replace)
 {
     Q_UNUSED(menu)
+    Q_UNUSED(replace)
+    return false;
+}
+
+bool Engine::removeMenu(const QString &name)
+{
+    Q_UNUSED(name)
     return false;
 }
 
 bool Engine::saveMenus(const QList<Menu *> &menus)
 {
     Q_FOREACH (Menu *menu, menus) {
-        if (!saveMenu(menu)) {
+        if (!saveMenu(menu, true)) {
             return false;
         }
     }

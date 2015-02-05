@@ -31,7 +31,6 @@
     <div class="blog-masthead">
       <div class="container">
         <nav class="blog-nav">
-
         {% for entry in menus.main.entries %}
           <a class="blog-nav-item{% ifequal ctx.request.path entry.url %} active{% endifequal %}" href="{{ ctx.request.base }}{{ entry.url }}">{{ entry.text }}</a>
         {% endfor %}

@@ -57,7 +57,7 @@ bool CMlyst::init()
     ViewEngine *view = new ViewEngine("Grantlee", this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
-    view->setCache(true);
+//    view->setCache(true);
 
     QDir dataDir = config("DataLocation", QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {

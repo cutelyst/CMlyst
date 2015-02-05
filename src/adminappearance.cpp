@@ -20,6 +20,7 @@
 #include "adminappearance.h"
 
 #include "../libCMS/fileengine.h"
+#include "../libCMS/menu.h"
 
 #include <QDir>
 #include <QSettings>
@@ -108,43 +109,20 @@ void AdminAppearance::menus(Context *ctx)
                      {"root", ctx->config("DataLocation").toString()}
                  });
 
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-
-    QList<QVariantHash> menus;
-
-    settings.beginGroup("Menus");
-    foreach (const QString &menu, settings.childGroups()) {
-        settings.beginGroup(menu);
-        QVariantHash data;
-        data.insert("id", menu);
-        QString name = settings.value("Name", menu).toString();
-        if (name.isEmpty()) {
-            name = menu;
-        }
-        data.insert("name", name);
-        data.insert("locations", settings.value("Locations").toStringList().join(", "));
-        menus.append(data);
-        settings.endGroup();
-    }
-    settings.endGroup();
-
     ctx->stash({
                    {"template", "appearance/menus.html"},
-                   {"menus", QVariant::fromValue(menus)}
+                   {"menus", QVariant::fromValue(engine->menus())}
                });
 }
 
 void AdminAppearance::menus_remove(Context *ctx, const QString &id)
 {
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+    engine->init({
+                     {"root", ctx->config("DataLocation").toString()}
+                 });
 
-    settings.beginGroup("Menus");
-    if (settings.childGroups().contains(id)) {
-        settings.remove(id);
-    }
-    settings.endGroup();
+    engine->removeMenu(id);
 
     ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
 }
@@ -154,16 +132,17 @@ void AdminAppearance::menus_new(Context *ctx)
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->req()->bodyParam();
 
-        QDir dataDir = ctx->config("DataLocation").toString();
-        QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-
-        settings.beginGroup("Menus");
-
-        settings.beginGroup(params.value("name"));
-        settings.setValue("Name", params.value("name"));
-        settings.endGroup();
-
-        settings.endGroup();
+        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+        engine->init({
+                         {"root", ctx->config("DataLocation").toString()}
+                     });
+        CMS::Menu *menu = new CMS::Menu(params.value("name"), ctx);
+        if (!engine->saveMenu(menu, false)) {
+            ctx->stash({
+                           {"template", "appearance/menus_new.html"},
+                           {"error_msg", tr("Could not save menu")}
+                       });
+        }
 
         ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
         return;
@@ -176,36 +155,26 @@ void AdminAppearance::menus_new(Context *ctx)
 
 void AdminAppearance::menus_edit(Context *ctx, const QString &id)
 {
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+    ctx->stash({
+                   {"editing", true},
+               });
 
     if (ctx->req()->method() == "POST") {
 
         ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
     } else {
-        settings.beginGroup("Menus");
-        if (!settings.childGroups().contains(id)) {
+        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+        engine->init({
+                         {"root", ctx->config("DataLocation").toString()}
+                     });
+
+        CMS::Menu *menu = engine->menu(id);
+        if (!menu) {
             ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
             return;
         }
+        qDebug() << menu->entries();
 
-        QVariantHash menu;
-        settings.beginGroup(id);
-        menu.insert("name", settings.value("Name"));
-        menu.insert("autoaddtoppages", settings.value("AutoAddTopPages"));
-        settings.endGroup();
-
-        QList<QVariantHash> items;
-        int size = settings.beginReadArray(id);
-        for (int i = 0; i < size; ++i) {
-            settings.setArrayIndex(i);
-            QVariantHash item;
-            item.insert("url", settings.value("url"));
-            item.insert("text", settings.value("text"));
-            items.append(item);
-        }
-        settings.endArray();
-        menu.insert("items", QVariant::fromValue(items));
         ctx->stash({
                        {"template", "appearance/menus_new.html"},
                        {"menu", QVariant::fromValue(menu)}

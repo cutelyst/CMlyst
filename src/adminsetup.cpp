@@ -116,5 +116,5 @@ void AdminSetup::status(Context *ctx)
 
 void AdminSetup::End(Context *ctx)
 {
-    qDebug() << "*** AdminSetup::End()";
+    qDebug() << "*** AdminSetseup::End()";
 }

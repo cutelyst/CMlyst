@@ -20,9 +20,6 @@
 #ifndef MENU_P_H
 #define MENU_P_H
 
-#include <QUrl>
-#include <QStringList>
-
 #include "menu.h"
 
 namespace CMS {

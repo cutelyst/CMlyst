@@ -33,6 +33,8 @@ namespace CMS {
 class FileEnginePrivate
 {
 public:
+    Menu *createMenu(const QString &name, QObject *parent);
+
     QDir rootPath;
     QDir pagesPath;
     QSettings *settings;
@@ -41,7 +43,7 @@ public:
     QHash<QString, QString> mainSettings;
     QHash<QString, Page*> pages;
     QDateTime menusDT;
-    QHash<QString, CMS::Menu *> menus;
+    QList<CMS::Menu *> menus;
     QDateTime menuLocationsDT;
     QHash<QString, CMS::Menu *> menuLocations;
 };

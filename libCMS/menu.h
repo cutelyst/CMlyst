@@ -21,6 +21,7 @@
 #define MENU_H
 
 #include <QObject>
+#include <QStringList>
 
 namespace CMS {
 
@@ -29,6 +30,8 @@ class Menu : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Menu)
+    Q_PROPERTY(QString name READ name)
+    Q_PROPERTY(QStringList locations READ locations WRITE setLocations)
     Q_PROPERTY(QList<QVariantHash> entries READ entries)
 public:
     explicit Menu(const QString &name, QObject *parent = 0);
@@ -51,5 +54,7 @@ protected:
 };
 
 }
+
+Q_DECLARE_METATYPE(CMS::Menu *)
 
 #endif // MENU_H

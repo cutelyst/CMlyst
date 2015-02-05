@@ -44,9 +44,6 @@ public:
     C_ATTR(page, :Path)
     void page(Cutelyst::Context *ctx);
 
-private slots:
-    bool Auto(Context *ctx);
-
 protected:
     void init(Application *app);
 

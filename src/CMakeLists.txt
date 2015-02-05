@@ -23,7 +23,6 @@ set(cmlyst_SRCS
     adminpages.cpp
     adminmedia.cpp
     adminsettings.cpp
-    blog.cpp
     cmlyst.cpp
 )
 

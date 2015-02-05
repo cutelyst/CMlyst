@@ -48,6 +48,8 @@ public:
 
     virtual QList<Page *> listPages(int depth = -1);
 
+    virtual QList<Page *> listPosts(int depth = -1);
+
     virtual QList<Menu *> menus();
     virtual QHash<QString, Menu *> menuLocations();
 

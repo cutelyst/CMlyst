@@ -41,7 +41,6 @@
 #include "adminmedia.h"
 #include "adminsettings.h"
 #include "adminsetup.h"
-#include "blog.h"
 
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
@@ -89,7 +88,6 @@ bool CMlyst::init()
         registerController(new AdminPages);
         registerController(new AdminMedia);
         registerController(new AdminSettings);
-        registerController(new Blog);
     }
 
     StoreHtpasswd *store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));

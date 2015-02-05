@@ -36,9 +36,15 @@ AdminPosts::AdminPosts(QObject *parent) :
 
 void AdminPosts::index(Context *ctx)
 {
-    ctx->stash()["post_type"] = "post";
+    ctx->stash()["post_type"] = "post";    
 
-    qDebug() << ctx->request()->path() << ctx->req()->args();
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+    engine->init({
+                     {"root", ctx->config("DataLocation").toString()}
+                 });
+    QList<CMS::Page *> pages = engine->listPosts();
+    ctx->stash()["posts"] = QVariant::fromValue(pages);
+
     ctx->stash()["template"] = "posts/index.html";
 }
 
@@ -57,15 +63,22 @@ void AdminPosts::create(Context *ctx)
         qDebug() << path;
         qDebug() << content;
 
+        QString savePath = path;
+        if (savePath.isEmpty()) {
+            savePath = title;
+        }
+        savePath.prepend(QDate::currentDate().toString("yyyy/MM/dd/"));
+        qDebug() << "save path"  << savePath;
 
         CMS::FileEngine *engine = new CMS::FileEngine(ctx);
         engine->init({
                          {"root", ctx->config("DataLocation").toString()}
                      });
 
-        CMS::Page *page = engine->getPageToEdit(path);
+        CMS::Page *page = engine->getPageToEdit(savePath);
         page->setContent(content.toUtf8());
         page->setName(title);
+        page->setBlog(true);
         qDebug() << page->path();
 
         bool ret = engine->savePage(page);
@@ -74,22 +87,10 @@ void AdminPosts::create(Context *ctx)
         }
 
         qDebug() << "saved" << ret;
-
-
-
-//        QSqlQuery query;
-//        query.prepare("INSERT INTO u_posts (user_id, title, content) "
-//                      "VALUES (:user_id, :title, :content)");
-//        query.bindValue(":user_id", auth->user().id());
-//        query.bindValue(":title", title);
-//        query.bindValue(":content", content);
-//        if (!query.exec()) {
-//            ctx->stash()["error_msg"] = query.lastError().text();
-//        } else {
-//            ctx->res()->redirect("/");
-//            return;
-//        }
     }
+
+    // TODO this is hackish...
+    ctx->stash()["date"] = QDate::currentDate().toString("yyyy/MM/dd");
 
     ctx->stash()["title"] = title;
     ctx->stash()["path"] = path;

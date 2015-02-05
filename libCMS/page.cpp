@@ -103,6 +103,18 @@ void Page::setModified(const QDateTime &dateTime)
     d->modified = dateTime;
 }
 
+QDateTime Page::created() const
+{
+    Q_D(const Page);
+    return d->created;
+}
+
+void Page::setCreated(const QDateTime &dateTime)
+{
+    Q_D(Page);
+    d->created = dateTime;
+}
+
 QStringList Page::tags() const
 {
     Q_D(const Page);
@@ -113,6 +125,30 @@ void Page::setTags(const QStringList &tags)
 {
     Q_D(Page);
     d->tags = tags;
+}
+
+bool Page::blog() const
+{
+    Q_D(const Page);
+    return d->blog;
+}
+
+void Page::setBlog(bool enable)
+{
+    Q_D(Page);
+    d->blog = enable;
+}
+
+bool Page::allowComments() const
+{
+    Q_D(const Page);
+    return d->allowComments;
+}
+
+void Page::setAllowComments(bool allow)
+{
+    Q_D(Page);
+    d->allowComments = allow;
 }
 
 QString Page::readablePath(const QString &path)

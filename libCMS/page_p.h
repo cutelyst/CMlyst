@@ -37,6 +37,9 @@ public:
     QString content;
     QStringList tags;
     QDateTime modified;
+    QDateTime created;
+    bool blog = false;
+    bool allowComments = false;
 };
 
 }

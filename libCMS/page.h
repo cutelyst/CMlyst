@@ -37,7 +37,10 @@ class Page : public QObject
     Q_PROPERTY(QString author READ author WRITE setAuthor)
     Q_PROPERTY(QString content READ content WRITE setContent)
     Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
+    Q_PROPERTY(QDateTime created READ created WRITE setCreated)
     Q_PROPERTY(QStringList tags READ tags WRITE setTags)
+    Q_PROPERTY(bool blog READ blog WRITE setBlog)
+    Q_PROPERTY(bool allowComments READ allowComments WRITE setAllowComments)
 public:
     Page();
     virtual ~Page();
@@ -60,8 +63,17 @@ public:
     QDateTime modified() const;
     void setModified(const QDateTime &dateTime);
 
+    QDateTime created() const;
+    void setCreated(const QDateTime &dateTime);
+
     QStringList tags() const;
     void setTags(const QStringList &tags);
+
+    bool blog() const;
+    void setBlog(bool enable);
+
+    bool allowComments() const;
+    void setAllowComments(bool allow);
 
     static QString readablePath(const QString &path);
 

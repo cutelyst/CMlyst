@@ -61,6 +61,12 @@ QList<Page *> Engine::listPages(int depth)
     return QList<Page *>();
 }
 
+QList<Page *> Engine::listPosts(int depth)
+{
+    Q_UNUSED(depth)
+    return QList<Page *>();
+}
+
 QList<Menu *> Engine::menus()
 {
     return QList<Menu *>();

@@ -82,31 +82,16 @@ void Root::page(Cutelyst::Context *ctx)
 //    qDebug() << "*** Root::page()";
 //    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
-    ctx->stash({
-                   {"cms", QVariant::fromValue(m_engine->settings())}
-               });
-
     Response *res = ctx->res();
     Request *req = ctx->req();
-
-//    CMS::Menu *menu = new CMS::Menu("teste", ctx);
-//    menu->appendEntry("foo", "http://foo");
-//    menu->appendEntry("bar", "http://bar");
-//    menu->setLocations({"main"});
-//    qDebug() << menu->name();
-//    m_engine->saveMenu(menu);
-
-//    CMS::Menu *menu2 = new CMS::Menu("bla", ctx);
-//    menu2->appendEntry("foo2", "http://foo2");
-//    menu2->appendEntry("bar2", "http://bar2");
-//    menu2->setLocations({"bottom"});
-//    m_engine->saveMenu(menu2);
-
-//    qDebug() << m_engine->menus();
 
     // Find the desired page
     CMS::Page *page = m_engine->getPage(req->path());
     if (!page) {
+        ctx->stash({
+                       {QStringLiteral("template"), QStringLiteral("404.html")},
+                       {QStringLiteral("cms"), QVariant::fromValue(m_engine->settings())}
+                   });
         ctx->stash()[QLatin1String("template")] = "404.html";
         res->setStatus(404);
         return;
@@ -125,8 +110,9 @@ void Root::page(Cutelyst::Context *ctx)
     res->headers().setLastModified(currentDateTime);
 
     ctx->stash({
-                   {"template", "page.html"},
-                   {"menus", QVariant::fromValue(m_engine->menuLocations())},
-                   {"page", QVariant::fromValue(page)}
+                   {QStringLiteral("template"), page->blog() ? QStringLiteral("blog.html") : QStringLiteral("page.html")},
+                   {QStringLiteral("cms"), QVariant::fromValue(m_engine->settings())},
+                   {QStringLiteral("menus"), QVariant::fromValue(m_engine->menuLocations())},
+                   {QStringLiteral("page"), QVariant::fromValue(page)}
                });
 }

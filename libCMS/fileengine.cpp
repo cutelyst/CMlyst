@@ -129,7 +129,13 @@ Page *FileEngine::loadPage(const QString &path) const
         page->setPath(path);
 
         page->setName(data.value("Name").toString());
-        page->setAuthor(data.value("Author").toString());
+
+        QString author = data.value("Author").toString();
+        if (author.isEmpty()) {
+            author = fileInfo.owner();
+        }
+        page->setAuthor(author);
+
         QDateTime modified = data.value("Modified").toDateTime();
         if (modified.isValid()) {
         } else {
@@ -137,8 +143,18 @@ Page *FileEngine::loadPage(const QString &path) const
         }
         page->setModified(modified);
 
+        QDateTime created = data.value("Created").toDateTime();
+        if (created.isValid()) {
+        } else {
+            created = fileInfo.created();
+        }
+        page->setCreated(created);
+
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());
+        page->setBlog(data.value("Blog").toBool());
+        page->setAllowComments(data.value("AllowComments").toBool());
+
         data.beginGroup("Body");
         page->setContent(data.value("Content").toString());
         data.endGroup();
@@ -166,9 +182,13 @@ bool FileEngine::savePage(Page *page)
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
     data.setValue("Modified", page->modified());
+    data.setValue("Created", page->created());
     data.setValue("Author", page->author());
     data.setValue("NavigationLabel", page->navigationLabel());
     data.setValue("Tags", page->tags());
+    data.setValue("Blog", page->blog());
+    data.setValue("AllowComments", page->allowComments());
+
     data.beginGroup("Body");
     data.setValue("Content", page->content());
     data.endGroup();
@@ -206,7 +226,42 @@ QList<Page *> FileEngine::listPages(int depth)
 
 //        qDebug() << "listpages relative ok:" << relpath;
         Page *page = getPage(relpath);
-        if (page) {
+        if (page && !page->blog()) {
+            ret.append(page);
+        }
+    }
+    return ret;
+}
+
+QList<Page *> FileEngine::listPosts(int depth)
+{
+    Q_D(const FileEngine);
+
+    QList<Page *> ret;
+//    qDebug() << "listpages:" << d->pagesPath.path();
+
+    QDirIterator it(d->pagesPath.path(),
+                    QDir::Files | QDir::NoDotAndDotDot,
+                    QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        QString path = it.next();
+//        qDebug() << "listpages:" << path;
+
+        QString relpath = d->pagesPath.relativeFilePath(path);
+//        qDebug() << "listpages relative:" << relpath << depth << relpath.count(QChar('/'));
+        if (depth != -1 && relpath.count(QChar('/')) > depth) {
+            continue;
+        }
+
+        if (relpath == QLatin1String("index.page")) {
+            relpath = QStringLiteral("");
+        } else {
+            relpath.remove(QRegularExpression(".page$"));
+        }
+
+//        qDebug() << "listpages relative ok:" << relpath;
+        Page *page = getPage(relpath);
+        if (page && page->blog()) {
             ret.append(page);
         }
     }

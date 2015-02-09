@@ -24,6 +24,7 @@ set(cmlyst_SRCS
     adminmedia.cpp
     adminsettings.cpp
     cmlyst.cpp
+    rsswriter.cpp
 )
 
 # C++11 rocks!

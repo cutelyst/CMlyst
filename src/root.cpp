@@ -31,6 +31,8 @@
 #include "../libCMS/page.h"
 #include "../libCMS/menu.h"
 
+#include "rsswriter.h"
+
 Root::Root()
 {
     qDebug() << Q_FUNC_INFO;
@@ -63,6 +65,8 @@ void Root::End(Context *ctx)
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
     ctx->stash()["basetheme"] = ctx->uriFor(staticTheme).toString();
+
+
 }
 
 void Root::init(Application *app)
@@ -75,6 +79,22 @@ void Root::init(Application *app)
                      {"root", dataDir.absolutePath()}
                  });
     m_engine = engine;
+
+    RSSWriter writer;
+    writer.writeStartChannel();
+    writer.writeChannelTitle("Dantti's Blog");
+    writer.writeChannelFeedLink("https://dantti.wordpress.com/feed/");
+
+    writer.writeStartItem();
+    writer.writeItemTitle("some post");
+    writer.writeItemCreator("dantti");
+    writer.writeItemDescription("some post");
+    writer.writeEndItem();
+
+    writer.writeEndChannel();
+    writer.endRSS();
+
+    qDebug() << writer.result();
 }
 
 void Root::page(Cutelyst::Context *ctx)
@@ -115,4 +135,36 @@ void Root::page(Cutelyst::Context *ctx)
                    {QStringLiteral("menus"), QVariant::fromValue(m_engine->menuLocations())},
                    {QStringLiteral("page"), QVariant::fromValue(page)}
                });
+}
+
+void Root::feed(Context *ctx)
+{
+    Response *res = ctx->res();
+    Request *req = ctx->req();
+
+
+    RSSWriter writer;
+    writer.writeStartChannel();
+    writer.writeChannelTitle(m_engine->title());
+    writer.writeChannelDescription(m_engine->description());
+    writer.writeChannelFeedLink(req->base());
+
+    QList<CMS::Page *> posts = m_engine->listPosts();
+    Q_FOREACH (CMS::Page *post, posts) {
+        writer.writeStartItem();
+        writer.writeItemTitle(post->name());
+        writer.writeItemCreator(post->author());
+        writer.writeItemPubDate(post->created());
+        writer.writeItemDescription(post->content().left(300));
+        writer.writeItemContent(post->content());
+        writer.writeEndItem();
+    }
+
+    writer.writeEndChannel();
+    writer.endRSS();
+
+    res->body() = writer.result();
+    res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
+
+    qDebug() << writer.result();
 }

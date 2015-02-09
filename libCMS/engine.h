@@ -41,6 +41,9 @@ public:
 
     bool init(const QHash<QString, QString> &settings);
 
+    QString title();
+    QString description();
+
     virtual Page *getPage(const QString &path);
 
     virtual Page *getPageToEdit(const QString &path) const;

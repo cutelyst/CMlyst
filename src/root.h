@@ -44,6 +44,9 @@ public:
     C_ATTR(page, :Path)
     void page(Cutelyst::Context *ctx);
 
+    C_ATTR(feed, :Path(.feed))
+    void feed(Cutelyst::Context *ctx);
+
 protected:
     void init(Application *app);
 

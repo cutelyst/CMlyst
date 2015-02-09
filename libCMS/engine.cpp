@@ -148,3 +148,13 @@ bool Engine::setSettingsValue(const QString &key, const QString &value)
     Q_UNUSED(value)
     return false;
 }
+
+QString CMS::Engine::title()
+{
+    return settingsValue(QStringLiteral("title"));
+}
+
+QString Engine::description()
+{
+    return settingsValue(QStringLiteral("tagline"));
+}

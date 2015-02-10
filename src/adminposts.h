@@ -36,6 +36,9 @@ public:
 
     C_ATTR(create, :Path(new) :Local)
     void create(Context *ctx);
+
+    C_ATTR(edit, :Local)
+    void edit(Context *ctx);
 };
 
 #endif // ADMINPOSTS_H

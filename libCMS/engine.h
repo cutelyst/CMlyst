@@ -36,9 +36,29 @@ class Engine : public QObject
     Q_DECLARE_PRIVATE(Engine)
     Q_PROPERTY(StringHash settings READ settings)
 public:
+    enum Filter {
+        Pages         = 0x1,
+        Posts         = 0x2,
+        OnlyPublished = 0x4,
+
+        NoFilter      = -1
+    };
+    Q_DECLARE_FLAGS(Filters, Filter)
+
+    enum SortFlag {
+        Date = 0x1,
+        Name = 0x2
+    };
+    Q_DECLARE_FLAGS(SortFlags, SortFlag)
+
     explicit Engine(QObject *parent = 0);
     virtual ~Engine();
 
+    /**
+     * ALWAYS init the engine on post fork, otherwise
+     * engines might not perform correctly depending on
+     * their implementation
+     */
     bool init(const QHash<QString, QString> &settings);
 
     QString title();
@@ -53,9 +73,10 @@ public:
      * Returns the available pages,
      * when depth is -1 all pages are listed
      */
-    virtual QList<Page *> listPages(int depth = -1);
-
-    virtual QList<Page *> listPosts(int depth = -1);
+    virtual QList<Page *> listPages(Filters filters = NoFilter,
+                                    SortFlags sort = SortFlags(Date | Name),
+                                    int depth = -1,
+                                    int limit = -1);
 
     virtual QList<Menu *> menus();
 

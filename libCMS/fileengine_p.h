@@ -41,7 +41,9 @@ public:
     QFileInfo settingsInfo;
     QDateTime mainSettingsDT;
     QHash<QString, QString> mainSettings;
-    QHash<QString, Page*> pages;
+    QHash<QString, Page*> pathPages;
+    QList<Page*> pages;
+    QList<Page*> posts;
     QDateTime menusDT;
     QList<CMS::Menu *> menus;
     QDateTime menuLocationsDT;

@@ -1,5 +1,6 @@
 #include "rsswriter.h"
 
+#include <QStringBuilder>
 #include <QDebug>
 
 #define NAMESPACE_CONTENT "http://purl.org/rss/1.0/modules/content/"
@@ -15,9 +16,9 @@
 RSSWriter::RSSWriter(QObject *parent) : QObject(parent)
   , m_stream(&m_output)
 {
-    m_stream.setAutoFormatting(true);
+//    m_stream.setAutoFormatting(true);
     m_stream.writeStartDocument();
-    m_stream.writeStartElement("rss");
+    m_stream.writeStartElement(QStringLiteral("rss"));
     m_stream.writeNamespace(NAMESPACE_CONTENT,"content");
     m_stream.writeNamespace(NAMESPACE_WFW,"wfw");
     m_stream.writeNamespace(NAMESPACE_DC,"dc");
@@ -77,8 +78,10 @@ void RSSWriter::writeChannelDescription(const QString &description)
 
 void RSSWriter::writeChannelLastBuildDate(const QDateTime &lastBuildDate)
 {
-    m_stream.writeTextElement(QStringLiteral("lastBuildDate"),
-                              lastBuildDate.toString("DDD, dd MMM yyyy hh:mm:ss +1000"));
+    QLocale locale(QLocale::C);
+    const QString &dt = locale.toString(lastBuildDate.toTimeSpec(Qt::UTC),
+                                        QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    m_stream.writeTextElement(QStringLiteral("lastBuildDate"), dt);
 }
 
 void RSSWriter::writeChannelLanguage(const QString &language)
@@ -154,8 +157,10 @@ void RSSWriter::writeItemCategory(const QString &category)
 
 void RSSWriter::writeItemPubDate(const QDateTime &pubDate)
 {
-    m_stream.writeTextElement(QStringLiteral("pubDate"),
-                              pubDate.toString("DDD, dd MMM yyyy hh:mm:ss +1000"));
+    QLocale locale(QLocale::C);
+    const QString &dt = locale.toString(pubDate.toTimeSpec(Qt::UTC),
+                                        QLatin1String("ddd, dd MMM yyyy hh:mm:ss")) % QLatin1String(" GMT");
+    m_stream.writeTextElement(QStringLiteral("pubDate"), dt);
 }
 
 void RSSWriter::writeItemDescription(const QString &description)
@@ -192,4 +197,3 @@ QByteArray RSSWriter::result() const
 {
     return m_output;
 }
-

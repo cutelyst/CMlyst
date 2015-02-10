@@ -69,7 +69,7 @@ void Root::End(Context *ctx)
 
 }
 
-void Root::init(Application *app)
+bool Root::postFork(Application *app)
 {
     QDir dataDir = app->config("DataLocation").toString();
     m_rootDir = app->config("RootLocation").toString();
@@ -80,21 +80,7 @@ void Root::init(Application *app)
                  });
     m_engine = engine;
 
-    RSSWriter writer;
-    writer.writeStartChannel();
-    writer.writeChannelTitle("Dantti's Blog");
-    writer.writeChannelFeedLink("https://dantti.wordpress.com/feed/");
-
-    writer.writeStartItem();
-    writer.writeItemTitle("some post");
-    writer.writeItemCreator("dantti");
-    writer.writeItemDescription("some post");
-    writer.writeEndItem();
-
-    writer.writeEndChannel();
-    writer.endRSS();
-
-    qDebug() << writer.result();
+    return true;
 }
 
 void Root::page(Cutelyst::Context *ctx)
@@ -142,14 +128,33 @@ void Root::feed(Context *ctx)
     Response *res = ctx->res();
     Request *req = ctx->req();
 
+    QList<CMS::Page *> posts = m_engine->listPages(CMS::Engine::Posts,
+                                                   CMS::Engine::SortFlags(CMS::Engine::Name | CMS::Engine::Date),
+                                                   -1,
+                                                   10);
+    if (!posts.isEmpty()) {
+        // See if the page has changed, if the settings have changed
+        // and have a newer date use that instead
+        const QDateTime &currentDateTime = posts.first()->created();
+        const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+        if (clientDate.isValid()) {
+            if (currentDateTime == clientDate && currentDateTime.isValid()) {
+                res->setStatus(Response::NotModified);
+                return;
+            }
+        }
+        res->headers().setLastModified(currentDateTime);
+    }
 
     RSSWriter writer;
     writer.writeStartChannel();
     writer.writeChannelTitle(m_engine->title());
     writer.writeChannelDescription(m_engine->description());
     writer.writeChannelFeedLink(req->base());
+    if (!posts.isEmpty()) {
+        writer.writeChannelLastBuildDate(posts.first()->created());
+    }
 
-    QList<CMS::Page *> posts = m_engine->listPosts();
     Q_FOREACH (CMS::Page *post, posts) {
         writer.writeStartItem();
         writer.writeItemTitle(post->name());
@@ -166,5 +171,5 @@ void Root::feed(Context *ctx)
     res->body() = writer.result();
     res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
-    qDebug() << writer.result();
+    //    qDebug() << writer.result();
 }

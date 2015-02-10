@@ -43,7 +43,7 @@ void AdminPages::index(Context *ctx)
     engine->init({
                      {"root", ctx->config("DataLocation").toString()}
                  });
-    QList<CMS::Page *> pages = engine->listPages();
+    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Pages);
     ctx->stash()["posts"] = QVariant::fromValue(pages);
 
     ctx->stash()["template"] = "posts/index.html";
@@ -59,11 +59,9 @@ void AdminPages::create(Context *ctx)
     QString path = params.value("path");
     QString content = params.value("content");
     if (ctx->req()->method() == "POST") {
-        Authentication *auth = ctx->plugin<Authentication*>();
-
-        qDebug() << title;
-        qDebug() << path;
-        qDebug() << content;
+//        qDebug() << title;
+//        qDebug() << path;
+//        qDebug() << content;
 
 
         CMS::FileEngine *engine = new CMS::FileEngine(ctx);
@@ -74,14 +72,14 @@ void AdminPages::create(Context *ctx)
         CMS::Page *page = engine->getPageToEdit(path);
         page->setContent(content);
         page->setName(title);
-        qDebug() << page->path();
+//        qDebug() << page->path();
 
         bool ret = engine->savePage(page);
         if (ret) {
             ctx->stash()["status"] = "Page saved";
         }
 
-        qDebug() << "saved" << ret;
+//        qDebug() << "saved" << ret;
     }
 
     ctx->stash()["title"] = title;
@@ -105,9 +103,9 @@ void AdminPages::edit(Context *ctx)
     QString title;
     QString content;
 
-    qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
+//    qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
     CMS::Page *page = engine->getPageToEdit(path);
-    qDebug() << Q_FUNC_INFO << page;
+//    qDebug() << Q_FUNC_INFO << page;
 
     if (page) {
         path = page->path();
@@ -120,11 +118,9 @@ void AdminPages::edit(Context *ctx)
         title = params.value("title");
         content = params.value("content");
 
-        Authentication *auth = ctx->plugin<Authentication*>();
-
-        qDebug() << title;
-        qDebug() << path;
-        qDebug() << content;
+//        qDebug() << title;
+//        qDebug() << path;
+//        qDebug() << content;
 
 
         if (page->path() != params.value("path")) {
@@ -133,14 +129,14 @@ void AdminPages::edit(Context *ctx)
 
         page->setContent(content);
         page->setName(title);
-        qDebug() << page->path();
+//        qDebug() << page->path();
 
         bool ret = engine->savePage(page);
         if (ret) {
             ctx->stash()["status"] = "Page saved";
         }
 
-        qDebug() << "saved" << ret;
+//        qDebug() << "saved" << ret;
     }
 
     ctx->stash()["title"] = title;

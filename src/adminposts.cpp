@@ -42,7 +42,7 @@ void AdminPosts::index(Context *ctx)
     engine->init({
                      {"root", ctx->config("DataLocation").toString()}
                  });
-    QList<CMS::Page *> pages = engine->listPosts();
+    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Posts);
     ctx->stash()["posts"] = QVariant::fromValue(pages);
 
     ctx->stash()["template"] = "posts/index.html";
@@ -57,18 +57,12 @@ void AdminPosts::create(Context *ctx)
     QString path = params.value("path");
     QString content = params.value("content");
     if (ctx->req()->method() == "POST") {
-        Authentication *auth = ctx->plugin<Authentication*>();
-
-        qDebug() << title;
-        qDebug() << path;
-        qDebug() << content;
-
         QString savePath = path;
         if (savePath.isEmpty()) {
             savePath = title;
         }
         savePath.prepend(QDate::currentDate().toString("yyyy/MM/dd/"));
-        qDebug() << "save path"  << savePath;
+//        qDebug() << "save path"  << savePath;
 
         CMS::FileEngine *engine = new CMS::FileEngine(ctx);
         engine->init({
@@ -79,18 +73,75 @@ void AdminPosts::create(Context *ctx)
         page->setContent(content.toUtf8());
         page->setName(title);
         page->setBlog(true);
-        qDebug() << page->path();
+//        qDebug() << page->path();
 
         bool ret = engine->savePage(page);
         if (ret) {
             ctx->stash()["status"] = "Page saved";
         }
 
-        qDebug() << "saved" << ret;
+//        qDebug() << "saved" << ret;
     }
 
     // TODO this is hackish...
     ctx->stash()["date"] = QDate::currentDate().toString("yyyy/MM/dd");
+
+    ctx->stash()["title"] = title;
+    ctx->stash()["path"] = path;
+    ctx->stash()["content"] = content;
+    ctx->stash()["template"] = "posts/create.html";
+}
+
+void AdminPosts::edit(Context *ctx)
+{
+    qDebug() << Q_FUNC_INFO;
+    ctx->stash()["post_type"] = "post";
+
+    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
+    engine->init({
+                     {"root", ctx->config("DataLocation").toString()}
+                 });
+
+    QStringList args = ctx->request()->args();
+    QString path = args.join(QLatin1Char('/'));
+    QString title;
+    QString content;
+
+//    qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
+    CMS::Page *page = engine->getPageToEdit(path);
+//    qDebug() << Q_FUNC_INFO << page;
+
+    if (page) {
+        path = page->path();
+        title = page->name();
+        content = page->content();
+    }
+
+    if (ctx->req()->method() == "POST") {
+        ParamsMultiMap params = ctx->request()->bodyParam();
+        title = params.value("title");
+        content = params.value("content");
+
+//        qDebug() << title;
+//        qDebug() << path;
+//        qDebug() << content;
+
+
+        if (page->path() != params.value("path")) {
+            qDebug() << "not yet supported";
+        }
+
+        page->setContent(content);
+        page->setName(title);
+//        qDebug() << page->path();
+
+        bool ret = engine->savePage(page);
+        if (ret) {
+            ctx->stash()["status"] = "Page saved";
+        }
+
+//        qDebug() << "saved" << ret;
+    }
 
     ctx->stash()["title"] = title;
     ctx->stash()["path"] = path;

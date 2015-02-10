@@ -48,7 +48,7 @@ public:
     void feed(Cutelyst::Context *ctx);
 
 protected:
-    void init(Application *app);
+    virtual bool postFork(Application *app);
 
 private:
     C_ATTR(End, :ActionClass(RenderView))

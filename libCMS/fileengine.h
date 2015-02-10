@@ -40,15 +40,16 @@ public:
 
     virtual Page *getPage(const QString &path);
 
-    virtual Page *getPageToEdit(const QString &path) const;
+    virtual Page *getPageToEdit(const QString &path);
 
-    virtual Page *loadPage(const QString &path) const;
+    virtual Page *loadPage(const QString &path);
 
     virtual bool savePage(Page *page);
 
-    virtual QList<Page *> listPages(int depth = -1);
-
-    virtual QList<Page *> listPosts(int depth = -1);
+    virtual QList<Page *> listPages(Filters filters = NoFilter,
+                                    SortFlags sort = SortFlags(Date | Name),
+                                    int depth = -1,
+                                    int limit = -1);
 
     virtual QList<Menu *> menus();
     virtual QHash<QString, Menu *> menuLocations();
@@ -65,6 +66,8 @@ public:
 
 protected:
     FileEnginePrivate *d_ptr;
+
+    void loadPages();
 };
 
 }

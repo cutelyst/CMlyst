@@ -47,6 +47,7 @@ Page *Engine::getPage(const QString &path)
 
 Page *Engine::getPageToEdit(const QString &path) const
 {
+    Q_UNUSED(path)
     return 0;
 }
 
@@ -55,15 +56,12 @@ bool Engine::savePage(Page *page)
     return false;
 }
 
-QList<Page *> Engine::listPages(int depth)
+QList<Page *> Engine::listPages(Filters filters, SortFlags sort, int depth, int limit)
 {
+    Q_UNUSED(filters)
+    Q_UNUSED(sort)
     Q_UNUSED(depth)
-    return QList<Page *>();
-}
-
-QList<Page *> Engine::listPosts(int depth)
-{
-    Q_UNUSED(depth)
+    Q_UNUSED(limit)
     return QList<Page *>();
 }
 

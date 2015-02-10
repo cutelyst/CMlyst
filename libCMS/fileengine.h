@@ -42,7 +42,7 @@ public:
 
     virtual Page *getPageToEdit(const QString &path);
 
-    virtual Page *loadPage(const QString &path);
+    virtual Page *loadPage(const QString &filename);
 
     virtual bool savePage(Page *page);
 

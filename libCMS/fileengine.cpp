@@ -96,7 +96,7 @@ Page *FileEngine::getPage(const QString &path)
 
 Page *FileEngine::getPageToEdit(const QString &path)
 {
-    Page *page = loadPage(path);
+    Page *page = getPage(path);
     if (!page) {
         page = new Page;
         page->setPath(path);
@@ -105,27 +105,30 @@ Page *FileEngine::getPageToEdit(const QString &path)
     return page;
 }
 
-Page *FileEngine::loadPage(const QString &path)
+Page *FileEngine::loadPage(const QString &filename)
 {
     Q_D(FileEngine);
 
     // skip temporary files
-    if (path.endsWith(QLatin1Char('~'))) {
+    if (filename.endsWith(QLatin1Char('~'))) {
         return 0;
     }
 
-    QString relPath = path;
-    relPath.remove(QRegularExpression("^/"));
-    if (relPath.isEmpty()) {
-        relPath = QStringLiteral("index");
+    const QString &relPathPercent = d->pagesPath.relativeFilePath(filename);
+    QString relPath = QUrl::fromPercentEncoding(relPathPercent.toLatin1());
+
+    // Paths like http://foo.com or http://foo.com/bar/
+    // have files that ends with index
+    if (relPath.endsWith(QLatin1String("index"))) {
+        relPath.remove(relPath.size() - 5, 5);
     }
 
     Page *page = 0;
+    QFileInfo fileInfo(filename);
     QHash<QString, Page*>::ConstIterator it = d->pathPages.constFind(relPath);
     if (it != d->pathPages.constEnd()) {
         page = it.value();
 
-        QFileInfo fileInfo(path);
         if (page->modified() != fileInfo.lastModified()) {
             d->pathPages.remove(relPath);
             d->posts.removeOne(page);
@@ -136,58 +139,46 @@ Page *FileEngine::loadPage(const QString &path)
     }
 
     if (!page) {
-        const QString &file = d->pagesPath.absoluteFilePath(relPath.toLatin1().toPercentEncoding());
-        QFileInfo fileInfo(file);
-        if (fileInfo.exists()) {
-            QSettings data(file, QSettings::IniFormat);
-            page = new Page;
+        QSettings data(filename, QSettings::IniFormat);
+        page = new Page;
 
-            // TODO save local path
-    //        QString localPath = path;
-    //        localPath = localPath.remove(0, d->pagesPath.path().length());
-            page->setPath(path);
+        page->setPath(relPath);
+        page->setName(data.value("Name").toString());
 
-            page->setName(data.value("Name").toString());
-
-            QString author = data.value("Author").toString();
-            if (author.isEmpty()) {
-                author = fileInfo.owner();
-            }
-            page->setAuthor(author);
-
-            QDateTime modified = data.value("Modified").toDateTime();
-            if (modified.isValid()) {
-            } else {
-                modified = fileInfo.lastModified();
-            }
-            page->setModified(modified);
-
-            QDateTime created = data.value("Created").toDateTime();
-            if (created.isValid()) {
-            } else {
-                created = fileInfo.created();
-            }
-            page->setCreated(created);
-
-            page->setNavigationLabel(data.value("NavigationLabel").toString());
-            page->setTags(data.value("Tags").toStringList());
-            page->setBlog(data.value("Blog").toBool());
-            page->setAllowComments(data.value("AllowComments").toBool());
-
-            data.beginGroup("Body");
-            page->setContent(data.value("Content").toString());
-            data.endGroup();
-        } else {
-            qDebug() << "FileEngine file not found" << file;
+        QString author = data.value("Author").toString();
+        if (author.isEmpty()) {
+            author = fileInfo.owner();
         }
+        page->setAuthor(author);
 
-        if (page) {
-            d->pathPages.insert(relPath, page);
-            if (page->blog()) {
-                d->posts.append(page);
-            } else {
-                d->pages.append(page);
-            }
+        QDateTime modified = data.value("Modified").toDateTime();
+        if (modified.isValid()) {
+        } else {
+            modified = fileInfo.lastModified();
+        }
+        page->setModified(modified);
+
+        QDateTime created = data.value("Created").toDateTime();
+        if (created.isValid()) {
+        } else {
+            created = fileInfo.created();
+        }
+        page->setCreated(created);
+
+        page->setNavigationLabel(data.value("NavigationLabel").toString());
+        page->setTags(data.value("Tags").toStringList());
+        page->setBlog(data.value("Blog").toBool());
+        page->setAllowComments(data.value("AllowComments").toBool());
+
+        data.beginGroup("Body");
+        page->setContent(data.value("Content").toString());
+        data.endGroup();
+
+        d->pathPages.insert(relPath, page);
+        if (page->blog()) {
+            d->posts.append(page);
+        } else {
+            d->pages.append(page);
         }
     }
 
@@ -465,17 +456,10 @@ void FileEngine::loadPages()
                     QDir::Files | QDir::NoDotAndDotDot,
                     QDirIterator::Subdirectories);
     while (it.hasNext()) {
-        const QString &path = it.next();
-
-        const QString &relPathPercent = d->pagesPath.relativeFilePath(path);
-        QString relPath = QUrl::fromPercentEncoding(relPathPercent.toLatin1());
-
-        if (relPath == QLatin1String("index")) {
-            relPath = QStringLiteral("");
-        }
-
-        loadPage(relPath);
+        loadPage(it.next());
     }
+
+    qDebug() << "pages..." << d->pathPages.keys();
 }
 
 Menu *FileEnginePrivate::createMenu(const QString &name, QObject *parent)

@@ -44,6 +44,7 @@ void AdminPages::index(Context *ctx)
                      {"root", ctx->config("DataLocation").toString()}
                  });
     QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Pages);
+
     ctx->stash()["posts"] = QVariant::fromValue(pages);
 
     ctx->stash()["template"] = "posts/index.html";

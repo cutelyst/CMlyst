@@ -156,14 +156,14 @@ Page *FileEngine::loadPage(const QString &filename)
         } else {
             modified = fileInfo.lastModified();
         }
-        page->setModified(modified);
+        page->setModified(modified.toUTC());
 
         QDateTime created = data.value("Created").toDateTime();
         if (created.isValid()) {
         } else {
             created = fileInfo.created();
         }
-        page->setCreated(created);
+        page->setCreated(created.toUTC());
 
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());
@@ -458,8 +458,6 @@ void FileEngine::loadPages()
     while (it.hasNext()) {
         loadPage(it.next());
     }
-
-    qDebug() << "pages..." << d->pathPages.keys();
 }
 
 Menu *FileEnginePrivate::createMenu(const QString &name, QObject *parent)

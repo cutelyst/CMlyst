@@ -212,8 +212,10 @@ bool FileEngine::savePage(Page *page)
     data.endGroup();
     data.sync();
 
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 4, 0))
     // Force a change to notify cache that something changed
     utime(file.toLatin1().data(), NULL);
+#endif
 
 //    qDebug() << "save page" << file;
     // if it's not writable we can't save the page

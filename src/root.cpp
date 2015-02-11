@@ -98,7 +98,6 @@ void Root::page(Cutelyst::Context *ctx)
                        {QStringLiteral("template"), QStringLiteral("404.html")},
                        {QStringLiteral("cms"), QVariant::fromValue(m_engine->settings())}
                    });
-        ctx->stash()[QLatin1String("template")] = "404.html";
         res->setStatus(404);
         return;
     }

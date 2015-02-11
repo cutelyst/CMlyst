@@ -151,19 +151,19 @@ Page *FileEngine::loadPage(const QString &filename)
         }
         page->setAuthor(author);
 
-        QDateTime modified = data.value("Modified").toDateTime();
+        QDateTime modified = QDateTime::fromString(data.value("Modified").toString(), Qt::ISODate);
         if (modified.isValid()) {
         } else {
-            modified = fileInfo.lastModified();
+            modified = fileInfo.lastModified().toUTC();
         }
-        page->setModified(modified.toUTC());
+        page->setModified(modified);
 
-        QDateTime created = data.value("Created").toDateTime();
+        QDateTime created = QDateTime::fromString(data.value("Created").toString(), Qt::ISODate);
         if (created.isValid()) {
         } else {
-            created = fileInfo.created();
+            created = fileInfo.created().toUTC();
         }
-        page->setCreated(created.toUTC());
+        page->setCreated(created);
 
         page->setNavigationLabel(data.value("NavigationLabel").toString());
         page->setTags(data.value("Tags").toStringList());
@@ -199,8 +199,8 @@ bool FileEngine::savePage(Page *page)
 //    qDebug() << "save Page" << page->path() << path;
     QSettings data(file, QSettings::IniFormat);
     data.setValue("Name", page->name());
-    data.setValue("Modified", page->modified().toUTC());
-    data.setValue("Created", page->created().toUTC());
+    data.setValue("Modified", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    data.setValue("Created", page->created().toUTC().toString(Qt::ISODate));
     data.setValue("Author", page->author());
     data.setValue("NavigationLabel", page->navigationLabel());
     data.setValue("Tags", page->tags());

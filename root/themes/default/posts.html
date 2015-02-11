@@ -1,0 +1,23 @@
+      {% if listing %}
+      <div class="blog-header">
+        <h1 class="blog-title">{{ cms.title }}</h1>
+        <p class="lead blog-description">{{ cms.tagline }}</p>
+      </div>
+      {% endif %}
+
+      {% for page in posts %}
+      <div class="row">
+
+        <div class="col-sm-8 blog-main">
+
+          <div class="blog-post">
+            <h2 class="blog-post-title">{{ page.name }}</h2>
+            <p class="blog-post-meta">{{ page.created|date:"MMMM d, yyyy" }} by <a href="#">{{ page.author }}</a></p>
+
+            <p>{{ page.content|safe }}</p>
+          </div><!-- /.blog-post -->
+
+        </div><!-- /.blog-main -->
+
+      </div><!-- /.row -->
+      {% endfor %}

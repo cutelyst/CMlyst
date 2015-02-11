@@ -23,6 +23,41 @@
       </select>
     </div>
   </div>
+
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="tagline">Front page displays</label>
+    <div class="col-sm-9">
+      <div class="radio">
+        <label><input name="show_on_front" type="radio" value="posts" class="tog" {% ifequal show_on_front "posts" %}checked="checked"{% endifequal %}/>
+        Your latest posts</label>
+      </div>
+      <div class="radio">
+        <label><input name="show_on_front" type="radio" value="page" class="tog" {% ifequal show_on_front "page" %}checked="checked"{% endifequal %}/>
+        A static page (select below)</label>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="page_on_front">Front page:</label>
+        <div class="col-sm-9">
+          <select class="form-control" name="page_on_front" id="page_on_front">
+            <option value="0">&mdash; Select &mdash;</option>
+          {% for page in pages %}
+            <option value="{{ page.path }}" {% ifequal currentFrontPage page.name %}selected{% endifequal %}>{{ page.name }}</option>
+          {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="page_for_posts">Posts page:</label>
+        <div class="col-sm-9">
+          <select class="form-control" name="page_for_posts" id="page_for_posts">
+            <option value="0">&mdash; Select &mdash;</option>
+          {% for page in pages %}
+            <option value="{{ page.path }}" {% ifequal currentPostPage page.name %}selected{% endifequal %}>{{ page.name }}</option>
+          {% endfor %}
+          </select>
+        </div>
+      </div>
+  </div>
   <div class="form-group">
     <button type="submit" name="submit" value="Submit" class="btn">Save Changes</button>
   </div>

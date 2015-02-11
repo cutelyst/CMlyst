@@ -94,7 +94,8 @@ void Page::setContent(const QString &body)
 QDateTime Page::modified() const
 {
     Q_D(const Page);
-    return d->modified;
+    // TODO fix Grantlee
+    return d->modified.toLocalTime();
 }
 
 void Page::setModified(const QDateTime &dateTime)
@@ -106,7 +107,8 @@ void Page::setModified(const QDateTime &dateTime)
 QDateTime Page::created() const
 {
     Q_D(const Page);
-    return d->created;
+    // TODO fix Grantlee
+    return d->created.toLocalTime();
 }
 
 void Page::setCreated(const QDateTime &dateTime)

@@ -20,6 +20,7 @@
 #include "adminsettings.h"
 
 #include "../libCMS/fileengine.h"
+#include "../libCMS/page.h"
 
 #include <QDir>
 
@@ -44,9 +45,11 @@ void AdminSettings::index(Context *ctx)
 
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->request()->bodyParam();
+        qDebug() << params;
         engine->setSettingsValue("title", params.value("title"));
         engine->setSettingsValue("tagline", params.value("tagline"));
         engine->setSettingsValue("theme", params.value("theme"));
+        engine->setSettingsValue("show_on_front", params.value("show_on_front"));
     }
 
     QDir rootDir = ctx->config("RootLocation").toString();
@@ -54,11 +57,18 @@ void AdminSettings::index(Context *ctx)
     QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
                                              QDir::Name | QDir:: IgnoreCase);
 
+
+    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Filters(
+                                                     CMS::Engine::Pages |
+                                                     CMS::Engine::OnlyPublished));
+
     ctx->stash({
                    {"template", "settings/index.html"},
                    {"title", engine->settingsValue("title")},
                    {"tagline", engine->settingsValue("tagline")},
                    {"currentTheme", engine->settingsValue("theme")},
-                   {"themes", themes}
+                   {"themes", themes},
+                   {"pages", QVariant::fromValue(pages)},
+                   {"show_on_front", engine->settingsValue("show_on_front")},
                });
 }

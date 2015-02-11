@@ -97,7 +97,7 @@ void Root::page(Cutelyst::Context *ctx)
     QString templateFile;
 
     // if we are at the root check if we should show the posts
-    if (req->path().isEmpty() && m_engine->settingsValue("show_on_front") == QLatin1String("posts")) {
+    if (req->path().isEmpty() && m_engine->settingsValue("show_on_front", "posts") == QLatin1String("posts")) {
         posts = m_engine->listPages(CMS::Engine::Posts,
                                     CMS::Engine::SortFlags(
                                         CMS::Engine::Name |
@@ -130,7 +130,7 @@ void Root::page(Cutelyst::Context *ctx)
         }
         res->headers().setLastModified(currentDateTime);
 
-        page->blog() ? QStringLiteral("blog.html") : QStringLiteral("page.html");
+        templateFile = page->blog() ? QStringLiteral("blog.html") : QStringLiteral("page.html");
     }
 
     ctx->stash({

@@ -69,6 +69,6 @@ void AdminSettings::index(Context *ctx)
                    {"currentTheme", engine->settingsValue("theme")},
                    {"themes", themes},
                    {"pages", QVariant::fromValue(pages)},
-                   {"show_on_front", engine->settingsValue("show_on_front")},
+                   {"show_on_front", engine->settingsValue("show_on_front", "posts")},
                });
 }

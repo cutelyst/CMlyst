@@ -127,10 +127,14 @@ void Root::feed(Context *ctx)
     Response *res = ctx->res();
     Request *req = ctx->req();
 
-    QList<CMS::Page *> posts = m_engine->listPages(CMS::Engine::Posts,
-                                                   CMS::Engine::SortFlags(CMS::Engine::Name | CMS::Engine::Date),
-                                                   -1,
-                                                   10);
+    QList<CMS::Page *> posts;
+    posts = m_engine->listPages(CMS::Engine::Posts,
+                                CMS::Engine::SortFlags(
+                                    CMS::Engine::Name |
+                                    CMS::Engine::Date |
+                                    CMS::Engine::Reversed),
+                                -1,
+                                10);
     if (!posts.isEmpty()) {
         // See if the page has changed, if the settings have changed
         // and have a newer date use that instead

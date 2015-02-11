@@ -46,8 +46,9 @@ public:
     Q_DECLARE_FLAGS(Filters, Filter)
 
     enum SortFlag {
-        Date = 0x1,
-        Name = 0x2
+        Date     = 0x1,
+        Name     = 0x2,
+        Reversed = 0x4
     };
     Q_DECLARE_FLAGS(SortFlags, SortFlag)
 
@@ -74,7 +75,7 @@ public:
      * when depth is -1 all pages are listed
      */
     virtual QList<Page *> listPages(Filters filters = NoFilter,
-                                    SortFlags sort = SortFlags(Date | Name),
+                                    SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
                                     int limit = -1);
 

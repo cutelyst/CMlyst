@@ -43,6 +43,7 @@ void AdminPosts::index(Context *ctx)
                      {"root", ctx->config("DataLocation").toString()}
                  });
     QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Posts);
+
     ctx->stash()["posts"] = QVariant::fromValue(pages);
 
     ctx->stash()["template"] = "posts/index.html";
@@ -77,7 +78,7 @@ void AdminPosts::create(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->stash()["status"] = "Page saved";
+            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
         }
 
 //        qDebug() << "saved" << ret;
@@ -137,7 +138,7 @@ void AdminPosts::edit(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->stash()["status"] = "Page saved";
+            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
         }
 
 //        qDebug() << "saved" << ret;

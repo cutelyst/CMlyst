@@ -227,19 +227,40 @@ bool dateLessThan(Page *page1, Page *page2)
     return page1->created() < page2->created();
 }
 
+bool dateGreaterThan(Page *page1, Page *page2)
+{
+    return page1->created() > page2->created();
+}
+
 bool nameLessThan(Page *page1, Page *page2)
 {
     return page1->name() < page2->name();
+}
+
+bool nameGreaterThan(Page *page1, Page *page2)
+{
+    return page1->name() > page2->name();
 }
 
 bool dateNameLessThan(Page *page1, Page *page2)
 {
     const QDateTime &dt1 = page1->created();
     const QDateTime &dt2 = page2->created();
-    if (dt1 == dt1) {
+    if (dt1 == dt2) {
         return page1->name() < page2->name();
     } else {
         return dt1 < dt2;
+    }
+}
+
+bool dateNameGreaterThan(Page *page1, Page *page2)
+{
+    const QDateTime &dt1 = page1->created();
+    const QDateTime &dt2 = page2->created();
+    if (dt1 == dt2) {
+        return page1->name() > page2->name();
+    } else {
+        return dt1 > dt2;
     }
 }
 
@@ -277,11 +298,11 @@ QList<Page *> FileEngine::listPages(Engine::Filters filters, Engine::SortFlags s
 
     // apply the sorting
     if (sort & Date && sort & Name) {
-        qSort(ret.begin(), ret.end(), dateNameLessThan);
+        qSort(ret.begin(), ret.end(), sort & Reversed ? dateNameGreaterThan : dateNameLessThan);
     } else if (sort & Date) {
-        qSort(ret.begin(), ret.end(), dateLessThan);
+        qSort(ret.begin(), ret.end(), sort & Reversed ? dateGreaterThan : dateLessThan);
     } else if (sort & Name) {
-        qSort(ret.begin(), ret.end(), nameLessThan);
+        qSort(ret.begin(), ret.end(), sort & Reversed ? nameGreaterThan : nameLessThan);
     }
 
     // Limit the list

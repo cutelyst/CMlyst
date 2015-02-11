@@ -47,7 +47,7 @@ public:
     virtual bool savePage(Page *page);
 
     virtual QList<Page *> listPages(Filters filters = NoFilter,
-                                    SortFlags sort = SortFlags(Date | Name),
+                                    SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
                                     int limit = -1);
 

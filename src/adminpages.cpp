@@ -77,7 +77,7 @@ void AdminPages::create(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->stash()["status"] = "Page saved";
+            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
         }
 
 //        qDebug() << "saved" << ret;
@@ -134,7 +134,7 @@ void AdminPages::edit(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->stash()["status"] = "Page saved";
+            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
         }
 
 //        qDebug() << "saved" << ret;

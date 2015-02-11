@@ -100,6 +100,9 @@ Page *FileEngine::getPageToEdit(const QString &path)
     if (!page) {
         page = new Page;
         page->setPath(path);
+        QDateTime dt = QDateTime::currentDateTimeUtc();
+        page->setCreated(dt);
+        page->setModified(dt);
     }
 
     return page;

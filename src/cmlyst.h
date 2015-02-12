@@ -31,6 +31,8 @@ public:
     ~CMlyst();
 
     bool init();
+
+    virtual bool postFork();
 };
 
 #endif // CMLYST_H

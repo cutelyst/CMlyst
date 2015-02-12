@@ -14,6 +14,7 @@ set(cmlyst_SRCS
     ../libCMS/fileengine_p.h
     ../libCMS/menu.cpp
     ../libCMS/menu_p.h
+    cmengine.cpp
     root.cpp
     admin.cpp
     adminsetup.cpp

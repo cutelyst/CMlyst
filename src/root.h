@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -23,13 +23,15 @@
 #include <Cutelyst/Controller>
 #include <QDir>
 
+#include "cmengine.h"
+
 using namespace Cutelyst;
 
 namespace CMS {
 class Engine;
 }
 
-class Root : public Controller
+class Root : public Controller, public CMEngine
 {
     Q_OBJECT
     C_NAMESPACE("")
@@ -54,7 +56,6 @@ private:
     C_ATTR(End, :ActionClass(RenderView))
     void End(Context *ctx);
 
-    CMS::Engine *m_engine;
     QDir m_rootDir;
 };
 

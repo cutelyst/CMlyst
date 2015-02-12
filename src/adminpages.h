@@ -23,9 +23,11 @@
 #include <QObject>
 #include <Cutelyst/Controller>
 
+#include "cmengine.h"
+
 using namespace Cutelyst;
 
-class AdminPages : public Controller
+class AdminPages : public Controller, public CMEngine
 {
     Q_OBJECT
     C_NAMESPACE(".admin/pages")

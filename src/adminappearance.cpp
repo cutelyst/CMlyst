@@ -19,7 +19,6 @@
 
 #include "adminappearance.h"
 
-#include "../libCMS/fileengine.h"
 #include "../libCMS/menu.h"
 
 #include <QDir>
@@ -104,11 +103,6 @@ void AdminAppearance::index(Context *ctx)
 
 void AdminAppearance::menus(Context *ctx)
 {
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
-
     ctx->stash({
                    {"template", "appearance/menus.html"},
                    {"menus", QVariant::fromValue(engine->menus())}
@@ -117,11 +111,6 @@ void AdminAppearance::menus(Context *ctx)
 
 void AdminAppearance::menus_remove(Context *ctx, const QString &id)
 {
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
-
     engine->removeMenu(id);
 
     ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
@@ -132,10 +121,6 @@ void AdminAppearance::menus_new(Context *ctx)
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->req()->bodyParam();
 
-        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-        engine->init({
-                         {"root", ctx->config("DataLocation").toString()}
-                     });
         CMS::Menu *menu = new CMS::Menu(params.value("name"), ctx);
         if (!engine->saveMenu(menu, false)) {
             ctx->stash({
@@ -163,11 +148,6 @@ void AdminAppearance::menus_edit(Context *ctx, const QString &id)
 
         ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
     } else {
-        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-        engine->init({
-                         {"root", ctx->config("DataLocation").toString()}
-                     });
-
         CMS::Menu *menu = engine->menu(id);
         if (!menu) {
             ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
@@ -181,4 +161,3 @@ void AdminAppearance::menus_edit(Context *ctx, const QString &id)
                    });
     }
 }
-

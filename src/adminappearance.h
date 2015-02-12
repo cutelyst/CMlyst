@@ -21,10 +21,11 @@
 #define ADMINAPPEARANCE_H
 
 #include <Cutelyst/Controller>
+#include "cmengine.h"
 
 using namespace Cutelyst;
 
-class AdminAppearance : public Controller
+class AdminAppearance : public Controller, public CMEngine
 {
     Q_OBJECT
     C_NAMESPACE(".admin/appearance")

@@ -27,7 +27,6 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-#include "../libCMS/fileengine.h"
 #include "../libCMS/page.h"
 #include "../libCMS/menu.h"
 
@@ -53,7 +52,7 @@ void Root::End(Context *ctx)
     Q_UNUSED(ctx)
 //    qDebug() << "*** Root::End()" << ctx->view();
 
-    const QString &theme = m_engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
+    const QString &theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
 
     const QString &themePath = m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme);
 
@@ -71,14 +70,7 @@ void Root::End(Context *ctx)
 
 bool Root::postFork(Application *app)
 {
-    QDir dataDir = app->config("DataLocation").toString();
     m_rootDir = app->config("RootLocation").toString();
-
-    CMS::FileEngine *engine = new CMS::FileEngine(this);
-    engine->init({
-                     {"root", dataDir.absolutePath()}
-                 });
-    m_engine = engine;
 
     return true;
 }
@@ -96,22 +88,22 @@ void Root::page(Cutelyst::Context *ctx)
     QString templateFile;
 
     // if we are at the root check if we should show the posts
-    if (req->path().isEmpty() && m_engine->settingsValue("show_on_front", "posts") == QLatin1String("posts")) {
-        posts = m_engine->listPages(CMS::Engine::Posts,
-                                    CMS::Engine::SortFlags(
-                                        CMS::Engine::Name |
-                                        CMS::Engine::Date |
-                                        CMS::Engine::Reversed),
-                                    -1,
-                                    10);
+    if (req->path().isEmpty() && engine->settingsValue("show_on_front", "posts") == QLatin1String("posts")) {
+        posts = engine->listPages(CMS::Engine::Posts,
+                                  CMS::Engine::SortFlags(
+                                      CMS::Engine::Name |
+                                      CMS::Engine::Date |
+                                      CMS::Engine::Reversed),
+                                  -1,
+                                  10);
         templateFile = QStringLiteral("posts.html");
     } else {
         // Find the desired page
-        page = m_engine->getPage(req->path());
+        page = engine->getPage(req->path());
         if (!page) {
             ctx->stash({
                            {QStringLiteral("template"), QStringLiteral("404.html")},
-                           {QStringLiteral("cms"), QVariant::fromValue(m_engine->settings())}
+                           {QStringLiteral("cms"), QVariant::fromValue(engine->settings())}
                        });
             res->setStatus(404);
             return;
@@ -119,7 +111,7 @@ void Root::page(Cutelyst::Context *ctx)
 
         // See if the page has changed, if the settings have changed
         // and have a newer date use that instead
-        const QDateTime &currentDateTime = qMax(page->modified(), m_engine->lastModified());
+        const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
         const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
         if (clientDate.isValid()) {
             if (currentDateTime == clientDate && currentDateTime.isValid()) {
@@ -134,8 +126,8 @@ void Root::page(Cutelyst::Context *ctx)
 
     ctx->stash({
                    {QStringLiteral("template"), templateFile},
-                   {QStringLiteral("cms"), QVariant::fromValue(m_engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(m_engine->menuLocations())},
+                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
                    {QStringLiteral("page"), QVariant::fromValue(page)},
                    {QStringLiteral("posts"), QVariant::fromValue(posts)}
                });
@@ -147,13 +139,13 @@ void Root::feed(Context *ctx)
     Request *req = ctx->req();
 
     QList<CMS::Page *> posts;
-    posts = m_engine->listPages(CMS::Engine::Posts,
-                                CMS::Engine::SortFlags(
-                                    CMS::Engine::Name |
-                                    CMS::Engine::Date |
-                                    CMS::Engine::Reversed),
-                                -1,
-                                10);
+    posts = engine->listPages(CMS::Engine::Posts,
+                              CMS::Engine::SortFlags(
+                                  CMS::Engine::Name |
+                                  CMS::Engine::Date |
+                                  CMS::Engine::Reversed),
+                              -1,
+                              10);
     if (!posts.isEmpty()) {
         // See if the page has changed, if the settings have changed
         // and have a newer date use that instead
@@ -170,8 +162,8 @@ void Root::feed(Context *ctx)
 
     RSSWriter writer;
     writer.writeStartChannel();
-    writer.writeChannelTitle(m_engine->title());
-    writer.writeChannelDescription(m_engine->description());
+    writer.writeChannelTitle(engine->title());
+    writer.writeChannelDescription(engine->description());
     writer.writeChannelFeedLink(req->base());
     if (!posts.isEmpty()) {
         writer.writeChannelLastBuildDate(posts.first()->created());

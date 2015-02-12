@@ -19,7 +19,6 @@
 
 #include "adminsettings.h"
 
-#include "../libCMS/fileengine.h"
 #include "../libCMS/page.h"
 
 #include <QDir>
@@ -32,11 +31,6 @@ AdminSettings::AdminSettings(QObject *parent) :
 
 void AdminSettings::index(Context *ctx)
 {
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
-
     if (!engine->settingsIsWritable()) {
         ctx->stash({
                        {"error_msg", "Settings file is read only!"}

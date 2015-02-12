@@ -24,7 +24,6 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Application>
 
-#include "../libCMS/fileengine.h"
 #include "../libCMS/page.h"
 
 #include <QDebug>
@@ -38,10 +37,6 @@ void AdminPosts::index(Context *ctx)
 {
     ctx->stash()["post_type"] = "post";    
 
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
     QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Posts);
 
     ctx->stash()["posts"] = QVariant::fromValue(pages);
@@ -64,11 +59,6 @@ void AdminPosts::create(Context *ctx)
         }
         savePath.prepend(QDate::currentDate().toString("yyyy/MM/dd/"));
 //        qDebug() << "save path"  << savePath;
-
-        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-        engine->init({
-                         {"root", ctx->config("DataLocation").toString()}
-                     });
 
         CMS::Page *page = engine->getPageToEdit(savePath);
         page->setContent(content.toUtf8());
@@ -97,11 +87,6 @@ void AdminPosts::edit(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
     ctx->stash()["post_type"] = "post";
-
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
 
     QStringList args = ctx->request()->args();
     QString path = args.join(QLatin1Char('/'));

@@ -42,6 +42,8 @@
 #include "adminsettings.h"
 #include "adminsetup.h"
 
+#include "../libCMS/fileengine.h"
+
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
 {
@@ -123,6 +125,26 @@ bool CMlyst::init()
     qDebug() << "Root location" << rootDir.absolutePath();
     qDebug() << "Root Admin location" << rootDir.absoluteFilePath("src/admin");
     qDebug() << "Data location" << dataDir.absolutePath();
+
+    return true;
+}
+
+bool CMlyst::postFork()
+{
+    QDir dataDir = config("DataLocation").toString();
+
+    CMS::FileEngine *engine = new CMS::FileEngine(this);
+    engine->init({
+                     {"root", dataDir.absolutePath()}
+                 });
+
+    Q_FOREACH (Controller *controller, controllers()) {
+        CMEngine *cmengine = dynamic_cast<CMEngine *>(controller);
+        if (cmengine) {
+            qDebug() << controller->ns();
+            cmengine->engine = engine;
+        }
+    }
 
     return true;
 }

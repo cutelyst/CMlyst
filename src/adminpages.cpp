@@ -22,7 +22,6 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Application>
 
-#include "../libCMS/fileengine.h"
 #include "../libCMS/page.h"
 
 AdminPages::AdminPages()
@@ -39,10 +38,6 @@ void AdminPages::index(Context *ctx)
 {
     ctx->stash()["post_type"] = "page";
 
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
     QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Pages);
 
     ctx->stash()["posts"] = QVariant::fromValue(pages);
@@ -63,12 +58,6 @@ void AdminPages::create(Context *ctx)
 //        qDebug() << title;
 //        qDebug() << path;
 //        qDebug() << content;
-
-
-        CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-        engine->init({
-                         {"root", ctx->config("DataLocation").toString()}
-                     });
 
         CMS::Page *page = engine->getPageToEdit(path);
         page->setContent(content);
@@ -93,11 +82,6 @@ void AdminPages::edit(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
     ctx->stash()["post_type"] = "page";
-
-    CMS::FileEngine *engine = new CMS::FileEngine(ctx);
-    engine->init({
-                     {"root", ctx->config("DataLocation").toString()}
-                 });
 
     QStringList args = ctx->request()->args();
     QString path = args.join(QLatin1Char('/'));
@@ -145,4 +129,3 @@ void AdminPages::edit(Context *ctx)
     ctx->stash()["content"] = content;
     ctx->stash()["template"] = "posts/create.html";
 }
-

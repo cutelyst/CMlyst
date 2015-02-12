@@ -75,8 +75,6 @@ public:
     bool allowComments() const;
     void setAllowComments(bool allow);
 
-    static QString readablePath(const QString &path);
-
 protected:
     PagePrivate *d_ptr;
 };

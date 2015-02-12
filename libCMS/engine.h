@@ -97,6 +97,9 @@ public:
     virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
     virtual bool setSettingsValue(const QString &key, const QString &value);
 
+    static QString normalizePath(const QString &path);
+    static QString normalizeTitle(const QString &path);
+
 protected:
     EnginePrivate *d_ptr;
 };

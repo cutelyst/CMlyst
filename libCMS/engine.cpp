@@ -20,8 +20,10 @@
 #include "engine.h"
 #include "menu.h"
 
+#include <QRegularExpression>
 #include <QStringList>
 #include <QDateTime>
+#include <QDebug>
 
 using namespace CMS;
 
@@ -145,6 +147,39 @@ bool Engine::setSettingsValue(const QString &key, const QString &value)
     Q_UNUSED(key)
     Q_UNUSED(value)
     return false;
+}
+
+QString Engine::normalizePath(const QString &path)
+{
+    // "/foo/bar/Iam a big...path" turns into
+    // "/foo/bar/iam-a-big-path"
+    QStringList parts = path.split(QChar('/'));
+    for (int i = 0; i < parts.size(); ++i) {
+        parts.replace(i, normalizeTitle(parts.at(i)));
+    }
+    return parts.join(QChar('/'));
+}
+
+QString Engine::normalizeTitle(const QString &title)
+{
+    // "Iam a big/small...path" turns into
+    // "/foo/bar/iam-a-bigsmall-path"
+    QString ret = title.toLower();
+
+    // turn separators into space
+    ret.replace(QChar('.'), QChar::Space);
+    ret.replace(QChar('-'), QChar::Space);
+
+    // remove everything that is not a word or space
+    ret.remove(QRegularExpression("[^\\w\\s]"));
+
+    // remove abused space
+    ret = ret.simplified();
+
+    // turn space into dashes
+    ret.replace(QChar::Space, QChar('-'));
+
+    return ret;
 }
 
 QString CMS::Engine::title()

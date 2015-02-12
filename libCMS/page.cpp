@@ -18,6 +18,7 @@
  ***************************************************************************/
 
 #include "page_p.h"
+#include "engine.h"
 
 using namespace CMS;
 
@@ -64,7 +65,7 @@ QString Page::path() const
 void Page::setPath(const QString &path)
 {
     Q_D(Page);
-    d->path = readablePath(path);
+    d->path = path;
 }
 
 QString Page::author() const
@@ -151,9 +152,4 @@ void Page::setAllowComments(bool allow)
 {
     Q_D(Page);
     d->allowComments = allow;
-}
-
-QString Page::readablePath(const QString &path)
-{
-    return path.simplified().replace(QLatin1Char(' '), QLatin1String("-"));
 }

@@ -59,7 +59,7 @@ void AdminPages::create(Context *ctx)
 //        qDebug() << path;
 //        qDebug() << content;
 
-        CMS::Page *page = engine->getPageToEdit(path);
+        CMS::Page *page = engine->getPageToEdit(CMS::Engine::normalizePath(path));
         page->setContent(content);
         page->setName(title);
 //        qDebug() << page->path();

@@ -40,11 +40,14 @@ public:
     ~Root();
 
 public:
-//    C_ATTR(notFound, :Path)
-//    void notFound(Context *c);
+    C_ATTR(notFound, :Path)
+    void notFound(Context *ctx);
 
-    C_ATTR(page, :Path)
+    C_ATTR(page, :Page)
     void page(Cutelyst::Context *ctx);
+
+    C_ATTR(post, :Post)
+    void post(Cutelyst::Context *ctx);
 
     C_ATTR(feed, :Path(.feed))
     void feed(Cutelyst::Context *ctx);
@@ -57,6 +60,7 @@ private:
     void End(Context *ctx);
 
     QDir m_rootDir;
+    QString m_theme;
 };
 
 #endif // ROOT_H

@@ -44,9 +44,7 @@ public:
     QHash<QString, Page*> pathPages;
     QList<Page*> pages;
     QList<Page*> posts;
-    QDateTime menusDT;
     QList<CMS::Menu *> menus;
-    QDateTime menuLocationsDT;
     QHash<QString, CMS::Menu *> menuLocations;
 };
 

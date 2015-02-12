@@ -41,11 +41,14 @@ Root::~Root()
 {
 }
 
-//void Root::notFound(Context *c)
-//{
-//    c->stash()[QLatin1String("template")] = "404.html";
-//    c->res()->setStatus(404);
-//}
+void Root::notFound(Context *ctx)
+{
+    ctx->stash({
+                   {QStringLiteral("template"), QStringLiteral("404.html")},
+                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())}
+               });
+    ctx->res()->setStatus(404);
+}
 
 void Root::End(Context *ctx)
 {
@@ -53,19 +56,16 @@ void Root::End(Context *ctx)
 //    qDebug() << "*** Root::End()" << ctx->view();
 
     const QString &theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
+    // Check if the theme changed
+    if (m_theme != theme) {
+        m_theme = theme;
 
-    const QString &themePath = m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme);
-
-    ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
-    // Check if theme path changed
-    if (view->includePath() != themePath) {
-        view->setIncludePath(themePath);
+        ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
+        view->setIncludePath(m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme));
     }
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
     ctx->stash()["basetheme"] = ctx->uriFor(staticTheme).toString();
-
-
 }
 
 bool Root::postFork(Application *app)
@@ -99,29 +99,19 @@ void Root::page(Cutelyst::Context *ctx)
         templateFile = QStringLiteral("posts.html");
     } else {
         // Find the desired page
-        page = engine->getPage(req->path());
-        if (!page) {
-            ctx->stash({
-                           {QStringLiteral("template"), QStringLiteral("404.html")},
-                           {QStringLiteral("cms"), QVariant::fromValue(engine->settings())}
-                       });
-            res->setStatus(404);
-            return;
-        }
+        CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
 
         // See if the page has changed, if the settings have changed
         // and have a newer date use that instead
         const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
         const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
-        if (clientDate.isValid()) {
-            if (currentDateTime == clientDate && currentDateTime.isValid()) {
-                res->setStatus(Response::NotModified);
-                return;
-            }
+        if (clientDate.isValid() && currentDateTime == clientDate) {
+            res->setStatus(Response::NotModified);
+            return;
         }
         res->headers().setLastModified(currentDateTime);
 
-        templateFile = page->blog() ? QStringLiteral("blog.html") : QStringLiteral("page.html");
+        templateFile = QStringLiteral("page.html");
     }
 
     ctx->stash({
@@ -130,6 +120,29 @@ void Root::page(Cutelyst::Context *ctx)
                    {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
                    {QStringLiteral("page"), QVariant::fromValue(page)},
                    {QStringLiteral("posts"), QVariant::fromValue(posts)}
+               });
+}
+
+void Root::post(Context *ctx)
+{
+    Response *res = ctx->res();
+    Request *req = ctx->req();
+    CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
+
+    // See if the page has changed, if the settings have changed
+    // and have a newer date use that instead
+    const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
+    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+    if (clientDate.isValid() && currentDateTime == clientDate) {
+        res->setStatus(Response::NotModified);
+        return;
+    }
+    res->headers().setLastModified(currentDateTime);
+
+    ctx->stash({
+                   {QStringLiteral("template"), QStringLiteral("blog.html")},
+                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
                });
 }
 

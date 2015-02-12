@@ -42,6 +42,8 @@
 #include "adminsettings.h"
 #include "adminsetup.h"
 
+#include "cmdispatcher.h"
+
 #include "../libCMS/fileengine.h"
 
 CMlyst::CMlyst(QObject *parent) :
@@ -92,6 +94,8 @@ bool CMlyst::init()
         registerController(new AdminSettings);
     }
 
+    registerDispatcher(new CMDispatcher);
+
     StoreHtpasswd *store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
 
     CredentialPassword *password = new CredentialPassword;
@@ -141,7 +145,13 @@ bool CMlyst::postFork()
     Q_FOREACH (Controller *controller, controllers()) {
         CMEngine *cmengine = dynamic_cast<CMEngine *>(controller);
         if (cmengine) {
-            qDebug() << controller->ns();
+            cmengine->engine = engine;
+        }
+    }
+
+    Q_FOREACH (DispatchType *type, dispatchers()) {
+        CMEngine *cmengine = dynamic_cast<CMEngine *>(type);
+        if (cmengine) {
             cmengine->engine = engine;
         }
     }

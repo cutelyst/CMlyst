@@ -75,6 +75,12 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
             this, &FileEngine::loadPages);
     loadPages();
 
+    QFileSystemWatcher *settingsWatch = new QFileSystemWatcher(this);
+    settingsWatch->addPath(d->settingsInfo.absoluteFilePath());
+    connect(settingsWatch, &QFileSystemWatcher::fileChanged,
+            this, &FileEngine::loadSettings);
+    loadSettings();
+
     if (!d->settings->isWritable()) {
         qWarning() << "Settings file is not writable!" << d->settingsInfo.absoluteFilePath();
         return false;
@@ -319,66 +325,13 @@ QList<Page *> FileEngine::listPages(Engine::Filters filters, Engine::SortFlags s
 QList<Menu *> FileEngine::menus()
 {
     Q_D(FileEngine);
-
-    const QDateTime &settingsDT = d->settingsInfo.lastModified();
-    if (settingsDT == d->menusDT) {
-        return d->menus;
-    }
-
-    d->settings->beginGroup("Menus");
-
-    QList<CMS::Menu *> menus;
-    foreach (const QString &menu, d->settings->childGroups()) {
-        menus.append(d->createMenu(menu, this));
-    }
-
-    d->settings->endGroup();
-
-    // Cache the result
-    d->menus = menus;
-    d->menusDT = settingsDT;
-
-    return menus;
+    return d->menus;
 }
 
 QHash<QString, Menu *> FileEngine::menuLocations()
 {
     Q_D(FileEngine);
-
-    const QDateTime &settingsDT = d->settingsInfo.lastModified();
-    if (settingsDT == d->menuLocationsDT) {
-        return d->menuLocations;
-    }
-
-    d->settings->beginGroup(QStringLiteral("Menus"));
-
-    QHash<QString, CMS::Menu *> menus;
-    foreach (const QString &menu, d->settings->childGroups()) {
-        Menu *obj = d->createMenu(menu, this);
-
-        bool added = false;
-        Q_FOREACH (const QString &location, obj->locations()) {
-            if (!menus.contains(location)) {
-                menus.insert(location, obj);
-                added = true;
-            }
-        }
-
-        if (!added) {
-            delete obj;
-            continue;
-        }
-
-        menus.insert(menu, obj);
-    }
-
-    d->settings->endGroup(); // Menus
-
-    // Cache the result
-    d->menuLocations = menus;
-    d->menuLocationsDT = settingsDT;
-
-    return menus;
+    return d->menuLocations;
 }
 
 bool FileEngine::saveMenu(Menu *menu, bool replace)
@@ -429,7 +382,7 @@ bool FileEngine::removeMenu(const QString &name)
 QDateTime FileEngine::lastModified()
 {
     Q_D(FileEngine);
-    return d->settingsInfo.lastModified();
+    return d->mainSettingsDT;
 }
 
 bool FileEngine::settingsIsWritable()
@@ -441,26 +394,18 @@ bool FileEngine::settingsIsWritable()
 QHash<QString, QString> FileEngine::settings()
 {
     Q_D(FileEngine);
-    if (d->mainSettingsDT != d->settingsInfo.lastModified()) {
-        QHash<QString, QString> ret;
-        d->settings->beginGroup(QStringLiteral("Main"));
-        Q_FOREACH (const QString &key, d->settings->allKeys()) {
-            ret.insert(key, d->settings->value(key).toString());
-        }
-        d->settings->endGroup();
-        d->mainSettings = ret;
-    }
-
     return d->mainSettings;
 }
 
 QString FileEngine::settingsValue(const QString &key, const QString &defaultValue)
 {
     Q_D(FileEngine);
-    d->settings->beginGroup(QStringLiteral("Main"));
-    const QString &ret = d->settings->value(key, defaultValue).toString();
-    d->settings->endGroup();
-    return ret;
+
+    QHash<QString, QString>::ConstIterator it = d->mainSettings.constFind(key);
+    if (it != d->mainSettings.constEnd()) {
+        return it.value();
+    }
+    return defaultValue;
 }
 
 bool FileEngine::setSettingsValue(const QString &key, const QString &value)
@@ -469,6 +414,12 @@ bool FileEngine::setSettingsValue(const QString &key, const QString &value)
     d->settings->beginGroup(QStringLiteral("Main"));
     d->settings->setValue(key, value);
     d->settings->endGroup();
+
+#if (QT_VERSION <= QT_VERSION_CHECK(5, 4, 0))
+    // Force a change to notify cache that something changed
+    utime(d->settingsInfo.absoluteFilePath().toLatin1().data(), NULL);
+#endif
+
     return d->settings->isWritable();
 }
 
@@ -484,6 +435,47 @@ void FileEngine::loadPages()
     while (it.hasNext()) {
         loadPage(it.next());
     }
+}
+
+void FileEngine::loadSettings()
+{
+    Q_D(FileEngine);
+
+    // Load main settings
+    QHash<QString, QString> settings;
+    d->settings->beginGroup(QStringLiteral("Main"));
+    Q_FOREACH (const QString &key, d->settings->allKeys()) {
+        settings.insert(key, d->settings->value(key).toString());
+    }
+    d->settings->endGroup();
+    d->mainSettings = settings;
+
+    // Load menus and menu locations
+    d->settings->beginGroup(QStringLiteral("Menus"));
+    QList<CMS::Menu *> menus;
+    QHash<QString, CMS::Menu *> menuLocations;
+    foreach (const QString &menu, d->settings->childGroups()) {
+        Menu *obj = d->createMenu(menu, this);
+        menus.append(obj);
+
+        bool added = false;
+        Q_FOREACH (const QString &location, obj->locations()) {
+            if (!menuLocations.contains(location)) {
+                menuLocations.insert(location, obj);
+                added = true;
+            }
+        }
+
+        if (!added) {
+            delete obj;
+        }
+    }
+    d->settings->endGroup();
+    d->menus = menus;
+    d->menuLocations = menuLocations;
+
+    // Store the last modified date
+    d->mainSettingsDT = d->settingsInfo.lastModified();
 }
 
 Menu *FileEnginePrivate::createMenu(const QString &name, QObject *parent)

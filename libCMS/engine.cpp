@@ -45,7 +45,7 @@ Page *Engine::getPage(const QString &path)
     return 0;
 }
 
-Page *Engine::getPageToEdit(const QString &path) const
+Page *Engine::getPageToEdit(const QString &path)
 {
     Q_UNUSED(path)
     return 0;

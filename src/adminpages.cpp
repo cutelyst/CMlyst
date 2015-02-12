@@ -90,7 +90,7 @@ void AdminPages::edit(Context *ctx)
 
 //    qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
     CMS::Page *page = engine->getPageToEdit(path);
-//    qDebug() << Q_FUNC_INFO << page;
+    qDebug() << Q_FUNC_INFO << page << path;
 
     if (page) {
         path = page->path();

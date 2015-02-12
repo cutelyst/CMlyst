@@ -68,6 +68,7 @@ protected:
     FileEnginePrivate *d_ptr;
 
     void loadPages();
+    void loadSettings();
 };
 
 }

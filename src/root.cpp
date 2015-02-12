@@ -86,11 +86,10 @@ bool Root::postFork(Application *app)
 void Root::page(Cutelyst::Context *ctx)
 {
 //    qDebug() << "*** Root::page()";
-    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
+//    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
 
     Response *res = ctx->res();
     Request *req = ctx->req();
-    qDebug() << "*** Root::page()" << req->path().isEmpty() << m_engine->settingsValue("show_on_front");
 
     CMS::Page *page = 0;
     QList<CMS::Page *> posts;

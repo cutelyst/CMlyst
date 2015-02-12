@@ -23,7 +23,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual bool match(Context *ctx, const QString &path, const QStringList &args) const;
+    virtual DispatchType::MatchType match(Context *ctx, const QString &path, const QStringList &args) const;
 
     /**
      * Returns an uri for an action
@@ -37,6 +37,7 @@ public:
 private:
     Action *m_pageAction = 0;
     Action *m_postAction = 0;
+    Action *m_latestPostsAction = 0;
 };
 
 #endif // CMDISPATCHER_H

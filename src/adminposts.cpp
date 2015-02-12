@@ -53,7 +53,12 @@ void AdminPosts::create(Context *ctx)
     QString path = params.value("path");
     QString content = params.value("content");
     if (ctx->req()->method() == "POST") {
-        QString savePath = CMS::Engine::normalizeTitle(title);
+        QString savePath;
+        if (path.isEmpty()) {
+            savePath = CMS::Engine::normalizeTitle(title);
+        } else {
+            savePath = CMS::Engine::normalizeTitle(path);
+        }
         savePath.prepend(QDate::currentDate().toString("yyyy/MM/dd/"));
 //        qDebug() << "save path"  << savePath;
 

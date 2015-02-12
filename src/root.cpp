@@ -83,43 +83,24 @@ void Root::page(Cutelyst::Context *ctx)
     Response *res = ctx->res();
     Request *req = ctx->req();
 
-    CMS::Page *page = 0;
-    QList<CMS::Page *> posts;
-    QString templateFile;
+    // Get the desired page (dispatcher already found it)
+    CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
 
-    // if we are at the root check if we should show the posts
-    if (req->path().isEmpty() && engine->settingsValue("show_on_front", "posts") == QLatin1String("posts")) {
-        posts = engine->listPages(CMS::Engine::Posts,
-                                  CMS::Engine::SortFlags(
-                                      CMS::Engine::Name |
-                                      CMS::Engine::Date |
-                                      CMS::Engine::Reversed),
-                                  -1,
-                                  10);
-        templateFile = QStringLiteral("posts.html");
-    } else {
-        // Find the desired page
-        CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
-
-        // See if the page has changed, if the settings have changed
-        // and have a newer date use that instead
-        const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
-        const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
-        if (clientDate.isValid() && currentDateTime == clientDate) {
-            res->setStatus(Response::NotModified);
-            return;
-        }
-        res->headers().setLastModified(currentDateTime);
-
-        templateFile = QStringLiteral("page.html");
+    // See if the page has changed, if the settings have changed
+    // and have a newer date use that instead
+    const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
+    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+    if (clientDate.isValid() && currentDateTime == clientDate) {
+        res->setStatus(Response::NotModified);
+        return;
     }
+    res->headers().setLastModified(currentDateTime);
 
     ctx->stash({
-                   {QStringLiteral("template"), templateFile},
+                   {QStringLiteral("template"), QStringLiteral("page.html")},
                    {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
                    {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
-                   {QStringLiteral("page"), QVariant::fromValue(page)},
-                   {QStringLiteral("posts"), QVariant::fromValue(posts)}
+                   {QStringLiteral("page"), QVariant::fromValue(page)}
                });
 }
 
@@ -143,6 +124,41 @@ void Root::post(Context *ctx)
                    {QStringLiteral("template"), QStringLiteral("blog.html")},
                    {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
                    {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
+               });
+}
+
+void Root::lastPosts(Context *ctx)
+{
+    Response *res = ctx->res();
+    Request *req = ctx->req();
+    QList<CMS::Page *> posts;
+    posts = engine->listPages(CMS::Engine::Posts,
+                              CMS::Engine::SortFlags(
+                                  CMS::Engine::Name |
+                                  CMS::Engine::Date |
+                                  CMS::Engine::Reversed),
+                              -1,
+                              10);
+
+    if (!posts.isEmpty()) {
+        // See if the page has changed, if the settings have changed
+        // and have a newer date use that instead
+        const QDateTime &currentDateTime = posts.first()->created();
+        const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+        if (clientDate.isValid()) {
+            if (currentDateTime == clientDate && currentDateTime.isValid()) {
+                res->setStatus(Response::NotModified);
+                return;
+            }
+        }
+        res->headers().setLastModified(currentDateTime);
+    }
+
+    ctx->stash({
+                   {QStringLiteral("template"), QStringLiteral("posts.html")},
+                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
+                   {QStringLiteral("posts"), QVariant::fromValue(posts)}
                });
 }
 

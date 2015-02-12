@@ -49,6 +49,9 @@ public:
     C_ATTR(post, :Post)
     void post(Cutelyst::Context *ctx);
 
+    C_ATTR(lastPosts, :LatestPosts)
+    void lastPosts(Cutelyst::Context *ctx);
+
     C_ATTR(feed, :Path(.feed))
     void feed(Cutelyst::Context *ctx);
 

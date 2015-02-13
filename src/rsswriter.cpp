@@ -38,15 +38,24 @@ RSSWriter::RSSWriter(QObject *parent) : QObject(parent)
 //    m_stream.setAutoFormatting(true);
     m_stream.writeStartDocument();
     m_stream.writeStartElement(QStringLiteral("rss"));
-    m_stream.writeNamespace(NAMESPACE_CONTENT,"content");
-    m_stream.writeNamespace(NAMESPACE_WFW,"wfw");
-    m_stream.writeNamespace(NAMESPACE_DC,"dc");
-    m_stream.writeNamespace(NAMESPACE_ATOM,"atom");
-    m_stream.writeNamespace(NAMESPACE_SY,"sy");
-    m_stream.writeNamespace(NAMESPACE_SLASH,"slash");
-    m_stream.writeNamespace(NAMESPACE_GEORSS,"georss");
-    m_stream.writeNamespace(NAMESPACE_GEO,"geo");
-    m_stream.writeNamespace(NAMESPACE_MEDIA,"media");
+    m_stream.writeNamespace(NAMESPACE_CONTENT,
+                            QStringLiteral("content"));
+    m_stream.writeNamespace(NAMESPACE_WFW,
+                            QStringLiteral("wfw"));
+    m_stream.writeNamespace(NAMESPACE_DC,
+                            QStringLiteral("dc"));
+    m_stream.writeNamespace(NAMESPACE_ATOM,
+                            QStringLiteral("atom"));
+    m_stream.writeNamespace(NAMESPACE_SY,
+                            QStringLiteral("sy"));
+    m_stream.writeNamespace(NAMESPACE_SLASH,
+                            QStringLiteral("slash"));
+    m_stream.writeNamespace(NAMESPACE_GEORSS,
+                            QStringLiteral("georss"));
+    m_stream.writeNamespace(NAMESPACE_GEO,
+                            QStringLiteral("geo"));
+    m_stream.writeNamespace(NAMESPACE_MEDIA,
+                            QStringLiteral("media"));
 }
 
 RSSWriter::~RSSWriter()
@@ -155,23 +164,17 @@ void RSSWriter::writeItemCommentsLink(const QString &link)
 
 void RSSWriter::writeItemNumberOfComments(int number)
 {
-    m_stream.writeStartElement(NAMESPACE_SLASH, "comments");
-    m_stream.writeCDATA(QString::number(number));
-    m_stream.writeEndElement();
+    m_stream.writeTextElement(NAMESPACE_SLASH, QStringLiteral("comments"), QString::number(number));
 }
 
 void RSSWriter::writeItemCreator(const QString &creator)
 {
-    m_stream.writeStartElement(NAMESPACE_DC, "creator");
-    m_stream.writeCDATA(creator);
-    m_stream.writeEndElement();
+    m_stream.writeTextElement(NAMESPACE_DC, QStringLiteral("creator"), creator);
 }
 
 void RSSWriter::writeItemCategory(const QString &category)
 {
-    m_stream.writeStartElement("category");
-    m_stream.writeCDATA(category);
-    m_stream.writeEndElement();
+    m_stream.writeTextElement(QStringLiteral("category"), category);
 }
 
 void RSSWriter::writeItemPubDate(const QDateTime &pubDate)
@@ -184,16 +187,12 @@ void RSSWriter::writeItemPubDate(const QDateTime &pubDate)
 
 void RSSWriter::writeItemDescription(const QString &description)
 {
-    m_stream.writeStartElement("description");
-    m_stream.writeCDATA(description);
-    m_stream.writeEndElement();
+    m_stream.writeTextElement(QStringLiteral("description"), description);
 }
 
 void RSSWriter::writeItemContent(const QString &content)
 {
-    m_stream.writeStartElement(NAMESPACE_CONTENT, QStringLiteral("encoded"));
-    m_stream.writeCDATA(content);
-    m_stream.writeEndElement();
+    m_stream.writeTextElement(NAMESPACE_CONTENT, QStringLiteral("encoded"), content);
 }
 
 void RSSWriter::writeEndItem()

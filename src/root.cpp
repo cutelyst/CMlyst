@@ -202,6 +202,9 @@ void Root::feed(Context *ctx)
     Q_FOREACH (CMS::Page *post, posts) {
         writer.writeStartItem();
         writer.writeItemTitle(post->name());
+        QString link = ctx->uriFor(post->path()).toString();
+        writer.writeItemLink(link);
+        writer.writeItemCommentsLink(link % QLatin1String("#comments"));
         writer.writeItemCreator(post->author());
         writer.writeItemPubDate(post->created());
         writer.writeItemDescription(post->content().left(300));

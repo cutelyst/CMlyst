@@ -45,7 +45,8 @@ void Root::notFound(Context *ctx)
 {
     ctx->stash({
                    {QStringLiteral("template"), QStringLiteral("404.html")},
-                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())}
+                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
                });
     ctx->res()->setStatus(404);
 }

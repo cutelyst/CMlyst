@@ -220,3 +220,13 @@ void Root::feed(Context *ctx)
 
     //    qDebug() << writer.result();
 }
+
+void Root::base(Context *ctx)
+{
+    qDebug() << Q_FUNC_INFO;
+}
+
+void Root::url_create(Context *ctx)
+{
+    qDebug() << Q_FUNC_INFO;
+}

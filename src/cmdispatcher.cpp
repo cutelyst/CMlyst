@@ -42,7 +42,9 @@ DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, c
                                              QStringLiteral("posts")) == QLatin1String("posts");
     if ((path.isEmpty() && showOnFront) ||
             (!showOnFront && engine->settingsValue(QStringLiteral("page_for_posts")) == path)) {
-        setupMatchedAction(ctx, m_latestPostsAction, path, args, QStringList());
+        ctx->req()->setArguments(args);
+        ctx->req()->setMatch(path);
+        setupMatchedAction(ctx, m_latestPostsAction);
         return ExactMatch;
     }
 
@@ -50,9 +52,13 @@ DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, c
     if (page) {
         ctx->stash().insert(QStringLiteral("page"), QVariant::fromValue(page));
         if (page->blog()) {
-            setupMatchedAction(ctx, m_postAction, path, args, QStringList());
+            ctx->req()->setArguments(args);
+            ctx->req()->setMatch(path);
+            setupMatchedAction(ctx, m_postAction);
         } else {
-            setupMatchedAction(ctx, m_pageAction, path, args, QStringList());
+            ctx->req()->setArguments(args);
+            ctx->req()->setMatch(path);
+            setupMatchedAction(ctx, m_pageAction);
         }
         return ExactMatch;
     }

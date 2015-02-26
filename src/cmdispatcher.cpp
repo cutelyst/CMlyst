@@ -4,6 +4,7 @@
 
 #include <Cutelyst/Action>
 
+#include <QStringBuilder>
 #include <QStringList>
 
 CMDispatcher::CMDispatcher(QObject *parent) : DispatchType(parent)
@@ -18,14 +19,20 @@ CMDispatcher::~CMDispatcher()
 
 QByteArray CMDispatcher::list() const
 {
-    QByteArray buffer;
-    QTextStream out(&buffer, QIODevice::WriteOnly);
+    QList<QStringList> table;
+    QStringList l1;
+    l1.append(QStringList("Page"));
+    l1.append(QLatin1Char('/') % m_pageAction->reverse());
+    table.append(l1);
 
-    out << "Loaded Content Manager actions:" << endl;
-    out << "Page: " << m_pageAction->reverse() << endl;
-    out << "Post: " << m_postAction->reverse() << endl;
+    QStringList post;
+    post.append(QStringList("Post"));
+    post.append(QLatin1Char('/') % m_postAction->reverse());
+    table.append(post);
 
-    return buffer;
+    return buildTable(table,
+    { QStringLiteral("Handle"), QStringLiteral("Private") },
+                      QStringLiteral("Loaded Content Manager actions:"));
 }
 
 DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, const QStringList &args) const

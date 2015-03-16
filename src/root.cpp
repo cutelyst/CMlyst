@@ -62,7 +62,7 @@ void Root::End(Context *ctx)
         m_theme = theme;
 
         ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
-        view->setIncludePath(m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme));
+        view->setIncludePaths({ m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme) });
     }
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
@@ -221,12 +221,3 @@ void Root::feed(Context *ctx)
     //    qDebug() << writer.result();
 }
 
-void Root::base(Context *ctx)
-{
-    qDebug() << Q_FUNC_INFO;
-}
-
-void Root::url_create(Context *ctx)
-{
-    qDebug() << Q_FUNC_INFO;
-}

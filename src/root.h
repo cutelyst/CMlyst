@@ -55,12 +55,6 @@ public:
     C_ATTR(feed, :Path(.feed))
     void feed(Cutelyst::Context *ctx);
 
-    C_ATTR(base, :Chained(/) :PathPart(books) :CaptureArgs(0))
-    void base(Cutelyst::Context *ctx);
-
-    C_ATTR(url_create, :Chained(base) :PathPart('url_create') :Args(3))
-    void url_create(Cutelyst::Context *ctx);
-
 protected:
     virtual bool postFork(Application *app);
 

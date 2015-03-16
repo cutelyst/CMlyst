@@ -72,13 +72,13 @@ bool CMlyst::init()
     QDir rootDir = config("RootLocation", QDir::currentPath()).toString();
     setConfig("RootLocation", rootDir.absolutePath());
 
-    view->setIncludePath(rootDir.absoluteFilePath("src/themes/default"));
+    view->setIncludePaths({ rootDir.absoluteFilePath("src/themes/default") });
     registerView(view);
 
     ViewEngine *adminView = new ViewEngine("Grantlee", this);
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
-    adminView->setIncludePath(rootDir.absoluteFilePath("admin"));
+    adminView->setIncludePaths({ rootDir.absoluteFilePath("admin") });
     registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {

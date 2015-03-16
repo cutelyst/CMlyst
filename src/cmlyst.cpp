@@ -105,7 +105,7 @@ bool CMlyst::init()
 
     Authentication::Realm *realm = new Authentication::Realm(store, password);
 
-    StaticSimple *staticSimple = new StaticSimple;
+    StaticSimple *staticSimple = new StaticSimple(this);
     staticSimple->setIncludePaths({
                                       rootDir.absolutePath(),
                                       dataDir.absolutePath()
@@ -119,9 +119,9 @@ bool CMlyst::init()
     QObject::connect(this, &Application::registerPlugins,
                 [=](Context *ctx) {
 
-        ctx->registerPlugin(new Session);
+        ctx->registerPlugin(new Session(this));
 
-        Authentication *auth = new Authentication;
+        Authentication *auth = new Authentication(this);
         auth->addRealm(realm);
         ctx->registerPlugin(auth);
     });

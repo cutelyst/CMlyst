@@ -37,7 +37,7 @@ void AdminSetup::setup(Context *ctx)
 {
     qDebug() << Q_FUNC_INFO;
     if (ctx->req()->method() == "POST") {
-        ParamsMultiMap param = ctx->req()->param();
+        ParamsMultiMap param = ctx->req()->params();
         QString email = param.value(QLatin1String("email"));
         QString username = param.value(QLatin1String("username"));
         QString password = param.value(QLatin1String("password"));
@@ -73,7 +73,7 @@ void AdminSetup::setup(Context *ctx)
 
 void AdminSetup::edit(Context *ctx, const QString &id)
 {
-    ParamsMultiMap param = ctx->req()->param();
+    ParamsMultiMap param = ctx->req()->params();
     QString email = param.value(QLatin1String("email"));
     QString username = param.value(QLatin1String("username"));
     QString password = param.value(QLatin1String("password"));

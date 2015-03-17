@@ -37,9 +37,9 @@ AdminLogin::AdminLogin(QObject *parent)
 
 void AdminLogin::index(Context *ctx)
 {
-    QString username = ctx->req()->param().value(QLatin1String("username"));
+    QString username = ctx->req()->param(QLatin1String("username"));
     if (ctx->req()->method() == "POST") {
-        QString password = ctx->req()->param().value(QLatin1String("password"));
+        QString password = ctx->req()->param(QLatin1String("password"));
         if (!username.isEmpty() && !password.isEmpty()) {
             Authentication *auth = ctx->plugin<Authentication*>();
             CStringHash userinfo;

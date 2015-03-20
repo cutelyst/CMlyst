@@ -48,7 +48,7 @@ void AdminLogin::index(Context *ctx)
             qDebug() << Q_FUNC_INFO << auth;
 
             // Authenticate
-            bool succeed = auth && !auth->authenticate(userinfo).isNull();
+            bool succeed = auth && !auth->authenticate(ctx, userinfo).isNull();
             if (succeed) {
                 qDebug() << Q_FUNC_INFO << username << "is now Logged in";
                 ctx->res()->redirect(ctx->uriFor("/.admin"));

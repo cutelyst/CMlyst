@@ -40,7 +40,7 @@ bool Admin::Auto(Context *ctx)
     }
 
     Authentication *auth = ctx->plugin<Authentication*>();
-    if (auth && !auth->userExists()) {
+    if (auth && !auth->userExists(ctx)) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
         ctx->res()->redirect(ctx->uriForAction("/.admin/login/index"));
         return false;
@@ -69,7 +69,7 @@ void Admin::logout(Cutelyst::Context *ctx)
 {
     Authentication *auth = ctx->plugin<Authentication*>();
     if (auth) {
-        auth->logout();
+        auth->logout(ctx);
     }
     ctx->res()->redirect(ctx->uriFor("/.admin/login"));
 }

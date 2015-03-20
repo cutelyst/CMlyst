@@ -116,15 +116,11 @@ bool CMlyst::init()
                           });
     registerPlugin(staticSimple);
 
-    QObject::connect(this, &Application::registerPlugins,
-                [=](Context *ctx) {
+    registerPlugin(new Session(this));
 
-        ctx->registerPlugin(new Session(this));
-
-        Authentication *auth = new Authentication(this);
-        auth->addRealm(realm);
-        ctx->registerPlugin(auth);
-    });
+    Authentication *auth = new Authentication(this);
+    auth->addRealm(realm);
+    registerPlugin(auth);
 
     qDebug() << "Root location" << rootDir.absolutePath();
     qDebug() << "Root Admin location" << rootDir.absoluteFilePath("src/admin");

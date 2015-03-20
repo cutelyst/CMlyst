@@ -10,7 +10,7 @@ class AuthStoreSql : public AuthenticationStore
 public:
     AuthStoreSql();
 
-    virtual Authentication::User findUser(Context *ctx, const CStringHash &userinfo);
+    virtual AuthenticationUser findUser(Context *ctx, const CStringHash &userinfo);
 
 private:
     QString m_idField;

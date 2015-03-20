@@ -24,6 +24,7 @@
 #include <Cutelyst/Plugins/StaticSimple>
 #include <Cutelyst/Plugins/Session>
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 
@@ -103,7 +104,7 @@ bool CMlyst::init()
     password->setPasswordType(CredentialPassword::Hashed);
     password->setHashType(QCryptographicHash::Sha256);
 
-    Authentication::Realm *realm = new Authentication::Realm(store, password);
+    AuthenticationRealm *realm = new AuthenticationRealm(store, password);
 
     StaticSimple *staticSimple = new StaticSimple(this);
     staticSimple->setIncludePaths({

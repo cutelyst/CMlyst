@@ -22,6 +22,7 @@
 #include "root.h"
 
 #include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 #include <Cutelyst/view.h>
 
@@ -55,7 +56,7 @@ void AdminSetup::setup(Context *ctx)
                 hash.addData(password.toUtf8());
                 password =  hash.result().toHex();
 
-                Authentication::Realm *realm = auth->realm();
+                AuthenticationRealm *realm = auth->realm();
                 StoreHtpasswd *store = static_cast<StoreHtpasswd*>(realm->store());
                 store->addUser({
                                    {"username", username},

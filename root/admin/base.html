@@ -70,7 +70,7 @@
       {% if status_msg %}<div class="alert alert-info" role="alert">{{ status_msg }}</div>{% endif %}
       {% if error_msg %}<div class="alert alert-danger" role="alert">{{ error_msg }}</div>{% endif %}
       <div id="content-body">
-        {% include template %}
+        {{ content }}
       </div>
 
     </div><!-- /.container -->

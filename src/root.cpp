@@ -34,7 +34,6 @@
 
 Root::Root()
 {
-    qDebug() << Q_FUNC_INFO;
 }
 
 Root::~Root()

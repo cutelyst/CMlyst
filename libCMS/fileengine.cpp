@@ -420,6 +420,10 @@ bool FileEngine::setSettingsValue(const QString &key, const QString &value)
     utime(d->settingsInfo.absoluteFilePath().toLatin1().data(), NULL);
 #endif
 
+    // this is needed due to a new
+    // call to value() does not return old values
+    d->mainSettings.insert(key, value);
+
     return d->settings->isWritable();
 }
 
@@ -440,6 +444,9 @@ void FileEngine::loadPages()
 void FileEngine::loadSettings()
 {
     Q_D(FileEngine);
+
+    // Make sure we read new things
+    d->settings->sync();
 
     // Load main settings
     QHash<QString, QString> settings;

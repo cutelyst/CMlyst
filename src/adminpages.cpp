@@ -53,7 +53,7 @@ void AdminPages::create(Context *ctx)
     ParamsMultiMap params = ctx->request()->bodyParam();
     QString title = params.value("title");
     QString path = params.value("path");
-    QString content = params.value("content");
+    QString content = params.value("page_content");
     if (ctx->req()->method() == "POST") {
 //        qDebug() << title;
 //        qDebug() << path;
@@ -74,7 +74,7 @@ void AdminPages::create(Context *ctx)
 
     ctx->stash()["title"] = title;
     ctx->stash()["path"] = path;
-    ctx->stash()["content"] = content;
+    ctx->stash()["page_content"] = content;
     ctx->stash()["template"] = "posts/create.html";
 }
 
@@ -101,7 +101,7 @@ void AdminPages::edit(Context *ctx)
     if (ctx->req()->method() == "POST") {
         ParamsMultiMap params = ctx->request()->bodyParam();
         title = params.value("title");
-        content = params.value("content");
+        content = params.value("page_content");
 
 //        qDebug() << title;
 //        qDebug() << path;
@@ -126,6 +126,6 @@ void AdminPages::edit(Context *ctx)
 
     ctx->stash()["title"] = title;
     ctx->stash()["path"] = path;
-    ctx->stash()["content"] = content;
+    ctx->stash()["page_content"] = content;
     ctx->stash()["template"] = "posts/create.html";
 }

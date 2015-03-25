@@ -40,7 +40,7 @@ qt5_use_modules(cmlyst Core Network)
 
 # Link to Cutelyst
 target_link_libraries(cmlyst
-    ${CutelystQt5_LIBRARY}
+    Cutelyst::cutelyst-qt5
 )
 
 # TODO install to a place where uWSGI Cutelyst plugin searches for

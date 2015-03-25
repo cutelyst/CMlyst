@@ -67,6 +67,9 @@ void AdminPages::create(Context *ctx)
         bool ret = engine->savePage(page);
         if (ret) {
             ctx->res()->redirect(ctx->uriFor(actionFor("index")));
+        } else {
+            qDebug() << "Failed to save page" << page;
+            ctx->stash()["error_msg"] = tr("Failed to save page");
         }
 
 //        qDebug() << "saved" << ret;
@@ -119,6 +122,9 @@ void AdminPages::edit(Context *ctx)
         bool ret = engine->savePage(page);
         if (ret) {
             ctx->res()->redirect(ctx->uriFor(actionFor("index")));
+        } else {
+            qDebug() << "Failed to save page" << page;
+            ctx->stash()["error_msg"] = tr("Failed to save page");
         }
 
 //        qDebug() << "saved" << ret;

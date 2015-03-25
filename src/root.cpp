@@ -62,7 +62,7 @@ void Root::End(Context *ctx)
         m_theme = theme;
 
         ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
-        view->setIncludePaths({ m_rootDir.absoluteFilePath(QLatin1String("themes/") % theme) });
+        view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
     }
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
@@ -71,7 +71,7 @@ void Root::End(Context *ctx)
 
 bool Root::postFork(Application *app)
 {
-    m_rootDir = app->config("RootLocation").toString();
+    m_themeDir = app->pathTo({ "root", "themes" });
 
     return true;
 }

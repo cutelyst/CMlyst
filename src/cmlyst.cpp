@@ -70,10 +70,7 @@ bool CMlyst::init()
     }
     setConfig("DataLocation", dataDir.absolutePath());
 
-    QDir rootDir = config("RootLocation", QDir::currentPath()).toString();
-    setConfig("RootLocation", rootDir.absolutePath());
-
-    view->setIncludePaths({ rootDir.absoluteFilePath("src/themes/default") });
+    view->setIncludePaths({ pathTo({ "root", "themes", "default" }) });
     registerView(view);
 
     ViewEngine *adminView = new ViewEngine("Grantlee", this);
@@ -108,7 +105,7 @@ bool CMlyst::init()
 
     StaticSimple *staticSimple = new StaticSimple(this);
     staticSimple->setIncludePaths({
-                                      rootDir.absolutePath(),
+                                      pathTo({ "root" }),
                                       dataDir.absolutePath()
                                   });
     staticSimple->setDirs({
@@ -123,8 +120,8 @@ bool CMlyst::init()
     auth->addRealm(realm);
     registerPlugin(auth);
 
-    qDebug() << "Root location" << rootDir.absolutePath();
-    qDebug() << "Root Admin location" << rootDir.absoluteFilePath("src/admin");
+    qDebug() << "Root location" << pathTo({ "root" });
+    qDebug() << "Root Admin location" << pathTo({ "root", "src", "admin" });
     qDebug() << "Data location" << dataDir.absolutePath();
 
     return true;

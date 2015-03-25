@@ -62,7 +62,7 @@ private:
     C_ATTR(End, :ActionClass(RenderView))
     void End(Context *ctx);
 
-    QDir m_rootDir;
+    QDir m_themeDir;
     QString m_theme;
 };
 

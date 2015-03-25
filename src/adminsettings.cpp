@@ -21,6 +21,8 @@
 
 #include "../libCMS/page.h"
 
+#include <Cutelyst/Application>
+
 #include <QDir>
 
 AdminSettings::AdminSettings(QObject *parent) :
@@ -46,8 +48,7 @@ void AdminSettings::index(Context *ctx)
         engine->setSettingsValue("show_on_front", params.value("show_on_front"));
     }
 
-    QDir rootDir = ctx->config("RootLocation").toString();
-    QDir themesDir = rootDir.absoluteFilePath("themes");
+    QDir themesDir = ctx->app()->pathTo({ "root", "themes" });
     QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
                                              QDir::Name | QDir:: IgnoreCase);
 

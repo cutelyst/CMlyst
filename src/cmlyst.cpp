@@ -79,7 +79,7 @@ bool CMlyst::init()
     ViewEngine *adminView = new ViewEngine("Grantlee", this);
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
-    adminView->setIncludePaths({ rootDir.absoluteFilePath("admin") });
+    adminView->setIncludePaths({ pathTo({ "root", "admin" }) });
     registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {

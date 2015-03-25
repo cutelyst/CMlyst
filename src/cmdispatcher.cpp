@@ -47,6 +47,7 @@ DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, c
     // to show the latest posts
     bool showOnFront = engine->settingsValue(QStringLiteral("show_on_front"),
                                              QStringLiteral("posts")) == QLatin1String("posts");
+
     if ((path.isEmpty() && showOnFront) ||
             (!showOnFront && engine->settingsValue(QStringLiteral("page_for_posts")) == path)) {
         ctx->req()->setArguments(args);
@@ -104,4 +105,3 @@ bool CMDispatcher::inUse() const
 {
     return m_pageAction && m_postAction && m_latestPostsAction;
 }
-

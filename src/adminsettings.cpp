@@ -46,6 +46,8 @@ void AdminSettings::index(Context *ctx)
         engine->setSettingsValue("tagline", params.value("tagline"));
         engine->setSettingsValue("theme", params.value("theme"));
         engine->setSettingsValue("show_on_front", params.value("show_on_front"));
+        engine->setSettingsValue("page_on_front", params.value("page_on_front"));
+        engine->setSettingsValue("page_for_posts", params.value("page_for_posts"));
     }
 
     QDir themesDir = ctx->app()->pathTo({ "root", "themes" });
@@ -65,5 +67,7 @@ void AdminSettings::index(Context *ctx)
                    {"themes", themes},
                    {"pages", QVariant::fromValue(pages)},
                    {"show_on_front", engine->settingsValue("show_on_front", "posts")},
+                   {"page_on_front", engine->settingsValue("page_on_front")},
+                   {"page_for_posts", engine->settingsValue("page_for_posts")},
                });
 }

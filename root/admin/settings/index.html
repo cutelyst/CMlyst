@@ -41,7 +41,7 @@
           <select class="form-control" name="page_on_front" id="page_on_front">
             <option value="0">&mdash; Select &mdash;</option>
           {% for page in pages %}
-            <option value="{{ page.path }}" {% ifequal currentFrontPage page.name %}selected{% endifequal %}>{{ page.name }}</option>
+            <option value="{{ page.path }}" {% ifequal page_on_front page.path %}selected{% endifequal %}>{{ page.name }}</option>
           {% endfor %}
           </select>
         </div>
@@ -52,7 +52,7 @@
           <select class="form-control" name="page_for_posts" id="page_for_posts">
             <option value="0">&mdash; Select &mdash;</option>
           {% for page in pages %}
-            <option value="{{ page.path }}" {% ifequal currentPostPage page.name %}selected{% endifequal %}>{{ page.name }}</option>
+            <option value="{{ page.path }}" {% ifequal page_for_posts page.path %}selected{% endifequal %}>{{ page.name }}</option>
           {% endfor %}
           </select>
         </div>

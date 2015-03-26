@@ -88,7 +88,7 @@ void Root::page(Cutelyst::Context *ctx)
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-    const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
+    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);
@@ -99,8 +99,7 @@ void Root::page(Cutelyst::Context *ctx)
     ctx->stash({
                    {QStringLiteral("template"), QStringLiteral("page.html")},
                    {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
-                   {QStringLiteral("page"), QVariant::fromValue(page)}
+                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
                });
 }
 
@@ -112,7 +111,7 @@ void Root::post(Context *ctx)
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-    const QDateTime &currentDateTime = qMax(page->modified(), engine->lastModified());
+    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);

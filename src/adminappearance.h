@@ -36,16 +36,16 @@ public:
     C_ATTR(index, :Path :Args)
     void index(Context *ctx);
 
-    C_ATTR(menus, :Local :Args)
+    C_ATTR(menus, :Local :Args(0))
     void menus(Context *ctx);
 
-    C_ATTR(menus_remove, :Path(menus/remove))
+    C_ATTR(menus_remove, :Path("menus/remove") :Args(1))
     void menus_remove(Context *ctx, const QString &id);
 
-    C_ATTR(menus_new, :Path(menus/new))
+    C_ATTR(menus_new, :Path("menus/new") :Args(0))
     void menus_new(Context *ctx);
 
-    C_ATTR(menus_edit, :Path(menus/edit))
+    C_ATTR(menus_edit, :Path("menus/edit") :Args(0))
     void menus_edit(Context *ctx, const QString &id);
 };
 

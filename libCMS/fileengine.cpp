@@ -194,7 +194,7 @@ Page *FileEngine::loadPage(const QString &filename)
     return page;
 }
 
-bool FileEngine::savePage(Page *page)
+bool FileEngine::savePageBackend(Page *page)
 {
     Q_D(FileEngine);
 
@@ -207,14 +207,14 @@ bool FileEngine::savePage(Page *page)
     const QString &file = d->pagesPath.absoluteFilePath(path.toLatin1().toPercentEncoding());
 //    qDebug() << "save Page" << page->path() << path;
     QSettings data(file, QSettings::IniFormat);
-    data.setValue("Name", page->name());
-    data.setValue("Modified", QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
-    data.setValue("Created", page->created().toUTC().toString(Qt::ISODate));
-    data.setValue("Author", page->author());
-    data.setValue("NavigationLabel", page->navigationLabel());
-    data.setValue("Tags", page->tags());
-    data.setValue("Blog", page->blog());
-    data.setValue("AllowComments", page->allowComments());
+    data.setValue(QStringLiteral("Name"), page->name());
+    data.setValue(QStringLiteral("Modified"), QDateTime::currentDateTimeUtc().toString(Qt::ISODate));
+    data.setValue(QStringLiteral("Created"), page->created().toUTC().toString(Qt::ISODate));
+    data.setValue(QStringLiteral("Author"), page->author());
+    data.setValue(QStringLiteral("NavigationLabel"), page->navigationLabel());
+    data.setValue(QStringLiteral("Tags"), page->tags());
+    data.setValue(QStringLiteral("Blog"), page->blog());
+    data.setValue(QStringLiteral("AllowComments"), page->allowComments());
 
     data.beginGroup("Body");
     data.setValue("Content", page->content());

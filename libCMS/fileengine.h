@@ -44,7 +44,7 @@ public:
 
     virtual Page *loadPage(const QString &filename);
 
-    virtual bool savePage(Page *page);
+    virtual bool savePageBackend(Page *page);
 
     virtual QList<Page *> listPages(Filters filters = NoFilter,
                                     SortFlags sort = SortFlags(Date | Reversed),

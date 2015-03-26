@@ -34,7 +34,7 @@ public:
     C_ATTR(notFound, :Path)
     void notFound(Context *ctx);
 
-    C_ATTR(logout, :Local)
+    C_ATTR(logout, :Local :Args(0))
     void logout(Context *ctx);
 
 private slots:

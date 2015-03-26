@@ -33,13 +33,13 @@ class AdminPosts : public Controller, public CMEngine
 public:
     explicit AdminPosts(QObject *parent = 0);
 
-    C_ATTR(index, :Path :Args)
+    C_ATTR(index, :Path :Args(0))
     void index(Context *ctx);
 
-    C_ATTR(create, :Path(new) :Local)
+    C_ATTR(create, :Path("new") :Local :Args(0))
     void create(Context *ctx);
 
-    C_ATTR(edit, :Local)
+    C_ATTR(edit, :Local :Args(0))
     void edit(Context *ctx);
 };
 

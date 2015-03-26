@@ -31,16 +31,16 @@ class AdminSetup : public Controller
 public:
     explicit AdminSetup(QObject *parent = 0);
 
-    C_ATTR(setup, :Local :Args)
+    C_ATTR(setup, :Local :Args(0))
     void setup(Context *ctx);
 
-    C_ATTR(edit, :Local :Args)
+    C_ATTR(edit, :Local :Args(1))
     void edit(Context *ctx, const QString &id);
 
-    C_ATTR(remove_user, :Local :Args)
+    C_ATTR(remove_user, :Local :Args(1))
     void remove_user(Context *ctx, const QString &id);
 
-    C_ATTR(status, :Path)
+    C_ATTR(status, :Path :Args(0))
     void status(Context *ctx);
 
     C_ATTR(End, :Private :ActionClass(RenderView) :View(admin))

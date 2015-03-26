@@ -69,7 +69,7 @@ public:
 
     virtual Page *getPageToEdit(const QString &path);
 
-    virtual bool savePage(Page *page);
+    bool savePage(Page *page);
 
     /**
      * Returns the available pages,
@@ -101,6 +101,8 @@ public:
     static QString normalizeTitle(const QString &path);
 
 protected:
+    virtual bool savePageBackend(Page *page) = 0;
+
     EnginePrivate *d_ptr;
 };
 

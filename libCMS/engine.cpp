@@ -19,6 +19,7 @@
 
 #include "engine.h"
 #include "menu.h"
+#include "page.h"
 
 #include <QRegularExpression>
 #include <QStringList>
@@ -55,7 +56,17 @@ Page *Engine::getPageToEdit(const QString &path)
 
 bool Engine::savePage(Page *page)
 {
-    return false;
+    bool ret = savePageBackend(page);
+    if (ret) {
+        QList<Menu *> autoMenus = menus();
+        Q_FOREACH (Menu *menu, autoMenus) {
+            if (menu->autoAddPages()) {
+                menu->appendEntry(page->name(), page->path());
+                saveMenu(menu, true);
+            }
+        }
+    }
+    return ret;
 }
 
 QList<Page *> Engine::listPages(Filters filters, SortFlags sort, int depth, int limit)

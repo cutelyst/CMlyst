@@ -33,10 +33,10 @@ public:
     explicit AdminMedia(QObject *parent = 0);
     ~AdminMedia();
 
-    C_ATTR(index, :Path :Args)
+    C_ATTR(index, :Path :Args(0))
     void index(Cutelyst::Context *ctx);
 
-    C_ATTR(upload, :Local :Args)
+    C_ATTR(upload, :Local :Args(0))
     void upload(Cutelyst::Context *ctx);
 };
 

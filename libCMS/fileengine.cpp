@@ -371,7 +371,9 @@ bool FileEngine::removeMenu(const QString &name)
     Q_D(FileEngine);
 
     d->settings->beginGroup(QStringLiteral("Menus"));
+    qDebug() <<" removing " << name << d->settings->childGroups();
     if (d->settings->childGroups().contains(name)) {
+        qDebug() <<" removing " << name;
         d->settings->remove(name);
     }
     d->settings->endGroup();
@@ -463,7 +465,6 @@ void FileEngine::loadSettings()
     QHash<QString, CMS::Menu *> menuLocations;
     foreach (const QString &menu, d->settings->childGroups()) {
         Menu *obj = d->createMenu(menu, this);
-        menus.append(obj);
 
         bool added = false;
         Q_FOREACH (const QString &location, obj->locations()) {
@@ -474,7 +475,9 @@ void FileEngine::loadSettings()
         }
 
         if (!added) {
-            delete obj;
+            menus.append(obj);
+            // TODO for the moment we don't filter menus
+//            delete obj;
         }
     }
     d->settings->endGroup();
@@ -489,7 +492,7 @@ Menu *FileEnginePrivate::createMenu(const QString &name, QObject *parent)
 {
     settings->beginGroup(name);
 
-    Menu *menu = new Menu(name, parent);
+    Menu *menu = new Menu(name);
 
     menu->setLocations(settings->value("Locations").toStringList());
     menu->setAutoAddPages(settings->value("AutoAddPages").toBool());

@@ -33,7 +33,7 @@ public:
     explicit AdminAppearance(QObject *parent = 0);
     ~AdminAppearance();
 
-    C_ATTR(index, :Path :Args)
+    C_ATTR(index, :Path :Args(0))
     void index(Context *ctx);
 
     C_ATTR(menus, :Local :Args(0))

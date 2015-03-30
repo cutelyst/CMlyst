@@ -20,6 +20,7 @@
 #include "menu_p.h"
 
 #include <QVariantHash>
+#include <QDebug>
 
 using namespace CMS;
 

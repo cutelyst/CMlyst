@@ -36,74 +36,78 @@ AdminAppearance::~AdminAppearance()
 
 void AdminAppearance::index(Context *ctx)
 {
-    QDir dataDir = ctx->config("DataLocation").toString();
-    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
+    ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+//    QDir dataDir = ctx->config("DataLocation").toString();
+//    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 
-    settings.beginGroup("Menus");
+//    settings.beginGroup("Menus");
 
-    QList<QObject *> menus;
-    foreach (const QString &menu, settings.childGroups()) {
-        settings.beginGroup(menu);
-        QObject *obj = new QObject(ctx);
-        obj->setProperty("Name", settings.value("Name"));
-        obj->setProperty("Locations", settings.value("Locations").toStringList().join(", "));
-        menus.append(obj);
-        settings.endGroup();
-    }
+//    QList<QObject *> menus;
+//    foreach (const QString &menu, settings.childGroups()) {
+//        settings.beginGroup(menu);
+//        QObject *obj = new QObject(ctx);
+//        obj->setProperty("Name", settings.value("Name"));
+//        obj->setProperty("Locations", settings.value("Locations").toStringList().join(", "));
+//        menus.append(obj);
+//        settings.endGroup();
+//    }
 
-    QStringList menu;
-    menu << "Home";
-    menu << "Abra";
-    menu << "Jota";
-    menu << "NOVO";
+//    QStringList menu;
+//    menu << "Home";
+//    menu << "Abra";
+//    menu << "Jota";
+//    menu << "NOVO";
 
-//    qDebug() << settings.allKeys();
-    qDebug() << menus;
-    qDebug() << settings.childGroups();
-    qDebug() << settings.childKeys();
+////    qDebug() << settings.allKeys();
+//    qDebug() << menus;
+//    qDebug() << settings.childGroups();
+//    qDebug() << settings.childKeys();
 
-    settings.beginGroup("menu2");
-    settings.setValue("AutoAddPages", true);
-    settings.endGroup();
+//    settings.beginGroup("menu2");
+//    settings.setValue("AutoAddPages", true);
+//    settings.endGroup();
 
-    int size = settings.beginReadArray("menu2");
-    for (int i = 0; i < size; ++i) {
-        settings.setArrayIndex(i);
-        qDebug() << settings.value("url").toString() << settings.value("text").toString();
-    }
-    settings.endArray();
+//    int size = settings.beginReadArray("menu2");
+//    for (int i = 0; i < size; ++i) {
+//        settings.setArrayIndex(i);
+//        qDebug() << settings.value("url").toString() << settings.value("text").toString();
+//    }
+//    settings.endArray();
 
-    settings.beginWriteArray("menu3");
-    for (int i = 0; i < menu.size(); ++i) {
-        settings.setArrayIndex(i);
-        settings.setValue("url", "http://www.fooo/" + menu.at(i));
-        settings.setValue("text", menu.at(i));
-    }
-    settings.endArray();
+//    settings.beginWriteArray("menu3");
+//    for (int i = 0; i < menu.size(); ++i) {
+//        settings.setArrayIndex(i);
+//        settings.setValue("url", "http://www.fooo/" + menu.at(i));
+//        settings.setValue("text", menu.at(i));
+//    }
+//    settings.endArray();
 
-    menu.sort();
+//    menu.sort();
 
-    settings.beginWriteArray("menu2");
-    for (int i = 0; i < menu.size(); ++i) {
-        settings.setArrayIndex(i);
-        settings.setValue("url", "http://www.menu2/" + menu.at(i));
-        settings.setValue("text", menu.at(i));
-    }
-    settings.endArray();
+//    settings.beginWriteArray("menu2");
+//    for (int i = 0; i < menu.size(); ++i) {
+//        settings.setArrayIndex(i);
+//        settings.setValue("url", "http://www.menu2/" + menu.at(i));
+//        settings.setValue("text", menu.at(i));
+//    }
+//    settings.endArray();
 
-    settings.remove("menu1");
+//    settings.remove("menu1");
 
-    settings.endGroup();
+//    settings.endGroup();
 
-    ctx->stash({
-                   {"template", "appearance/index.html"},
-                   {"menus", QVariant::fromValue(menus)}
-               });
+//    ctx->stash({
+//                   {"template", "appearance/index.html"},
+//                   {"menus", QVariant::fromValue(menus)}
+//               });
 }
 
 void AdminAppearance::menus(Context *ctx)
 {
-    ctx->stash({
+    qDebug() << Q_FUNC_INFO << engine;
+    QList<CMS::Menu *>  menus = engine->menus();
+    qDebug() << menus.size();
+     ctx->stash({
                    {"template", "appearance/menus.html"},
                    {"menus", QVariant::fromValue(engine->menus())}
                });
@@ -111,6 +115,7 @@ void AdminAppearance::menus(Context *ctx)
 
 void AdminAppearance::menus_remove(Context *ctx, const QString &id)
 {
+    qDebug() << Q_FUNC_INFO << id;
     engine->removeMenu(id);
 
     ctx->response()->redirect(ctx->uriFor(actionFor("menus")));

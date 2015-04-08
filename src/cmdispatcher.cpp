@@ -3,6 +3,7 @@
 #include "../libCMS/page.h"
 
 #include <Cutelyst/Action>
+#include <Cutelyst/utils.h>
 
 #include <QStringBuilder>
 #include <QStringList>
@@ -30,7 +31,7 @@ QByteArray CMDispatcher::list() const
     post.append(QLatin1Char('/') % m_postAction->reverse());
     table.append(post);
 
-    return buildTable(table,
+    return Utils::buildTable(table,
     { QStringLiteral("Handle"), QStringLiteral("Private") },
                       QStringLiteral("Loaded Content Manager actions:"));
 }

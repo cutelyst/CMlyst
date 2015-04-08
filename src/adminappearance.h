@@ -34,19 +34,19 @@ public:
     ~AdminAppearance();
 
     C_ATTR(index, :Path :Args(0))
-    void index(Context *ctx);
+    void index(Context *c);
 
     C_ATTR(menus, :Local :Args(0))
-    void menus(Context *ctx);
+    void menus(Context *c);
 
     C_ATTR(menus_remove, :Path("menus/remove") :Args(1))
-    void menus_remove(Context *ctx, const QString &id);
+    void menus_remove(Context *c, const QString &id);
 
     C_ATTR(menus_new, :Path("menus/new") :Args(0))
-    void menus_new(Context *ctx);
+    void menus_new(Context *c);
 
     C_ATTR(menus_edit, :Path("menus/edit") :Args(0))
-    void menus_edit(Context *ctx, const QString &id);
+    void menus_edit(Context *c, const QString &id);
 };
 
 #endif // ADMINAPPEARANCE_H

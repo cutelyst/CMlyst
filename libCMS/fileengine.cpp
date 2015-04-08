@@ -30,12 +30,14 @@
 #include <QStringBuilder>
 #include <QFileSystemWatcher>
 #include <QCoreApplication>
-#include <QDebug>
+#include <QLoggingCategory>
 
 #include <unistd.h>
 
 #include <sys/types.h>
 #include <utime.h>
+
+Q_LOGGING_CATEGORY(CMS_FILEENGINE, "cms.fileengine")
 
 using namespace CMS;
 
@@ -65,7 +67,7 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
 
     if (!d->pagesPath.exists() &&
             !d->pagesPath.mkpath(d->pagesPath.absolutePath())) {
-        qWarning() << "Failed to create pages path" << d->pagesPath.absolutePath();
+        qCWarning(CMS_FILEENGINE) << "Failed to create pages path" << d->pagesPath.absolutePath();
         return false;
     }
 
@@ -75,6 +77,8 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
             this, &FileEngine::loadPages);
     loadPages();
 
+    // When the settings file changes the watcher stops
+    // working, so it's better to watch for the settings directory
     QFileSystemWatcher *settingsWatch = new QFileSystemWatcher(this);
     settingsWatch->addPath(d->settingsInfo.absoluteFilePath());
     connect(settingsWatch, &QFileSystemWatcher::fileChanged,
@@ -82,7 +86,7 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
     loadSettings();
 
     if (!d->settings->isWritable()) {
-        qWarning() << "Settings file is not writable!" << d->settingsInfo.absoluteFilePath();
+        qCWarning(CMS_FILEENGINE) << "Settings file is not writable!" << d->settingsInfo.absoluteFilePath();
         return false;
     }
 
@@ -363,6 +367,9 @@ bool FileEngine::saveMenu(Menu *menu, bool replace)
 
     d->settings->endGroup(); // Menus
 
+    // Force reloading of settings
+    loadSettings();
+
     return ret && d->settings->isWritable();
 }
 
@@ -370,13 +377,16 @@ bool FileEngine::removeMenu(const QString &name)
 {
     Q_D(FileEngine);
 
+    qCDebug(CMS_FILEENGINE) << "Removing menu" << name;
+
     d->settings->beginGroup(QStringLiteral("Menus"));
-    qDebug() <<" removing " << name << d->settings->childGroups();
     if (d->settings->childGroups().contains(name)) {
-        qDebug() <<" removing " << name;
         d->settings->remove(name);
     }
     d->settings->endGroup();
+
+    // Force reloading of settings
+    loadSettings();
 
     return d->settings->isWritable();
 }
@@ -433,7 +443,7 @@ void FileEngine::loadPages()
 {
     Q_D(FileEngine);
 
-    qDebug() << "loading pages..." << QCoreApplication::applicationPid();
+    qCDebug(CMS_FILEENGINE) << "Loading pages..." << QCoreApplication::applicationPid();
 
     QDirIterator it(d->pagesPath.path(),
                     QDir::Files | QDir::NoDotAndDotDot,
@@ -443,9 +453,25 @@ void FileEngine::loadPages()
     }
 }
 
+void CMS::FileEngine::settingsDirChanged(const QString &path)
+{
+    qCDebug(CMS_FILEENGINE) << "Changed :" << path <<  QCoreApplication::applicationPid();
+}
+
 void FileEngine::loadSettings()
 {
     Q_D(FileEngine);
+
+    qCDebug(CMS_FILEENGINE) << "Loading settings" << QCoreApplication::applicationPid();
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 4, 1))
+    QFileSystemWatcher *settingsWatch = qobject_cast<QFileSystemWatcher *>(sender());
+    if (settingsWatch) {
+        // On 5.4.1 the watch stops working once the file get's replaced
+        // so make sure we watch it again
+        settingsWatch->addPath(d->settingsInfo.absoluteFilePath());
+    }
+#endif
 
     // Make sure we read new things
     d->settings->sync();

@@ -34,9 +34,9 @@ AdminAppearance::~AdminAppearance()
 
 }
 
-void AdminAppearance::index(Context *ctx)
+void AdminAppearance::index(Context *c)
 {
-    ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+    c->response()->redirect(c->uriFor(actionFor("menus")));
 //    QDir dataDir = ctx->config("DataLocation").toString();
 //    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 
@@ -102,65 +102,58 @@ void AdminAppearance::index(Context *ctx)
 //               });
 }
 
-void AdminAppearance::menus(Context *ctx)
+void AdminAppearance::menus(Context *c)
 {
-    qDebug() << Q_FUNC_INFO << engine;
-    QList<CMS::Menu *>  menus = engine->menus();
-    qDebug() << menus.size();
-     ctx->stash({
-                   {"template", "appearance/menus.html"},
-                   {"menus", QVariant::fromValue(engine->menus())}
-               });
+    c->stash({
+                 {"template", "appearance/menus.html"},
+                 {"menus", QVariant::fromValue(engine->menus())}
+             });
 }
 
-void AdminAppearance::menus_remove(Context *ctx, const QString &id)
+void AdminAppearance::menus_remove(Context *c, const QString &id)
 {
-    qDebug() << Q_FUNC_INFO << id;
     engine->removeMenu(id);
 
-    ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+    c->response()->redirect(c->uriFor(actionFor("menus")));
 }
 
-void AdminAppearance::menus_new(Context *ctx)
+void AdminAppearance::menus_new(Context *c)
 {
-    if (ctx->req()->method() == "POST") {
-        ParamsMultiMap params = ctx->req()->bodyParam();
+    if (c->req()->method() == "POST") {
+        ParamsMultiMap params = c->req()->bodyParam();
 
-        CMS::Menu *menu = new CMS::Menu(params.value("name"), ctx);
+        CMS::Menu *menu = new CMS::Menu(params.value("name"), c);
         if (!engine->saveMenu(menu, false)) {
-            ctx->stash({
-                           {"template", "appearance/menus_new.html"},
-                           {"error_msg", tr("Could not save menu")}
-                       });
+            c->stash({
+                         {"template", "appearance/menus_new.html"},
+                         {"error_msg", tr("Could not save menu")}
+                     });
         }
 
-        ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+        c->response()->redirect(c->uriFor(actionFor("menus")));
         return;
     }
 
-    ctx->stash({
-                   {"template", "appearance/menus_new.html"}
-               });
+    c->stash({
+                 {"template", "appearance/menus_new.html"}
+             });
 }
 
-void AdminAppearance::menus_edit(Context *ctx, const QString &id)
+void AdminAppearance::menus_edit(Context *c, const QString &id)
 {
-    ctx->stash({
-                   {"editing", true},
-               });
+    c->stash()["editing"] = true;
 
-    if (ctx->req()->method() == "POST") {
+    if (c->req()->method() == "POST") {
 
-        ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+        c->response()->redirect(c->uriFor(actionFor("menus")));
     } else {
         CMS::Menu *menu = engine->menu(id);
         if (!menu) {
-            ctx->response()->redirect(ctx->uriFor(actionFor("menus")));
+            c->response()->redirect(c->uriFor(actionFor("menus")));
             return;
         }
-        qDebug() << menu->entries();
 
-        ctx->stash({
+        c->stash({
                        {"template", "appearance/menus_new.html"},
                        {"menu", QVariant::fromValue(menu)}
                    });

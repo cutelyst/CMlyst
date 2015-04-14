@@ -35,14 +35,14 @@ public:
     AdminPages();
     ~AdminPages();
 
-    C_ATTR(index, :Path :Args(0))
-    void index(Context *ctx);
+    C_ATTR(index, :Path :AutoArgs)
+    void index(Context *c);
 
-    C_ATTR(create, :Path("new") :Local :Args(0))
-    void create(Context *ctx);
+    C_ATTR(create, :Path("new") :Local :AutoArgs)
+    void create(Context *c);
 
-    C_ATTR(edit, :Local :Args(0))
-    void edit(Context *ctx);
+    C_ATTR(edit, :Local :AutoArgs)
+    void edit(Context *c);
 };
 
 #endif // ADMINPAGES_H

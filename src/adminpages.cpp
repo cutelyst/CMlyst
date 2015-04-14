@@ -34,27 +34,27 @@ AdminPages::~AdminPages()
 
 }
 
-void AdminPages::index(Context *ctx)
+void AdminPages::index(Context *c)
 {
-    ctx->stash()["post_type"] = "page";
+    c->stash()["post_type"] = "page";
 
     QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Pages);
 
-    ctx->stash()["posts"] = QVariant::fromValue(pages);
+    c->stash()["posts"] = QVariant::fromValue(pages);
 
-    ctx->stash()["template"] = "posts/index.html";
+    c->stash()["template"] = "posts/index.html";
 }
 
-void AdminPages::create(Context *ctx)
+void AdminPages::create(Context *c)
 {
     qDebug() << Q_FUNC_INFO;
-    ctx->stash()["post_type"] = "page";
+    c->stash()["post_type"] = "page";
 
-    ParamsMultiMap params = ctx->request()->bodyParam();
+    ParamsMultiMap params = c->request()->bodyParam();
     QString title = params.value("title");
     QString path = params.value("path");
     QString content = params.value("page_content");
-    if (ctx->req()->method() == "POST") {
+    if (c->req()->method() == "POST") {
 //        qDebug() << title;
 //        qDebug() << path;
 //        qDebug() << content;
@@ -66,32 +66,32 @@ void AdminPages::create(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
+            c->res()->redirect(c->uriFor(actionFor("index")));
         } else {
             qDebug() << "Failed to save page" << page;
-            ctx->stash()["error_msg"] = tr("Failed to save page");
+            c->stash()["error_msg"] = tr("Failed to save page");
         }
 
 //        qDebug() << "saved" << ret;
     }
 
-    ctx->stash()["title"] = title;
-    ctx->stash()["path"] = path;
-    ctx->stash()["page_content"] = content;
-    ctx->stash()["template"] = "posts/create.html";
+    c->stash()["title"] = title;
+    c->stash()["path"] = path;
+    c->stash()["page_content"] = content;
+    c->stash()["template"] = "posts/create.html";
 }
 
-void AdminPages::edit(Context *ctx)
+void AdminPages::edit(Context *c)
 {
     qDebug() << Q_FUNC_INFO;
-    ctx->stash()["post_type"] = "page";
+    c->stash()["post_type"] = "page";
 
-    QStringList args = ctx->request()->args();
+    QStringList args = c->request()->args();
     QString path = args.join(QLatin1Char('/'));
     QString title;
     QString content;
 
-//    qDebug() << Q_FUNC_INFO << path <<  ctx->request()->args();
+//    qDebug() << Q_FUNC_INFO << path <<  c->request()->args();
     CMS::Page *page = engine->getPageToEdit(path);
     qDebug() << Q_FUNC_INFO << page << path;
 
@@ -101,8 +101,8 @@ void AdminPages::edit(Context *ctx)
         content = page->content();
     }
 
-    if (ctx->req()->method() == "POST") {
-        ParamsMultiMap params = ctx->request()->bodyParam();
+    if (c->req()->method() == "POST") {
+        ParamsMultiMap params = c->request()->bodyParam();
         title = params.value("title");
         content = params.value("page_content");
 
@@ -121,17 +121,17 @@ void AdminPages::edit(Context *ctx)
 
         bool ret = engine->savePage(page);
         if (ret) {
-            ctx->res()->redirect(ctx->uriFor(actionFor("index")));
+            c->res()->redirect(c->uriFor(actionFor("index")));
         } else {
             qDebug() << "Failed to save page" << page;
-            ctx->stash()["error_msg"] = tr("Failed to save page");
+            c->stash()["error_msg"] = tr("Failed to save page");
         }
 
 //        qDebug() << "saved" << ret;
     }
 
-    ctx->stash()["title"] = title;
-    ctx->stash()["path"] = path;
-    ctx->stash()["page_content"] = content;
-    ctx->stash()["template"] = "posts/create.html";
+    c->stash()["title"] = title;
+    c->stash()["path"] = path;
+    c->stash()["page_content"] = content;
+    c->stash()["template"] = "posts/create.html";
 }

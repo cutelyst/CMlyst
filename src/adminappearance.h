@@ -33,19 +33,19 @@ public:
     explicit AdminAppearance(QObject *parent = 0);
     ~AdminAppearance();
 
-    C_ATTR(index, :Path :Args(0))
+    C_ATTR(index, :Path :AutoArgs)
     void index(Context *c);
 
-    C_ATTR(menus, :Local :Args(0))
+    C_ATTR(menus, :Local :AutoArgs)
     void menus(Context *c);
 
-    C_ATTR(menus_remove, :Path("menus/remove") :Args(1))
+    C_ATTR(menus_remove, :Path("menus/remove") :AutoArgs)
     void menus_remove(Context *c, const QString &id);
 
-    C_ATTR(menus_new, :Path("menus/new") :Args(0))
+    C_ATTR(menus_new, :Path("menus/new") :AutoArgs)
     void menus_new(Context *c);
 
-    C_ATTR(menus_edit, :Path("menus/edit") :Args(0))
+    C_ATTR(menus_edit, :Path("menus/edit") :AutoArgs)
     void menus_edit(Context *c, const QString &id);
 };
 

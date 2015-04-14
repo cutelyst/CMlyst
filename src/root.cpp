@@ -40,32 +40,32 @@ Root::~Root()
 {
 }
 
-void Root::notFound(Context *ctx)
+void Root::notFound(Context *c)
 {
-    ctx->stash({
-                   {QStringLiteral("template"), QStringLiteral("404.html")},
-                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
-               });
-    ctx->res()->setStatus(404);
+    c->stash({
+                 {QStringLiteral("template"), QStringLiteral("404.html")},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
+             });
+    c->res()->setStatus(404);
 }
 
-void Root::End(Context *ctx)
+void Root::End(Context *c)
 {
-    Q_UNUSED(ctx)
-//    qDebug() << "*** Root::End()" << ctx->view();
+    Q_UNUSED(c)
+    //    qDebug() << "*** Root::End()" << c->view();
 
     const QString &theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
     // Check if the theme changed
     if (m_theme != theme) {
         m_theme = theme;
 
-        ViewEngine *view = qobject_cast<ViewEngine*>(ctx->view());
+        ViewEngine *view = qobject_cast<ViewEngine*>(c->view());
         view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
     }
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
-    ctx->stash()["basetheme"] = ctx->uriFor(staticTheme).toString();
+    c->stash()["basetheme"] = c->uriFor(staticTheme).toString();
 }
 
 bool Root::postFork(Application *app)
@@ -75,16 +75,16 @@ bool Root::postFork(Application *app)
     return true;
 }
 
-void Root::page(Cutelyst::Context *ctx)
+void Root::page(Cutelyst::Context *c)
 {
-//    qDebug() << "*** Root::page()";
-//    qDebug() << "*** Root::page()" << ctx->req()->path() << ctx->req()->base();
+    //    qDebug() << "*** Root::page()";
+    //    qDebug() << "*** Root::page()" << c->req()->path() << c->req()->base();
 
-    Response *res = ctx->res();
-    Request *req = ctx->req();
+    Response *res = c->res();
+    Request *req = c->req();
 
     // Get the desired page (dispatcher already found it)
-    CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
+    CMS::Page *page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
@@ -96,18 +96,18 @@ void Root::page(Cutelyst::Context *ctx)
     }
     res->headers().setLastModified(currentDateTime);
 
-    ctx->stash({
-                   {QStringLiteral("template"), QStringLiteral("page.html")},
-                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
-               });
+    c->stash({
+                 {QStringLiteral("template"), QStringLiteral("page.html")},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
+             });
 }
 
-void Root::post(Context *ctx)
+void Root::post(Context *c)
 {
-    Response *res = ctx->res();
-    Request *req = ctx->req();
-    CMS::Page *page = ctx->stash(QStringLiteral("page")).value<CMS::Page *>();
+    Response *res = c->res();
+    Request *req = c->req();
+    CMS::Page *page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
@@ -119,17 +119,17 @@ void Root::post(Context *ctx)
     }
     res->headers().setLastModified(currentDateTime);
 
-    ctx->stash({
-                   {QStringLiteral("template"), QStringLiteral("blog.html")},
-                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
-               });
+    c->stash({
+                 {QStringLiteral("template"), QStringLiteral("blog.html")},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
+             });
 }
 
-void Root::lastPosts(Context *ctx)
+void Root::lastPosts(Context *c)
 {
-    Response *res = ctx->res();
-    Request *req = ctx->req();
+    Response *res = c->res();
+    Request *req = c->req();
     QList<CMS::Page *> posts;
     posts = engine->listPages(CMS::Engine::Posts,
                               CMS::Engine::SortFlags(
@@ -153,18 +153,19 @@ void Root::lastPosts(Context *ctx)
         res->headers().setLastModified(currentDateTime);
     }
 
-    ctx->stash({
-                   {QStringLiteral("template"), QStringLiteral("posts.html")},
-                   {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                   {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
-                   {QStringLiteral("posts"), QVariant::fromValue(posts)}
-               });
+    c->stash({
+                 {QStringLiteral("template"), QStringLiteral("posts.html")},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
+                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
+                 {QStringLiteral("posts"), QVariant::fromValue(posts)}
+             });
 }
 
-void Root::feed(Context *ctx)
+void Root::feed(Context *c)
 {
-    Response *res = ctx->res();
-    Request *req = ctx->req();
+    Response *res = c->res();
+    Request *req = c->req();
+    res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
     QList<CMS::Page *> posts;
     posts = engine->listPages(CMS::Engine::Posts,
@@ -200,7 +201,7 @@ void Root::feed(Context *ctx)
     Q_FOREACH (CMS::Page *post, posts) {
         writer.writeStartItem();
         writer.writeItemTitle(post->name());
-        QString link = ctx->uriFor(post->path()).toString();
+        QString link = c->uriFor(post->path()).toString();
         writer.writeItemLink(link);
         writer.writeItemCommentsLink(link % QLatin1String("#comments"));
         writer.writeItemCreator(post->author());
@@ -214,8 +215,4 @@ void Root::feed(Context *ctx)
     writer.endRSS();
 
     res->body() = writer.result();
-    res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
-
-    //    qDebug() << writer.result();
 }
-

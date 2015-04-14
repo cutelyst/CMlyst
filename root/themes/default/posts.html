@@ -11,7 +11,7 @@
         <div class="col-sm-8 blog-main">
 
           <div class="blog-post">
-            <h2 class="blog-post-title"><a href="{{ ctx.req.base }}{{ page.path }}">{{ page.name }}</a></h2>
+            <h2 class="blog-post-title"><a href="{{ c.req.base }}{{ page.path }}">{{ page.name }}</a></h2>
             <p class="blog-post-meta">{{ page.created|date:"MMMM d, yyyy" }} by <a href="#">{{ page.author }}</a></p>
 
             <p>{{ page.content|safe }}</p>

@@ -29,47 +29,43 @@ Admin::Admin()
 {
 }
 
-bool Admin::Auto(Context *ctx)
+bool Admin::Auto(Context *c)
 {
-//    qDebug() << "*** Admin::Auto()" << ctx->controller()->objectName() << ctx->actionName();
-    qDebug() << "*** Admin::Auto()" << ctx->req()->path() << ctx->req()->base();
-
-    if (*ctx->controller() == "AdminLogin" ||
-            ctx->actionName() == "logout") {
+    if (*c->controller() == "AdminLogin" ||
+            c->actionName() == QLatin1String("logout")) {
         return true;
     }
 
-    Authentication *auth = ctx->plugin<Authentication*>();
-    if (auth && !auth->userExists(ctx)) {
+    Authentication *auth = c->plugin<Authentication*>();
+    if (auth && !auth->userExists(c)) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        ctx->res()->redirect(ctx->uriForAction("/.admin/login/index"));
+        c->res()->redirect(c->uriForAction("/.admin/login/index"));
         return false;
     }
 
-    ctx->setObjectName("CMlyst");
+    c->setObjectName("CMlyst");
 
-    ctx->stash()["adminbase"] = true;
+    c->stash()["adminbase"] = true;
 
     return true;
 }
 
-void Admin::notFound(Context *ctx)
+void Admin::notFound(Context *c)
 {
-    ctx->stash()[QLatin1String("template")] = "404.html";
-    ctx->res()->setStatus(404);
+    c->stash()[QLatin1String("template")] = "404.html";
+    c->res()->setStatus(404);
 }
 
-void Admin::End(Context *ctx)
+void Admin::End(Context *c)
 {
-    Q_UNUSED(ctx)
-    qDebug() << "*** Admin::End()";
+    Q_UNUSED(c)
 }
 
-void Admin::logout(Cutelyst::Context *ctx)
+void Admin::logout(Cutelyst::Context *c)
 {
-    Authentication *auth = ctx->plugin<Authentication*>();
+    Authentication *auth = c->plugin<Authentication*>();
     if (auth) {
-        auth->logout(ctx);
+        auth->logout(c);
     }
-    ctx->res()->redirect(ctx->uriFor("/.admin/login"));
+    c->res()->redirect(c->uriFor("/.admin/login"));
 }

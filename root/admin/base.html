@@ -37,7 +37,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/.admin">{{ ctx.objectName }}</a>
+          <a class="navbar-brand" href="/.admin">{{ c.objectName }}</a>
         </div>
       </div>
     </div>
@@ -46,19 +46,19 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li{% ifequal ctx.controllerName "AdminPosts" %} class="active"{% endifequal %}>
+            <li{% ifequal c.controllerName "AdminPosts" %} class="active"{% endifequal %}>
               <a href="/.admin/posts">Posts</a>
             </li>
-            <li{% ifequal ctx.controllerName "AdminPages" %} class="active"{% endifequal %}>
+            <li{% ifequal c.controllerName "AdminPages" %} class="active"{% endifequal %}>
               <a href="/.admin/pages">Pages</a>
             </li>
-            <li{% ifequal ctx.controllerName "AdminMedia" %} class="active"{% endifequal %}>
+            <li{% ifequal c.controllerName "AdminMedia" %} class="active"{% endifequal %}>
               <a href="/.admin/media">Media</a>
             </li>
-            <li{% ifequal ctx.controllerName "AdminAppearance" %} class="active"{% endifequal %}>
+            <li{% ifequal c.controllerName "AdminAppearance" %} class="active"{% endifequal %}>
               <a href="/.admin/appearance">Appearance</a>
             </li>
-            <li{% ifequal ctx.controllerName "AdminSettings" %} class="active"{% endifequal %}>
+            <li{% ifequal c.controllerName "AdminSettings" %} class="active"{% endifequal %}>
               <a href="/.admin/settings">Settings</a>
             </li>
           </ul>

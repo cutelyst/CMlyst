@@ -41,26 +41,26 @@ public:
 
 public:
     C_ATTR(notFound, :Path)
-    void notFound(Context *ctx);
+    void notFound(Context *c);
 
     C_ATTR(page, :Page)
-    void page(Cutelyst::Context *ctx);
+    void page(Cutelyst::Context *c);
 
     C_ATTR(post, :Post)
-    void post(Cutelyst::Context *ctx);
+    void post(Cutelyst::Context *c);
 
     C_ATTR(lastPosts, :LatestPosts)
-    void lastPosts(Cutelyst::Context *ctx);
+    void lastPosts(Cutelyst::Context *c);
 
     C_ATTR(feed, :Path(.feed))
-    void feed(Cutelyst::Context *ctx);
+    void feed(Cutelyst::Context *c);
 
 protected:
-    virtual bool postFork(Application *app);
+    virtual bool postFork(Application *app) Q_DECL_FINAL;
 
 private:
     C_ATTR(End, :ActionClass(RenderView))
-    void End(Context *ctx);
+    void End(Context *c);
 
     QDir m_themeDir;
     QString m_theme;

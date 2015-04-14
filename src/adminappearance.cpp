@@ -37,7 +37,7 @@ AdminAppearance::~AdminAppearance()
 void AdminAppearance::index(Context *c)
 {
     c->response()->redirect(c->uriFor(actionFor("menus")));
-//    QDir dataDir = ctx->config("DataLocation").toString();
+//    QDir dataDir = c->config("DataLocation").toString();
 //    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
 
 //    settings.beginGroup("Menus");
@@ -45,7 +45,7 @@ void AdminAppearance::index(Context *c)
 //    QList<QObject *> menus;
 //    foreach (const QString &menu, settings.childGroups()) {
 //        settings.beginGroup(menu);
-//        QObject *obj = new QObject(ctx);
+//        QObject *obj = new QObject(c);
 //        obj->setProperty("Name", settings.value("Name"));
 //        obj->setProperty("Locations", settings.value("Locations").toStringList().join(", "));
 //        menus.append(obj);
@@ -96,7 +96,7 @@ void AdminAppearance::index(Context *c)
 
 //    settings.endGroup();
 
-//    ctx->stash({
+//    c->stash({
 //                   {"template", "appearance/index.html"},
 //                   {"menus", QVariant::fromValue(menus)}
 //               });

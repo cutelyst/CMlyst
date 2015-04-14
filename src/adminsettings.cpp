@@ -31,16 +31,16 @@ AdminSettings::AdminSettings(QObject *parent) :
 
 }
 
-void AdminSettings::index(Context *ctx)
+void AdminSettings::index(Context *c)
 {
     if (!engine->settingsIsWritable()) {
-        ctx->stash({
+        c->stash({
                        {"error_msg", "Settings file is read only!"}
                    });
     }
 
-    if (ctx->req()->method() == "POST") {
-        ParamsMultiMap params = ctx->request()->bodyParam();
+    if (c->req()->method() == "POST") {
+        ParamsMultiMap params = c->request()->bodyParam();
         qDebug() << params;
         engine->setSettingsValue("title", params.value("title"));
         engine->setSettingsValue("tagline", params.value("tagline"));
@@ -50,7 +50,7 @@ void AdminSettings::index(Context *ctx)
         engine->setSettingsValue("page_for_posts", params.value("page_for_posts"));
     }
 
-    QDir themesDir = ctx->app()->pathTo({ "root", "themes" });
+    QDir themesDir = c->app()->pathTo({ "root", "themes" });
     QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
                                              QDir::Name | QDir:: IgnoreCase);
 
@@ -59,7 +59,7 @@ void AdminSettings::index(Context *ctx)
                                                      CMS::Engine::Pages |
                                                      CMS::Engine::OnlyPublished));
 
-    ctx->stash({
+    c->stash({
                    {"template", "settings/index.html"},
                    {"title", engine->settingsValue("title")},
                    {"tagline", engine->settingsValue("tagline")},

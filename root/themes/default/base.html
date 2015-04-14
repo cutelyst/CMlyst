@@ -32,7 +32,7 @@
       <div class="container">
         <nav class="blog-nav">
         {% for entry in menus.main.entries %}
-          <a class="blog-nav-item{% ifequal ctx.request.path entry.url %} active{% endifequal %}" href="{{ entry.url }}">{{ entry.text }}</a>
+          <a class="blog-nav-item{% ifequal c.request.path entry.url %} active{% endifequal %}" href="{{ entry.url }}">{{ entry.text }}</a>
         {% endfor %}
         </nav>
       </div>

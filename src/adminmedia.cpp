@@ -39,7 +39,6 @@ AdminMedia::~AdminMedia()
 void AdminMedia::index(Context *ctx)
 {
     QDir mediaDir(ctx->config("DataLocation").toString() % QLatin1String("/media"));
-    qDebug() << mediaDir.absolutePath();
 
     QStringList files;
     QDirIterator it(mediaDir.absolutePath(),
@@ -49,7 +48,6 @@ void AdminMedia::index(Context *ctx)
         files.append(it.next());
     }
     files.sort(Qt::CaseInsensitive);
-    qDebug() << files;
 
     int removeSize = mediaDir.absolutePath().size();
     QList<QHash<QString, QString> > filesHash;
@@ -57,7 +55,6 @@ void AdminMedia::index(Context *ctx)
         QFileInfo fileInfo(file);
         QString urlPath = file;
         urlPath.remove(0 ,removeSize);
-        qDebug() << urlPath;
         urlPath.prepend("/.media");
 
         QHash<QString, QString> hash;
@@ -67,7 +64,6 @@ void AdminMedia::index(Context *ctx)
         hash.insert("url", ctx->uriFor(urlPath).toString());
         filesHash.append(hash);
     }
-    qDebug() << filesHash;
 
     ctx->stash({
                    {"template", "media/index.html"},

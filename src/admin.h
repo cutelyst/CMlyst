@@ -32,17 +32,17 @@ public:
     Admin();
 
     C_ATTR(notFound, :Path)
-    void notFound(Context *ctx);
+    void notFound(Context *c);
 
-    C_ATTR(logout, :Local :Args(0))
-    void logout(Context *ctx);
+    C_ATTR(logout, :Local :AutoArgs)
+    void logout(Context *c);
 
 private slots:
-    bool Auto(Context *ctx);
+    bool Auto(Context *c);
 
 private:
     C_ATTR(End, :ActionClass(RenderView) :View(admin))
-    void End(Context *ctx);
+    void End(Context *c);
 };
 
 #endif // ADMIN_H

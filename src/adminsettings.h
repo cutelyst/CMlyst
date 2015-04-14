@@ -33,8 +33,8 @@ class AdminSettings : public Controller, public CMEngine
 public:
     explicit AdminSettings(QObject *parent = 0);
 
-    C_ATTR(index, :Path :Args(0))
-    void index(Context *ctx);
+    C_ATTR(index, :Path :AutoArgs)
+    void index(Context *c);
 };
 
 #endif // ADMINSETTINGS_H

@@ -163,8 +163,8 @@ void Root::lastPosts(Context *c)
 
 void Root::feed(Context *c)
 {
-    Response *res = c->res();
     Request *req = c->req();
+    Response *res = c->res();
     res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
     QList<CMS::Page *> posts;

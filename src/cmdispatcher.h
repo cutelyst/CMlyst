@@ -32,7 +32,7 @@ public:
 
     virtual bool registerAction(Action *action) Q_DECL_FINAL;
 
-    virtual bool inUse() const Q_DECL_FINAL;
+    virtual bool inUse() Q_DECL_FINAL;
 
 private:
     Action *m_pageAction = 0;

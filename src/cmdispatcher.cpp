@@ -102,7 +102,7 @@ bool CMDispatcher::registerAction(Action *action)
     return false;
 }
 
-bool CMDispatcher::inUse() const
+bool CMDispatcher::inUse()
 {
     return m_pageAction && m_postAction && m_latestPostsAction;
 }

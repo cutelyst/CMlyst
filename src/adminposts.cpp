@@ -88,12 +88,11 @@ void AdminPosts::create(Context *ctx)
     ctx->stash()["template"] = "posts/create.html";
 }
 
-void AdminPosts::edit(Context *ctx)
+void AdminPosts::edit(Context *ctx, const QStringList &args)
 {
     qDebug() << Q_FUNC_INFO;
     ctx->stash()["post_type"] = "post";
 
-    QStringList args = ctx->request()->args();
     QString path = args.join(QLatin1Char('/'));
     QString title;
     QString content;

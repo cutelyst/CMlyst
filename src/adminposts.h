@@ -40,7 +40,7 @@ public:
     void create(Context *c);
 
     C_ATTR(edit, :Local :AutoArgs)
-    void edit(Context *c);
+    void edit(Context *c, const QStringList &args);
 };
 
 #endif // ADMINPOSTS_H

@@ -4,7 +4,6 @@ cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
 find_package(Qt5 COMPONENTS
     Core
     Network
-    DBus
 )
 find_package(CutelystQt5 REQUIRED)
 

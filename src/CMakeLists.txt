@@ -14,6 +14,7 @@ set(cmlyst_SRCS
     ../libCMS/fileengine_p.h
     ../libCMS/menu.cpp
     ../libCMS/menu_p.h
+    ../libCMS/htmlpurifier.cpp
     cmengine.cpp
     cmdispatcher.cpp
     root.cpp

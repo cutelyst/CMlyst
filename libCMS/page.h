@@ -59,6 +59,7 @@ public:
 
     QString content() const;
     void setContent(const QString &body);
+    void updateContent(const QString &body);
 
     QDateTime modified() const;
     void setModified(const QDateTime &dateTime);

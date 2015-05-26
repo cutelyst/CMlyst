@@ -114,7 +114,7 @@ void AdminPages::edit(Context *c, const QStringList &args)
             qDebug() << "not yet supported";
         }
 
-        page->setContent(content);
+        page->updateContent(content);
         page->setName(title);
 //        qDebug() << page->path();
 

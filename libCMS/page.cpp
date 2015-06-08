@@ -22,8 +22,6 @@
 
 #include <QDebug>
 
-#include "htmlpurifier.h"
-
 using namespace CMS;
 
 Page::Page() :
@@ -99,12 +97,6 @@ void Page::setContent(const QString &body)
 void Page::updateContent(const QString &body)
 {
     Q_D(Page);
-    HTMLPurifier purifier;
-    qDebug() << "purifing1";
-    purifier.setContent(body);
-    qDebug() << "purifing2";
-    QString ret = purifier.purify();
-    qDebug() << "purified3:" << ret;
     d->content = body;
 }
 

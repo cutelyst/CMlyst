@@ -83,10 +83,10 @@ QList<Menu *> Engine::menus()
     return QList<Menu *>();
 }
 
-Menu *Engine::menu(const QString &name)
+Menu *Engine::menu(const QString &id)
 {
     Q_FOREACH (Menu *menu, menus()) {
-        if (menu->name() == name) {
+        if (menu->id() == id) {
             return menu;
         }
     }

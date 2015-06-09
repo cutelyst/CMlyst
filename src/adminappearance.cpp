@@ -87,6 +87,7 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
 
     CMS::Menu *menu = engine->menu(id.toHtmlEscaped());
     if (!menu) {
+        qWarning() << "menu not found" << id;
         c->response()->redirect(c->uriFor(actionFor("menus")));
         return;
     }

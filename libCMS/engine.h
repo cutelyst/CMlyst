@@ -82,7 +82,7 @@ public:
 
     virtual QList<Menu *> menus();
 
-    virtual Menu *menu(const QString &name);
+    virtual Menu *menu(const QString &id);
 
     virtual QHash<QString, Menu *> menuLocations();
 

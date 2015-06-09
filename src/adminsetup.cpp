@@ -72,6 +72,11 @@ void AdminSetup::setup(Context *ctx)
     ctx->stash()[QLatin1String("template")] = "setup.html";
 }
 
+void AdminSetup::notFound(Context *c)
+{
+    c->response()->redirect(c->uriFor(actionFor("setup")));
+}
+
 void AdminSetup::edit(Context *ctx, const QString &id)
 {
     ParamsMultiMap param = ctx->req()->params();

@@ -34,6 +34,9 @@ public:
     C_ATTR(setup, :Local :AutoArgs)
     void setup(Context *c);
 
+    C_ATTR(notFound, :Path)
+    void notFound(Context *c);
+
     C_ATTR(edit, :Local :AutoArgs)
     void edit(Context *c, const QString &id);
 

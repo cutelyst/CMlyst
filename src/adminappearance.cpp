@@ -38,69 +38,6 @@ AdminAppearance::~AdminAppearance()
 void AdminAppearance::index(Context *c)
 {
     c->response()->redirect(c->uriFor(actionFor("menus")));
-//    QDir dataDir = c->config("DataLocation").toString();
-//    QSettings settings(dataDir.absoluteFilePath("site.conf"), QSettings::IniFormat);
-
-//    settings.beginGroup("Menus");
-
-//    QList<QObject *> menus;
-//    foreach (const QString &menu, settings.childGroups()) {
-//        settings.beginGroup(menu);
-//        QObject *obj = new QObject(c);
-//        obj->setProperty("Name", settings.value("Name"));
-//        obj->setProperty("Locations", settings.value("Locations").toStringList().join(", "));
-//        menus.append(obj);
-//        settings.endGroup();
-//    }
-
-//    QStringList menu;
-//    menu << "Home";
-//    menu << "Abra";
-//    menu << "Jota";
-//    menu << "NOVO";
-
-////    qDebug() << settings.allKeys();
-//    qDebug() << menus;
-//    qDebug() << settings.childGroups();
-//    qDebug() << settings.childKeys();
-
-//    settings.beginGroup("menu2");
-//    settings.setValue("AutoAddPages", true);
-//    settings.endGroup();
-
-//    int size = settings.beginReadArray("menu2");
-//    for (int i = 0; i < size; ++i) {
-//        settings.setArrayIndex(i);
-//        qDebug() << settings.value("url").toString() << settings.value("text").toString();
-//    }
-//    settings.endArray();
-
-//    settings.beginWriteArray("menu3");
-//    for (int i = 0; i < menu.size(); ++i) {
-//        settings.setArrayIndex(i);
-//        settings.setValue("url", "http://www.fooo/" + menu.at(i));
-//        settings.setValue("text", menu.at(i));
-//    }
-//    settings.endArray();
-
-//    menu.sort();
-
-//    settings.beginWriteArray("menu2");
-//    for (int i = 0; i < menu.size(); ++i) {
-//        settings.setArrayIndex(i);
-//        settings.setValue("url", "http://www.menu2/" + menu.at(i));
-//        settings.setValue("text", menu.at(i));
-//    }
-//    settings.endArray();
-
-//    settings.remove("menu1");
-
-//    settings.endGroup();
-
-//    c->stash({
-//                   {"template", "appearance/index.html"},
-//                   {"menus", QVariant::fromValue(menus)}
-//               });
 }
 
 void AdminAppearance::menus(Context *c)
@@ -177,6 +114,10 @@ bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bo
 {
     qDebug() << "saving menu" << menu->name();
     menu->setName(params.value("name").toHtmlEscaped());
+
+    // TODO remove this hack
+    menu->setLocations({ "main" });
+
     QStringList menuNames = params.values(QStringLiteral("menuName"));
     QStringList menuUrl = params.values(QStringLiteral("menuUrl"));
 //    QStringList menuExternal = params.values(QStringLiteral("menuExternal"));

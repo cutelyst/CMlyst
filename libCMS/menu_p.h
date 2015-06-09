@@ -28,6 +28,7 @@ class MenuPrivate
 {
 public:
     bool autoAddPages = false;
+    QString id;
     QString name;
     QStringList locations;
     QList<QVariantHash> urls;

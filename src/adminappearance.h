@@ -47,6 +47,9 @@ public:
 
     C_ATTR(menus_edit, :Path("menus/edit") :AutoArgs)
     void menus_edit(Context *c, const QString &id);
+
+private:
+    bool saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace);
 };
 
 #endif // ADMINAPPEARANCE_H

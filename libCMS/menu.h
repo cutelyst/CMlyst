@@ -30,6 +30,7 @@ class Menu : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Menu)
+    Q_PROPERTY(QString id READ id)
     Q_PROPERTY(QString name READ name)
     Q_PROPERTY(QStringList locations READ locations WRITE setLocations)
     Q_PROPERTY(QList<QVariantHash> entries READ entries)
@@ -37,7 +38,10 @@ public:
     explicit Menu(const QString &name, QObject *parent = 0);
     ~Menu();
 
+    QString id() const;
+
     QString name() const;
+    void setName(const QString &name);
 
     bool autoAddPages() const;
     void setAutoAddPages(bool enable);

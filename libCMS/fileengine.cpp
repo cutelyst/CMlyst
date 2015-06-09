@@ -345,9 +345,10 @@ bool FileEngine::saveMenu(Menu *menu, bool replace)
     bool ret = false;
     d->settings->beginGroup(QStringLiteral("Menus"));
 
-    if (replace || !d->settings->childGroups().contains(menu->name())) {
-        d->settings->beginGroup(menu->name());
+    if (replace || !d->settings->childGroups().contains(menu->id())) {
+        d->settings->beginGroup(menu->id());
 
+        d->settings->setValue("Name", menu->name());
         d->settings->setValue("AutoAddPages", menu->autoAddPages());
         d->settings->setValue("Locations", menu->locations());
 
@@ -514,12 +515,13 @@ void FileEngine::loadSettings()
     d->mainSettingsDT = d->settingsInfo.lastModified();
 }
 
-Menu *FileEnginePrivate::createMenu(const QString &name, QObject *parent)
+Menu *FileEnginePrivate::createMenu(const QString &id, QObject *parent)
 {
-    settings->beginGroup(name);
+    settings->beginGroup(id);
 
-    Menu *menu = new Menu(name);
+    Menu *menu = new Menu(id);
 
+    menu->setName(settings->value("Name").toString());
     menu->setLocations(settings->value("Locations").toStringList());
     menu->setAutoAddPages(settings->value("AutoAddPages").toBool());
 

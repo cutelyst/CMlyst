@@ -1,39 +1,63 @@
-<h2 class="sub-header">{% if editing %}Edit{% else %}Add New{% endif %} Menu</h2>
+<h2 class="sub-header">{% if editing %}Edit Menu
+<form method="post" class="pull-right" action="menus/remove/{{ menu.id }}">
+<button type="submit" name="submit" value="delete" class="btn">
+  <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
+</form>
+{% else %}Add New Menu{% endif %}
+</h2>
 
-<form method="post" class="form" role="form" autocomplete="off">
+<form method="post" class="form" role="form" action="menus/{% if editing %}edit/{{ menu.id }}{% else %}new{% endif %}" autocomplete="off">
   <div class="form-group">
-    <label class="control-label" for="title">Name</label>
     <input type="text" class="form-control" name="name" id="name" value="{{ menu.name }}" required>
   </div>
 
-{% if editing %}
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Url</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
+<div class="form-group panel-group" id="accordion" role="tablist" aria-multiselectable="true">
     {% for entry in menu.entries %}
-      <tr>
-        <td>{{entry.text}}</td>
-        <td><a href="{{entry.url}}">{{entry.url}}</a></td>
-        <td>
-          <a href="remove/{{entry.id}}">Remove</a>
-          <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Up</a>
-          <a href="/.admin/appearance/menus/remove/{{entry.name}}">Move Down</a>
-        </td>
-      </tr>
+    <div class="panel panel-default">
+      <div class="panel-heading" role="tab" id="headingOne">
+        <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#collapse{{entry.id}}" aria-expanded="false" aria-controls="collapseTwo">
+          <input type="text" class="form-control" name="menuName" id="menuName" value="{{entry.text}}">
+        </h4>
+      </div>
+      <div id="collapse{{entry.id}}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+          <label class="control-label" for="menuUrl">URL</label>
+          <input type="text" class="form-control" name="menuUrl" id="menuUrl" value="{{entry.url}}">
+        </div>
+      </div>
+    </div>
     {% endfor %}
-    </tbody>
-  </table>
+
+  <div id="newEntry" class="panel panel-default">
+    <div class="panel-heading" role="tab" id="headingNew">
+      <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#newCollapse" aria-expanded="false" aria-controls="collapseTwo">
+        <input onfocus="Javascript:appendRow(this)" type="text" class="form-control" name="menuName" id="menuName" value="" placeholder="New menu entry">
+      </h4>
+    </div>
+    <div id="newCollapse" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+      <div class="panel-body">
+        <label class="control-label" for="menuUrl">URL</label>
+        <input type="text" class="form-control" name="menuUrl" id="menuUrl" placeholder="New url entry">
+      </div>
+    </div>
+  </div>
 </div>
-{% endif %}
 
   <div class="form-group">
     <button type="submit" name="submit" value="Submit" class="btn">Save</button>
   </div>
 </form>
+
+<!-- Latest Sortable -->
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.2.0/Sortable.min.js"></script>
+<script>
+    // Simple list
+    Sortable.create(accordion, { /* options */ });
+    function appendRow(nameObj) {
+        if (!nameObj.required) {
+            $("#accordion").append($("#newEntry").clone(false) );
+            nameObj.required = true;
+        }
+    }
+</script>

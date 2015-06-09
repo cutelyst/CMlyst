@@ -1,28 +1,23 @@
-<h2 class="sub-header">Menus</h2>
 
-<a href="/.admin/appearance/menus/new">Add New</a>
+<select id="menusSelect" class="form-control" {% comment %}onchange="if (this.value) window.location.href=this.value"{% endcomment %}>
+  <option>Select a menu...</option>
+{% for menu in menus %}
+  <option value="/.admin/appearance/menus/edit/{{menu.name}}">{{menu.name}}</option>
+{% endfor %}
+  <option disabled></option>
+  <option value="/.admin/appearance/menus/new">Add New</option>
+</select>
 
-<div class="table-responsive">
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Locations</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for menu in menus %}
-      <tr>
-        <td>
-          <a href="/.admin/appearance/menus/edit/{{menu.name}}">{{menu.name}}</a>
-        </td>
-        <td>{% for location in menu.locations %} {{ location }}{% endfor %}</td>
-        <td>
-          <a href="/.admin/appearance/menus/remove/{{menu.name}}">Remove</a>
-        </td>
-      </tr>
-    {% endfor %}
-    </tbody>
-  </table>
-</div>
+<div id="menuContent"></div>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/Sortable/1.2.0/Sortable.min.js"></script>
+<script>
+$(document).ready(function(){
+    $("#menusSelect").on('change', function(){
+        $.ajax({url: this.value, success: function(result){
+            $("#menuContent").html(result);
+        }});
+    });
+});
+</script>

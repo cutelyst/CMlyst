@@ -23,6 +23,7 @@
 
 #include <QDir>
 #include <QSettings>
+#include <QUuid>
 
 AdminAppearance::AdminAppearance(QObject *parent) : Controller(parent)
 {
@@ -112,7 +113,9 @@ void AdminAppearance::menus(Context *c)
 
 void AdminAppearance::menus_remove(Context *c, const QString &id)
 {
-    engine->removeMenu(id);
+    if (c->req()->method() == "POST") {
+        engine->removeMenu(id);
+    }
 
     c->response()->redirect(c->uriFor(actionFor("menus")));
 }
@@ -122,20 +125,22 @@ void AdminAppearance::menus_new(Context *c)
     if (c->req()->method() == "POST") {
         ParamsMultiMap params = c->req()->bodyParam();
 
-        CMS::Menu *menu = new CMS::Menu(params.value("name"), c);
-        if (!engine->saveMenu(menu, false)) {
-            c->stash({
-                         {"template", "appearance/menus_new.html"},
-                         {"error_msg", tr("Could not save menu")}
-                     });
+        QString id = QUuid::createUuid().toString().remove('{').remove('}');
+        CMS::Menu *menu = new CMS::Menu(id, c);
+        if (saveMenu(menu, params, false)) {
+            c->response()->redirect(c->uriFor(actionFor("menus")));
+            return;
         }
 
-        c->response()->redirect(c->uriFor(actionFor("menus")));
-        return;
+        c->stash({
+                     {"error_msg", tr("Could not save menu")}
+                 });
+
     }
 
     c->stash({
-                 {"template", "appearance/menus_new.html"}
+                 {"template", "appearance/menus_new.html"},
+                 {"no_wrapper", true},
              });
 }
 
@@ -143,19 +148,51 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
 {
     c->stash()["editing"] = true;
 
-    if (c->req()->method() == "POST") {
-
+    CMS::Menu *menu = engine->menu(id.toHtmlEscaped());
+    if (!menu) {
         c->response()->redirect(c->uriFor(actionFor("menus")));
-    } else {
-        CMS::Menu *menu = engine->menu(id);
-        if (!menu) {
+        return;
+    }
+
+    qWarning() << "params" << c->req()->method();
+    if (c->req()->method() == "POST") {
+        if (saveMenu(menu, c->req()->bodyParam(), true)) {
             c->response()->redirect(c->uriFor(actionFor("menus")));
             return;
+        } else {
+            c->stash({
+                         {"error_msg", tr("Could not save menu")}
+                     });
         }
-
-        c->stash({
-                       {"template", "appearance/menus_new.html"},
-                       {"menu", QVariant::fromValue(menu)}
-                   });
     }
+
+    c->stash({
+                 {"template", "appearance/menus_new.html"},
+                 {"menu", QVariant::fromValue(menu)},
+                 {"no_wrapper", true},
+             });
+}
+
+bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace)
+{
+    qDebug() << "saving menu" << menu->name();
+    menu->setName(params.value("name").toHtmlEscaped());
+    QStringList menuNames = params.values(QStringLiteral("menuName"));
+    QStringList menuUrl = params.values(QStringLiteral("menuUrl"));
+//    QStringList menuExternal = params.values(QStringLiteral("menuExternal"));
+
+    qDebug() << "params" << params << menuNames.size() << menuUrl.size();
+    if (menuNames.size() == menuUrl.size()) {
+        menu->setEntries(QList<QVariantHash>());
+        for (int i = 0; i < menuNames.size(); ++i) {
+            qDebug() << "appending" << menuNames.at(i) << menuUrl.at(i);
+            QString name = menuNames.at(i).toHtmlEscaped();
+            QString url = menuUrl.at(i).toHtmlEscaped();
+            if (!name.isEmpty() && !url.isEmpty()) {
+                menu->appendEntry(name, url);
+            }
+        }
+    }
+
+    return engine->saveMenu(menu, replace);
 }

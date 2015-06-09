@@ -24,11 +24,11 @@
 
 using namespace CMS;
 
-Menu::Menu(const QString &name, QObject *parent) : QObject(parent)
+Menu::Menu(const QString &id, QObject *parent) : QObject(parent)
   , d_ptr(new MenuPrivate)
 {
     Q_D(Menu);
-    d->name = name;
+    d->id = id;
 }
 
 Menu::~Menu()
@@ -36,10 +36,22 @@ Menu::~Menu()
     delete d_ptr;
 }
 
+QString Menu::id() const
+{
+    Q_D(const Menu);
+    return d->id;
+}
+
 QString Menu::name() const
 {
     Q_D(const Menu);
     return d->name;
+}
+
+void Menu::setName(const QString &name)
+{
+    Q_D(Menu);
+    d->name = name;
 }
 
 bool Menu::autoAddPages() const

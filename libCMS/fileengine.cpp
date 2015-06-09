@@ -501,11 +501,7 @@ void FileEngine::loadSettings()
             }
         }
 
-        if (!added) {
-            menus.append(obj);
-            // TODO for the moment we don't filter menus
-//            delete obj;
-        }
+        menus.append(obj);
     }
     d->settings->endGroup();
     d->menus = menus;

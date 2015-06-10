@@ -108,6 +108,11 @@ QHash<QString, Menu *> Engine::menuLocations()
     return ret;
 }
 
+QVariant Engine::menusProperty()
+{
+    return QVariant::fromValue(menuLocations());
+}
+
 bool Engine::saveMenu(Menu *menu, bool replace)
 {
     Q_UNUSED(menu)
@@ -145,6 +150,11 @@ bool Engine::settingsIsWritable()
 QHash<QString, QString> Engine::settings()
 {
     return QHash<QString, QString>();
+}
+
+QVariant Engine::settingsProperty()
+{
+    return QVariant::fromValue(settings());
 }
 
 QString Engine::settingsValue(const QString &key, const QString &defaultValue)

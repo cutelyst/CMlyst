@@ -96,10 +96,11 @@ void Root::page(Cutelyst::Context *c)
     }
     res->headers().setLastModified(currentDateTime);
 
+    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("page.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
+                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
              });
 }
 
@@ -119,10 +120,11 @@ void Root::post(Context *c)
     }
     res->headers().setLastModified(currentDateTime);
 
+    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("blog.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())}
+                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
              });
 }
 
@@ -153,10 +155,11 @@ void Root::lastPosts(Context *c)
         res->headers().setLastModified(currentDateTime);
     }
 
+    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("posts.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
                  {QStringLiteral("posts"), QVariant::fromValue(posts)}
              });
 }

@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="shortcut icon" href="../../assets/ico/favicon.ico">
 
-    <title>{{ cms.title }}</title>
+    <title>{{ cms.settings.title }}</title>
 
     <!-- Bootstrap core CSS -->
     <link href="/static/dist/css/bootstrap.css" rel="stylesheet">
@@ -31,8 +31,8 @@
     <div class="blog-masthead">
       <div class="container">
         <nav class="blog-nav">
-        {% for entry in menus.main.entries %}
-          <a class="blog-nav-item{% ifequal c.request.path entry.url %} active{% endifequal %}" href="{{ entry.url }}">{{ entry.text }}</a>
+        {% for entry in cms.menus.main.entries %}
+          <a class="blog-nav-item{% ifequal cmsPagePath entry.url %} active{% endifequal %}" href="{{ entry.url }}">{{ entry.text }}</a>
         {% endfor %}
         </nav>
       </div>

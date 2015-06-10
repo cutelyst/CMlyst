@@ -21,11 +21,10 @@
 #define ENGINE_H
 
 #include <QObject>
+#include <QVariant>
 #include <QHash>
 
 namespace CMS {
-
-typedef QHash<QString, QString> StringHash;
 
 class Page;
 class Menu;
@@ -34,7 +33,8 @@ class Engine : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Engine)
-    Q_PROPERTY(StringHash settings READ settings)
+    Q_PROPERTY(QVariant settings READ settingsProperty)
+    Q_PROPERTY(QVariant menus READ menusProperty)
 public:
     enum Filter {
         Pages         = 0x1,
@@ -86,6 +86,8 @@ public:
 
     virtual QHash<QString, Menu *> menuLocations();
 
+    QVariant menusProperty();
+
     virtual bool saveMenu(Menu *menu, bool replace);
     virtual bool removeMenu(const QString &name);
     bool saveMenus(const QList<Menu *> &menus);
@@ -94,6 +96,7 @@ public:
 
     virtual bool settingsIsWritable();
     virtual QHash<QString, QString> settings();
+    virtual QVariant settingsProperty();
     virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
     virtual bool setSettingsValue(const QString &key, const QString &value);
 
@@ -105,6 +108,8 @@ protected:
 
     EnginePrivate *d_ptr;
 };
+
+typedef QHash<QString, QString> StringHash;
 
 }
 

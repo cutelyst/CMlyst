@@ -22,6 +22,8 @@
 <script src="//tinymce.cachefly.net/4.1/tinymce.min.js"></script>
 <script>
     tinymce.init({
+        content_css: '/static/dist/css/bootstrap.min.css',
+        plugins: 'autoresize, code, image, link, media',
         theme:"modern",skin:"lightgray",language:"en",
         formats:{
             alignleft: [
@@ -42,8 +44,10 @@
         entities:"38,amp,60,lt,62,gt",entity_encoding:"raw",keep_styles:false,
         preview_styles:"font-family font-size font-weight font-style text-decoration text-transform",end_container_on_empty_block:true,
         selector:"#edit-content",
-        resize:false,menubar:false,wpautop:true,indent:false,
-        toolbar1:"bold,italic,strikethrough,bullist,numlist,blockquote,hr,alignleft,aligncenter,alignright,link,unlink,wp_more,spellchecker,fullscreen,wp_adv",toolbar2:"formatselect,underline,alignjustify,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo,wp_help",toolbar3:"",
+        resize:false,menubar:false,indent:false,
+        toolbar1:"bold,italic,strikethrough,bullist,numlist,blockquote,hr,alignleft,aligncenter,alignright,link,unlink,code,spellchecker,fullscreen,media",
+        toolbar2:"formatselect,underline,alignjustify,forecolor,pastetext,removeformat,charmap,outdent,indent,undo,redo",
+        toolbar3:"",
         toolbar4:"",tabfocus_elements:":prev,:next",body_class:"edit-content locale-en",
         gecko_spellcheck:"false",
         });

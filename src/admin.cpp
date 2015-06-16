@@ -36,8 +36,7 @@ bool Admin::Auto(Context *c)
         return true;
     }
 
-    Authentication *auth = c->plugin<Authentication*>();
-    if (auth && !auth->userExists(c)) {
+    if (!Authentication::userExists(c)) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
         c->res()->redirect(c->uriForAction("/.admin/login/index"));
         return false;

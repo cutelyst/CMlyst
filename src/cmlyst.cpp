@@ -99,7 +99,6 @@ bool CMlyst::init()
     CredentialPassword *password = new CredentialPassword;
     password->setPasswordField(QLatin1String("password"));
     password->setPasswordType(CredentialPassword::Hashed);
-    password->setHashType(QCryptographicHash::Sha256);
 
     AuthenticationRealm *realm = new AuthenticationRealm(store, password);
 

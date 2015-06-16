@@ -1,6 +1,7 @@
 project(CMlyst)
 
-cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0.0 FATAL_ERROR)
+
 find_package(Qt5 COMPONENTS
     Core
     Network

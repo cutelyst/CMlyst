@@ -48,7 +48,7 @@ void AdminPosts::create(Context *ctx)
 {
     ctx->stash()["post_type"] = "post";
     qDebug() << Q_FUNC_INFO;
-    ParamsMultiMap params = ctx->request()->bodyParam();
+    ParamsMultiMap params = ctx->request()->bodyParams();
     QString title = params.value("title");
     QString path = params.value("path");
     QString content = params.value("edit-content");
@@ -108,7 +108,7 @@ void AdminPosts::edit(Context *ctx, const QStringList &args)
     }
 
     if (ctx->req()->method() == "POST") {
-        ParamsMultiMap params = ctx->request()->bodyParam();
+        ParamsMultiMap params = ctx->request()->bodyParams();
         title = params.value("title");
         content = params.value("edit-content");
 

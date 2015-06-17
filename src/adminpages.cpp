@@ -50,7 +50,7 @@ void AdminPages::create(Context *c)
     qDebug() << Q_FUNC_INFO;
     c->stash()["post_type"] = "page";
 
-    ParamsMultiMap params = c->request()->bodyParam();
+    ParamsMultiMap params = c->request()->bodyParams();
     QString title = params.value("title");
     QString path = params.value("path");
     QString content = params.value("edit-content");
@@ -101,7 +101,7 @@ void AdminPages::edit(Context *c, const QStringList &args)
     }
 
     if (c->req()->method() == "POST") {
-        ParamsMultiMap params = c->request()->bodyParam();
+        ParamsMultiMap params = c->request()->bodyParams();
         title = params.value("title");
         content = params.value("edit-content");
 

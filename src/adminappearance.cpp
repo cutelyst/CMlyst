@@ -60,7 +60,7 @@ void AdminAppearance::menus_remove(Context *c, const QString &id)
 void AdminAppearance::menus_new(Context *c)
 {
     if (c->req()->method() == "POST") {
-        ParamsMultiMap params = c->req()->bodyParam();
+        ParamsMultiMap params = c->req()->bodyParams();
 
         QString id = QUuid::createUuid().toString().remove('{').remove('}');
         CMS::Menu *menu = new CMS::Menu(id, c);
@@ -94,7 +94,7 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
 
     qWarning() << "params" << c->req()->method();
     if (c->req()->method() == "POST") {
-        if (saveMenu(menu, c->req()->bodyParam(), true)) {
+        if (saveMenu(menu, c->req()->bodyParams(), true)) {
             c->response()->redirect(c->uriFor(actionFor("menus")));
             return;
         } else {

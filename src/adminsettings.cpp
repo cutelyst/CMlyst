@@ -40,7 +40,7 @@ void AdminSettings::index(Context *c)
     }
 
     if (c->req()->method() == "POST") {
-        ParamsMultiMap params = c->request()->bodyParam();
+        ParamsMultiMap params = c->request()->bodyParams();
         qDebug() << params;
         engine->setSettingsValue("title", params.value("title"));
         engine->setSettingsValue("tagline", params.value("tagline"));

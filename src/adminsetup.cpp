@@ -24,6 +24,7 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Plugins/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
+#include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/view.h>
 
 #include <QCryptographicHash>
@@ -52,9 +53,9 @@ void AdminSetup::setup(Context *ctx)
             } else {
                 Authentication *auth = ctx->plugin<Authentication*>();
 
-                QCryptographicHash hash(QCryptographicHash::Sha256);
-                hash.addData(password.toUtf8());
-                password =  hash.result().toHex();
+                password = CredentialPassword::createPassword(password.toUtf8(),
+                                                              QCryptographicHash::Sha256,
+                                                              1000, 24, 24);
 
                 AuthenticationRealm *realm = auth->realm();
                 StoreHtpasswd *store = static_cast<StoreHtpasswd*>(realm->store());
@@ -98,9 +99,9 @@ void AdminSetup::edit(Context *ctx, const QString &id)
             } else if (password.size() < 10) {
                 ctx->stash()["error_msg"] = tr("Password must be longer than 10 characters");
             } else {
-                QCryptographicHash hash(QCryptographicHash::Sha256);
-                hash.addData(password.toUtf8());
-                password =  hash.result().toHex();
+                password = CredentialPassword::createPassword(password.toUtf8(),
+                                                              QCryptographicHash::Sha256,
+                                                              1000, 24, 24);
             }
         } else {
             ctx->stash()["error_msg"] = tr("The two password didn't match");

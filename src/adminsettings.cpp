@@ -24,6 +24,7 @@
 #include <Cutelyst/Application>
 
 #include <QDir>
+#include <QDebug>
 
 AdminSettings::AdminSettings(QObject *parent) :
     Controller(parent)

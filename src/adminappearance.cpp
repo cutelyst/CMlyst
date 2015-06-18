@@ -24,6 +24,7 @@
 #include <QDir>
 #include <QSettings>
 #include <QUuid>
+#include <QDebug>
 
 AdminAppearance::AdminAppearance(QObject *parent) : Controller(parent)
 {

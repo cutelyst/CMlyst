@@ -3,6 +3,7 @@
 #include "../libCMS/page.h"
 
 #include <Cutelyst/Action>
+#include <Cutelyst/Context>
 #include <Cutelyst/utils.h>
 
 #include <QStringBuilder>

@@ -30,6 +30,7 @@
 
 #include <QStandardPaths>
 #include <QDir>
+#include <QDebug>
 
 #include "authstoresql.h"
 

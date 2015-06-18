@@ -22,6 +22,8 @@
 #include <Cutelyst/Plugins/authentication.h>
 #include <Cutelyst/Application>
 
+#include <QDebug>
+
 #include "../libCMS/page.h"
 
 AdminPages::AdminPages()

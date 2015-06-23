@@ -195,8 +195,9 @@ void Root::feed(Context *c)
     RSSWriter writer;
     writer.writeStartChannel();
     writer.writeChannelTitle(engine->title());
+    writer.writeChannelFeedLink(c->uriFor(c->action()).toString());
+    writer.writeChannelLink(req->base());
     writer.writeChannelDescription(engine->description());
-    writer.writeChannelFeedLink(req->base());
     if (!posts.isEmpty()) {
         writer.writeChannelLastBuildDate(posts.first()->created());
     }

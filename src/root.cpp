@@ -60,7 +60,7 @@ void Root::End(Context *c)
     if (m_theme != theme) {
         m_theme = theme;
 
-        ViewEngine *view = qobject_cast<ViewEngine*>(c->view());
+        ViewEngine *view = qobject_cast<ViewEngine*>(c->app()->view());
         view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
     }
 

@@ -31,7 +31,7 @@
 
 #include <QDebug>
 
-AdminLogin::AdminLogin(QObject *parent)
+AdminLogin::AdminLogin(Application *app) : Controller(app)
 {
 }
 

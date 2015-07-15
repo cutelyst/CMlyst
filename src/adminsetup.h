@@ -29,7 +29,7 @@ class AdminSetup : public Controller
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    explicit AdminSetup(QObject *parent = 0);
+    explicit AdminSetup(Application *app = 0);
 
     C_ATTR(setup, :Local :AutoArgs)
     void setup(Context *c);

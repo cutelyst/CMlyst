@@ -28,8 +28,7 @@
 
 #include <QDebug>
 
-AdminPosts::AdminPosts(QObject *parent) :
-    Controller(parent)
+AdminPosts::AdminPosts(Application *app) : Controller(app)
 {
 }
 

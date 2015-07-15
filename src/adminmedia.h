@@ -30,7 +30,7 @@ class AdminMedia : public Controller
     Q_OBJECT
     C_NAMESPACE(".admin/media")
 public:
-    explicit AdminMedia(QObject *parent = 0);
+    explicit AdminMedia(Application *app = 0);
     ~AdminMedia();
 
     C_ATTR(index, :Path :Args(0))

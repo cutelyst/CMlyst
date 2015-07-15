@@ -32,7 +32,7 @@ class AdminPages : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE(".admin/pages")
 public:
-    AdminPages();
+    AdminPages(Application *app);
     ~AdminPages();
 
     C_ATTR(index, :Path :AutoArgs)

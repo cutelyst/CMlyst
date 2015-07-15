@@ -29,7 +29,7 @@ class AdminLogin : public Controller
     Q_OBJECT
     C_NAMESPACE(".admin/login")
 public:
-    explicit AdminLogin(QObject *parent = 0);
+    explicit AdminLogin(Application *app = 0);
 
     C_ATTR(index, :Path :AutoArgs)
     void index(Cutelyst::Context *c);

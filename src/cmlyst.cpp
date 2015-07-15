@@ -72,28 +72,26 @@ bool CMlyst::init()
     setConfig("DataLocation", dataDir.absolutePath());
 
     view->setIncludePaths({ pathTo({ "root", "themes", "default" }) });
-    registerView(view);
 
-    ViewEngine *adminView = new ViewEngine("Grantlee", this);
+    ViewEngine *adminView = new ViewEngine("Grantlee", this, "admin");
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
     adminView->setIncludePaths({ pathTo({ "root", "admin" }) });
-    registerView(adminView, "admin");
 
     if (qEnvironmentVariableIsSet("SETUP")) {
-        registerController(new AdminSetup);
+        new AdminSetup(this);
     } else {
-        registerController(new Root);
-        registerController(new Admin);
-        registerController(new AdminLogin);
-        registerController(new AdminAppearance);
-        registerController(new AdminPosts);
-        registerController(new AdminPages);
-        registerController(new AdminMedia);
-        registerController(new AdminSettings);
+        new Root(this);
+        new Admin(this);
+        new AdminLogin(this);
+        new AdminAppearance(this);
+        new AdminPosts(this);
+        new AdminPages(this);
+        new AdminMedia(this);
+        new AdminSettings(this);
     }
 
-    registerDispatcher(new CMDispatcher);
+    new CMDispatcher(this);
 
     StoreHtpasswd *store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
 
@@ -112,13 +110,11 @@ bool CMlyst::init()
                               "static",
                               ".media"
                           });
-    registerPlugin(staticSimple);
 
-    registerPlugin(new Session(this));
+    new Session(this);
 
     Authentication *auth = new Authentication(this);
     auth->addRealm(realm);
-    registerPlugin(auth);
 
     qDebug() << "Root location" << pathTo({ "root" });
     qDebug() << "Root Admin location" << pathTo({ "root", "src", "admin" });

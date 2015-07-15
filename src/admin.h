@@ -29,7 +29,7 @@ class Admin : public Controller
     Q_OBJECT
     C_NAMESPACE(".admin")
 public:
-    Admin();
+    Admin(Application *app);
 
     C_ATTR(notFound, :Path)
     void notFound(Context *c);

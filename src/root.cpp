@@ -32,7 +32,7 @@
 
 #include "rsswriter.h"
 
-Root::Root()
+Root::Root(Application *app) : Controller(app)
 {
 }
 

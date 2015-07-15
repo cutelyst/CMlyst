@@ -31,7 +31,7 @@ class AdminSettings : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE(".admin/settings")
 public:
-    explicit AdminSettings(QObject *parent = 0);
+    explicit AdminSettings(Application *app = 0);
 
     C_ATTR(index, :Path :AutoArgs)
     void index(Context *c);

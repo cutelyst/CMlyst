@@ -26,7 +26,7 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-AdminMedia::AdminMedia(QObject *parent) : Controller(parent)
+AdminMedia::AdminMedia(Application *app) : Controller(app)
 {
 
 }

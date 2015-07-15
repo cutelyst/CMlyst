@@ -30,8 +30,7 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
-AdminSetup::AdminSetup(QObject *parent) :
-    Controller(parent)
+AdminSetup::AdminSetup(Application *app) : Controller(app)
 {
 }
 

@@ -31,7 +31,7 @@ class AdminPosts : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE(".admin/posts")
 public:
-    explicit AdminPosts(QObject *parent = 0);
+    explicit AdminPosts(Application *app = 0);
 
     C_ATTR(index, :Path :AutoArgs)
     void index(Context *c);

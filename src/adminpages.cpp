@@ -26,7 +26,7 @@
 
 #include "../libCMS/page.h"
 
-AdminPages::AdminPages()
+AdminPages::AdminPages(Application *app) : Controller(app)
 {
 
 }

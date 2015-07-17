@@ -30,17 +30,16 @@ set(cmlyst_SRCS
 )
 
 # C++11 rocks!
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Create the application
 add_library(cmlyst SHARED ${cmlyst_SRCS})
 
-# Link to Qt modules
-qt5_use_modules(cmlyst Core Network)
-
 # Link to Cutelyst
 target_link_libraries(cmlyst
     Cutelyst::cutelyst-qt5
+    Qt5::Core
+    Qt5::Network
 )
 
 # TODO install to a place where uWSGI Cutelyst plugin searches for

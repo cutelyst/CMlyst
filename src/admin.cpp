@@ -25,7 +25,7 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-Admin::Admin(Application *app) : Controller(app)
+Admin::Admin(QObject *app) : Controller(app)
 {
 }
 

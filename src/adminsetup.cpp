@@ -30,7 +30,7 @@
 #include <QCryptographicHash>
 #include <QDebug>
 
-AdminSetup::AdminSetup(Application *app) : Controller(app)
+AdminSetup::AdminSetup(QObject *app) : Controller(app)
 {
 }
 

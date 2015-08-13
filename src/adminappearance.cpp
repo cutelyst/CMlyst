@@ -26,7 +26,7 @@
 #include <QUuid>
 #include <QDebug>
 
-AdminAppearance::AdminAppearance(Application *app) : Controller(app)
+AdminAppearance::AdminAppearance(QObject *app) : Controller(app)
 {
 
 }

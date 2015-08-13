@@ -30,7 +30,7 @@ class AdminAppearance : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE(".admin/appearance")
 public:
-    explicit AdminAppearance(Application *app = 0);
+    explicit AdminAppearance(QObject *app = 0);
     ~AdminAppearance();
 
     C_ATTR(index, :Path :AutoArgs)

@@ -37,7 +37,7 @@ add_library(cmlyst SHARED ${cmlyst_SRCS})
 
 # Link to Cutelyst
 target_link_libraries(cmlyst
-    Cutelyst::cutelyst-qt5
+    Cutelyst::Core
     Qt5::Core
     Qt5::Network
 )

@@ -20,7 +20,7 @@
 #include "admin.h"
 
 #include <Cutelyst/Context>
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 
 #include <QStringBuilder>
 #include <QDebug>

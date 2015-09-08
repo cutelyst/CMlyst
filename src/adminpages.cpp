@@ -19,7 +19,7 @@
 
 #include "adminpages.h"
 
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Application>
 
 #include <QDebug>

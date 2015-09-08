@@ -19,8 +19,8 @@
 
 #include "adminlogin.h"
 
-#include <Cutelyst/Plugins/Session>
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Session/Session>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 
 #include <QCryptographicHash>
 #include <QFile>

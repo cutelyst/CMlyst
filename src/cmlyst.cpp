@@ -20,11 +20,11 @@
 #include "cmlyst.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Plugins/viewengine.h>
-#include <Cutelyst/Plugins/StaticSimple>
-#include <Cutelyst/Plugins/Session>
-#include <Cutelyst/Plugins/authentication.h>
-#include <Cutelyst/Plugins/authenticationrealm.h>
+#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
+#include <Cutelyst/Plugins/StaticSimple/StaticSimple>
+#include <Cutelyst/Plugins/Session/Session>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 
@@ -59,7 +59,7 @@ CMlyst::~CMlyst()
 
 bool CMlyst::init()
 {
-    ViewEngine *view = new ViewEngine("Grantlee", this);
+    GrantleeView *view = new GrantleeView(this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
     view->setCache(true);
@@ -73,7 +73,7 @@ bool CMlyst::init()
 
     view->setIncludePaths({ pathTo({ "root", "themes", "default" }) });
 
-    ViewEngine *adminView = new ViewEngine("Grantlee", this, "admin");
+    GrantleeView *adminView = new GrantleeView(this, "admin");
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
     adminView->setIncludePaths({ pathTo({ "root", "admin" }) });

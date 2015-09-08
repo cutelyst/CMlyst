@@ -21,8 +21,8 @@
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
-#include <Cutelyst/Plugins/authentication.h>
-#include <Cutelyst/Plugins/viewengine.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 
 #include <QStringBuilder>
 #include <QDebug>
@@ -60,7 +60,7 @@ void Root::End(Context *c)
     if (m_theme != theme) {
         m_theme = theme;
 
-        ViewEngine *view = qobject_cast<ViewEngine*>(c->app()->view());
+        GrantleeView *view = qobject_cast<GrantleeView*>(c->app()->view());
         view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
     }
 

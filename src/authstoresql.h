@@ -1,7 +1,7 @@
 #ifndef AUTHSTORESQL_H
 #define AUTHSTORESQL_H
 
-#include <Cutelyst/Plugins/authenticationstore.h>
+#include <Cutelyst/Plugins/Authentication/authenticationstore.h>
 
 using namespace Cutelyst;
 

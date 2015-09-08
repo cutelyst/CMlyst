@@ -38,6 +38,9 @@ add_library(cmlyst SHARED ${cmlyst_SRCS})
 # Link to Cutelyst
 target_link_libraries(cmlyst
     Cutelyst::Core
+    Cutelyst::View::Grantlee
+    Cutelyst::StaticSimple
+    Cutelyst::Authentication
     Qt5::Core
     Qt5::Network
 )

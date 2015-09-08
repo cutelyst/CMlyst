@@ -21,8 +21,8 @@
 
 #include "root.h"
 
-#include <Cutelyst/Plugins/authentication.h>
-#include <Cutelyst/Plugins/authenticationrealm.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/view.h>

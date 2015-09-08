@@ -21,7 +21,7 @@
 
 #include "root.h"
 
-#include <Cutelyst/Plugins/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Application>
 
 #include "../libCMS/page.h"

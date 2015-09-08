@@ -33,8 +33,8 @@ QByteArray CMDispatcher::list() const
     table.append(post);
 
     return Utils::buildTable(table,
-    { QStringLiteral("Handle"), QStringLiteral("Private") },
-                      QStringLiteral("Loaded Content Manager actions:"));
+    { "Handle", "Private" },
+                      "Loaded Content Manager actions:");
 }
 
 DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, const QStringList &args) const

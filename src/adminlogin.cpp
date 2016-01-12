@@ -37,22 +37,21 @@ AdminLogin::AdminLogin(QObject *app) : Controller(app)
 
 void AdminLogin::index(Context *ctx)
 {
-    QString username = ctx->req()->param(QLatin1String("username"));
+    QString username = ctx->req()->param(QStringLiteral("username"));
     if (ctx->req()->method() == "POST") {
-        QString password = ctx->req()->param(QLatin1String("password"));
+        QString password = ctx->req()->param(QStringLiteral("password"));
         if (!username.isEmpty() && !password.isEmpty()) {
             Authentication *auth = ctx->plugin<Authentication*>();
             CStringHash userinfo;
-            userinfo["username"] = username;
-            userinfo["password"] = password;
+            userinfo[QStringLiteral("username")] = username;
+            userinfo[QStringLiteral("password")] = password;
             qDebug() << Q_FUNC_INFO << auth;
 
             // Authenticate
             bool succeed = auth && auth->authenticate(ctx, userinfo);
             if (succeed) {
                 qDebug() << Q_FUNC_INFO << username << "is now Logged in";
-                ctx->res()->redirect(ctx->uriFor("/.admin"));
-
+                ctx->res()->redirect(ctx->uriFor(QStringLiteral("/.admin")));
                 return;
             } else {
                 ctx->stash()["error_msg"] = trUtf8("Wrong password or username");

@@ -33,9 +33,17 @@
 #define NAMESPACE_MEDIA   "http://search.yahoo.com/mrss/"
 
 RSSWriter::RSSWriter(QObject *parent) : QObject(parent)
-  , m_stream(&m_output)
 {
-//    m_stream.setAutoFormatting(true);
+}
+
+RSSWriter::~RSSWriter()
+{
+
+}
+
+void RSSWriter::startRSS()
+{
+    //    m_stream.setAutoFormatting(true);
     m_stream.writeStartDocument();
     m_stream.writeStartElement(QStringLiteral("rss"));
     m_stream.writeNamespace(NAMESPACE_CONTENT,
@@ -56,11 +64,6 @@ RSSWriter::RSSWriter(QObject *parent) : QObject(parent)
                             QStringLiteral("geo"));
     m_stream.writeNamespace(NAMESPACE_MEDIA,
                             QStringLiteral("media"));
-}
-
-RSSWriter::~RSSWriter()
-{
-
 }
 
 void RSSWriter::writeStartChannel()
@@ -211,7 +214,7 @@ void RSSWriter::endRSS()
     m_stream.writeEndDocument();
 }
 
-QByteArray RSSWriter::result() const
+void RSSWriter::setDevice(QIODevice *device)
 {
-    return m_output;
+    m_stream.setDevice(device);
 }

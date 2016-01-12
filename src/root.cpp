@@ -25,6 +25,7 @@
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 
 #include <QStringBuilder>
+#include <QBuffer>
 #include <QDebug>
 
 #include "../libCMS/page.h"
@@ -193,6 +194,13 @@ void Root::feed(Context *c)
     }
 
     RSSWriter writer;
+
+    QBuffer *buffer = new QBuffer(c);
+    buffer->open(QBuffer::ReadWrite);
+
+    writer.setDevice(buffer);
+
+    writer.startRSS();
     writer.writeStartChannel();
     writer.writeChannelTitle(engine->title());
     writer.writeChannelFeedLink(c->uriFor(c->action()).toString());
@@ -218,5 +226,5 @@ void Root::feed(Context *c)
     writer.writeEndChannel();
     writer.endRSS();
 
-    res->body() = writer.result();
+    res->setBody(buffer);
 }

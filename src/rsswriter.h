@@ -31,6 +31,8 @@ public:
     explicit RSSWriter(QObject *parent = 0);
     ~RSSWriter();
 
+    void startRSS();
+
     void writeStartChannel();
     void writeChannelTitle(const QString &title);
     void writeChannelLink(const QString &link);
@@ -70,10 +72,9 @@ public:
 
     void endRSS();
 
-    QByteArray result() const;
+    void setDevice(QIODevice *device);
 
 private:
-    QByteArray m_output;
     QXmlStreamWriter m_stream;
 };
 

@@ -32,8 +32,6 @@
 #include <QDir>
 #include <QDebug>
 
-#include "authstoresql.h"
-
 #include "root.h"
 #include "admin.h"
 #include "adminlogin.h"

@@ -1,4 +1,4 @@
-<h2 class="sub-header">{% ifequal post_type "page" %}Add New Page{% else %}Add New Post{% endifequal %}</h2>
+<h2 class="sub-header">{% if post_type == "page" %}Add New Page{% else %}Add New Post{% endif %}</h2>
 
 <form method="post" class="form" role="form" autocomplete="off">
   <div class="form-group">

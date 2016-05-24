@@ -1,6 +1,6 @@
-<h2 class="sub-header">{% ifequal post_type "page" %}Pages{% else %}Posts{% endifequal %}</h2>
+<h2 class="sub-header">{% if post_type == "page" %}Pages{% else %}Posts{% endif %}</h2>
 
-<a href="/.admin/{% ifequal post_type "page" %}pages{% else %}posts{% endifequal %}/new">Add New</a>
+<a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/new">Add New</a>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -15,8 +15,8 @@
     {% for post in posts %}
       <tr>
         <td>
-          <a href="/.admin/{% ifequal post_type "page" %}pages{% else %}posts{% endifequal %}/edit/{{ post.path }}">{{ post.name }}</a>
-          {% ifequal post_type "page" %}/{{ post.path }}{% endifequal %}
+          <a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/edit/{{ post.path }}">{{ post.name }}</a>
+          {% if post_type == "page" %}/{{ post.path }}{% endif %}
         </td>
         <td>{{ post.author }}</td>
         <td>{{ post.modified|date:"yyyy/MM/dd" }}</td>

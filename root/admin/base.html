@@ -47,21 +47,21 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="dropdown-header">PUBLISH</li>
-            <li{% ifequal c.controllerName "AdminPosts" %} class="active"{% endifequal %}>
+            <li{% if c.controllerName == "AdminPosts" %} class="active"{% endif %}>
               <a href="/.admin/posts">Blog Posts <span class="glyphicon glyphicon-bullhorn pull-right" aria-hidden="true"></span></a>
             </li>
-            <li{% ifequal c.controllerName "AdminPages" %} class="active"{% endifequal %}>
+            <li{% if c.controllerName == "AdminPages" %} class="active"{% endif %}>
               <a href="/.admin/pages">Pages <span class="glyphicon glyphicon-file pull-right" aria-hidden="true"></span></a>
             </li>
-            <li{% ifequal c.controllerName "AdminMedia" %} class="active"{% endifequal %}>
+            <li{% if c.controllerName == "AdminMedia" %} class="active"{% endif %}>
               <a href="/.admin/media">Media<span class="glyphicon glyphicon-film pull-right" aria-hidden="true"></span></a>
             </li>
             <li class="dropdown-header">LOOK AND FEEL</li>
-            <li{% ifequal c.controllerName "AdminAppearance" %} class="active"{% endifequal %}>
+            <li{% if c.controllerName == "AdminAppearance" %} class="active"{% endif %}>
               <a href="/.admin/appearance">Menus <span class="glyphicon glyphicon-th-list pull-right" aria-hidden="true"></span></a>
             </li>
             <li class="dropdown-header">CONFIGURATION</li>
-            <li{% ifequal c.controllerName "AdminSettings" %} class="active"{% endifequal %}>
+            <li{% if c.controllerName == "AdminSettings" %} class="active"{% endif %}>
               <a href="/.admin/settings">Settings <span class="glyphicon glyphicon-cog pull-right" aria-hidden="true"></span></a>
             </li>
           </ul>

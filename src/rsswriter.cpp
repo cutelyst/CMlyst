@@ -32,8 +32,9 @@
 #define NAMESPACE_GEO     "http://www.w3.org/2003/01/geo/wgs84_pos#"
 #define NAMESPACE_MEDIA   "http://search.yahoo.com/mrss/"
 
-RSSWriter::RSSWriter(QObject *parent) : QObject(parent)
+RSSWriter::RSSWriter(QIODevice *device, QObject *parent) : QObject(parent)
 {
+    m_stream.setDevice(device);
 }
 
 RSSWriter::~RSSWriter()
@@ -212,9 +213,4 @@ void RSSWriter::endRSS()
 {
     m_stream.writeEndElement();
     m_stream.writeEndDocument();
-}
-
-void RSSWriter::setDevice(QIODevice *device)
-{
-    m_stream.setDevice(device);
 }

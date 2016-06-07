@@ -25,7 +25,6 @@
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 
 #include <QStringBuilder>
-#include <QBuffer>
 #include <QDebug>
 
 #include "../libCMS/page.h"
@@ -193,12 +192,8 @@ void Root::feed(Context *c)
         res->headers().setLastModified(currentDateTime);
     }
 
-    RSSWriter writer;
-
-    QBuffer *buffer = new QBuffer(c);
-    buffer->open(QBuffer::ReadWrite);
-
-    writer.setDevice(buffer);
+    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+    RSSWriter writer(c->response());
 
     writer.startRSS();
     writer.writeStartChannel();
@@ -225,6 +220,4 @@ void Root::feed(Context *c)
 
     writer.writeEndChannel();
     writer.endRSS();
-
-    res->setBody(buffer);
 }

@@ -28,7 +28,7 @@ class RSSWriter : public QObject
 {
     Q_OBJECT
 public:
-    explicit RSSWriter(QObject *parent = 0);
+    explicit RSSWriter(QIODevice *device, QObject *parent = 0);
     ~RSSWriter();
 
     void startRSS();
@@ -71,8 +71,6 @@ public:
     void writeEndChannel();
 
     void endRSS();
-
-    void setDevice(QIODevice *device);
 
 private:
     QXmlStreamWriter m_stream;

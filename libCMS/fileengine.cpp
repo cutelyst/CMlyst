@@ -293,7 +293,7 @@ QList<Page *> FileEngine::listPages(Engine::Filters filters, Engine::SortFlags s
             pages.append(d->pages);
         }
     } else {
-        pages = d->pages;
+        pages = d->pages + d->posts;
     }
 
 
@@ -410,9 +410,9 @@ QHash<QString, QString> FileEngine::settings()
     return d->mainSettings;
 }
 
-QString FileEngine::settingsValue(const QString &key, const QString &defaultValue)
+QString FileEngine::settingsValue(const QString &key, const QString &defaultValue) const
 {
-    Q_D(FileEngine);
+    Q_D(const FileEngine);
 
     QHash<QString, QString>::ConstIterator it = d->mainSettings.constFind(key);
     if (it != d->mainSettings.constEnd()) {

@@ -60,14 +60,14 @@ public:
      * engines might not perform correctly depending on
      * their implementation
      */
-    bool init(const QHash<QString, QString> &settings);
+    virtual bool init(const QHash<QString, QString> &settings) = 0;
 
-    QString title();
-    QString description();
+    QString title() const;
+    QString description() const;
 
-    virtual Page *getPage(const QString &path);
+    virtual Page *getPage(const QString &path) = 0;
 
-    virtual Page *getPageToEdit(const QString &path);
+    virtual Page *getPageToEdit(const QString &path) = 0;
 
     bool savePage(Page *page);
 
@@ -78,7 +78,7 @@ public:
     virtual QList<Page *> listPages(Filters filters = NoFilter,
                                     SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
-                                    int limit = -1);
+                                    int limit = -1) = 0;
 
     virtual QList<Menu *> menus();
 
@@ -97,7 +97,7 @@ public:
     virtual bool settingsIsWritable();
     virtual QHash<QString, QString> settings();
     virtual QVariant settingsProperty();
-    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
+    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const;
     virtual bool setSettingsValue(const QString &key, const QString &value);
 
     static QString normalizePath(const QString &path);

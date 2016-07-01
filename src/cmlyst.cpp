@@ -45,6 +45,8 @@
 #include "cmdispatcher.h"
 
 #include "../libCMS/fileengine.h"
+#include "../libCMS/sqlengine.h"
+#include "../libCMS/page.h"
 
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
@@ -99,15 +101,15 @@ bool CMlyst::init()
 
     AuthenticationRealm *realm = new AuthenticationRealm(store, password);
 
-    StaticSimple *staticSimple = new StaticSimple(this);
-    staticSimple->setIncludePaths({
-                                      pathTo({ "root" }),
-                                      dataDir.absolutePath()
-                                  });
-    staticSimple->setDirs({
-                              "static",
-                              ".media"
-                          });
+//    StaticSimple *staticSimple = new StaticSimple(this);
+//    staticSimple->setIncludePaths({
+//                                      pathTo({ "root" }),
+//                                      dataDir.absolutePath()
+//                                  });
+//    staticSimple->setDirs({
+//                              "static",
+//                              ".media"
+//                          });
 
     new Session(this);
 
@@ -117,6 +119,22 @@ bool CMlyst::init()
     qDebug() << "Root location" << pathTo({ "root" });
     qDebug() << "Root Admin location" << pathTo({ "root", "src", "admin" });
     qDebug() << "Data location" << dataDir.absolutePath();
+
+    // Migrate
+    CMS::FileEngine *fileEngine = new CMS::FileEngine(this);
+    fileEngine->init({
+                     {"root", dataDir.absolutePath()}
+                 });
+
+    CMS::SqlEngine *sqlEngine = new CMS::SqlEngine(this);
+    sqlEngine->init({
+                     {"root", dataDir.absolutePath()}
+                 });
+
+    Q_FOREACH (CMS::Page *page, fileEngine->listPages()) {
+        qDebug() << page->blog();
+        sqlEngine->savePage(page);
+    }
 
     return true;
 }

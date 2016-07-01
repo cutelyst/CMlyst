@@ -14,6 +14,7 @@ set(cmlyst_SRCS
     ../libCMS/fileengine_p.h
     ../libCMS/menu.cpp
     ../libCMS/menu_p.h
+    ../libCMS/sqlengine.cpp
     cmengine.cpp
     cmdispatcher.cpp
     root.cpp
@@ -39,10 +40,12 @@ add_library(cmlyst SHARED ${cmlyst_SRCS})
 target_link_libraries(cmlyst
     Cutelyst::Core
     Cutelyst::View::Grantlee
+    Cutelyst::Utils::Sql
     Cutelyst::StaticSimple
     Cutelyst::Authentication
     Qt5::Core
     Qt5::Network
+    Qt5::Sql
 )
 
 # TODO install to a place where uWSGI Cutelyst plugin searches for

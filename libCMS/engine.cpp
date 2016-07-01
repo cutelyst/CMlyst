@@ -38,22 +38,6 @@ Engine::~Engine()
 
 }
 
-bool Engine::init(const QHash<QString, QString> &settings)
-{
-    return true;
-}
-
-Page *Engine::getPage(const QString &path)
-{
-    return 0;
-}
-
-Page *Engine::getPageToEdit(const QString &path)
-{
-    Q_UNUSED(path)
-    return 0;
-}
-
 bool Engine::savePage(Page *page)
 {
     bool ret = savePageBackend(page);
@@ -67,15 +51,6 @@ bool Engine::savePage(Page *page)
         }
     }
     return ret;
-}
-
-QList<Page *> Engine::listPages(Filters filters, SortFlags sort, int depth, int limit)
-{
-    Q_UNUSED(filters)
-    Q_UNUSED(sort)
-    Q_UNUSED(depth)
-    Q_UNUSED(limit)
-    return QList<Page *>();
 }
 
 QList<Menu *> Engine::menus()
@@ -157,7 +132,7 @@ QVariant Engine::settingsProperty()
     return QVariant::fromValue(settings());
 }
 
-QString Engine::settingsValue(const QString &key, const QString &defaultValue)
+QString Engine::settingsValue(const QString &key, const QString &defaultValue) const
 {
     Q_UNUSED(key)
     return defaultValue;
@@ -203,12 +178,12 @@ QString Engine::normalizeTitle(const QString &title)
     return ret;
 }
 
-QString CMS::Engine::title()
+QString CMS::Engine::title() const
 {
     return settingsValue(QStringLiteral("title"));
 }
 
-QString Engine::description()
+QString Engine::description() const
 {
     return settingsValue(QStringLiteral("tagline"));
 }

@@ -36,32 +36,32 @@ public:
     explicit FileEngine(QObject *parent = 0);
     ~FileEngine();
 
-    bool init(const QHash<QString, QString> &settings);
+    virtual bool init(const QHash<QString, QString> &settings) override;
 
-    virtual Page *getPage(const QString &path);
+    virtual Page *getPage(const QString &path) override;
 
-    virtual Page *getPageToEdit(const QString &path);
+    virtual Page *getPageToEdit(const QString &path) override;
 
     virtual Page *loadPage(const QString &filename);
 
-    virtual bool savePageBackend(Page *page);
+    virtual bool savePageBackend(Page *page) override;
 
     virtual QList<Page *> listPages(Filters filters = NoFilter,
                                     SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
-                                    int limit = -1);
+                                    int limit = -1) override;
 
-    virtual QList<Menu *> menus();
-    virtual QHash<QString, Menu *> menuLocations();
+    virtual QList<Menu *> menus() override;
+    virtual QHash<QString, Menu *> menuLocations() override;
 
-    virtual bool saveMenu(Menu *menu, bool replace);
-    virtual bool removeMenu(const QString &name);
+    virtual bool saveMenu(Menu *menu, bool replace) override;
+    virtual bool removeMenu(const QString &name) override;
 
     virtual QDateTime lastModified();
 
     virtual bool settingsIsWritable();
     virtual QHash<QString, QString> settings();
-    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString());
+    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
     virtual bool setSettingsValue(const QString &key, const QString &value);
 
 protected:

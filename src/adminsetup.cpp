@@ -110,17 +110,18 @@ void AdminSetup::edit(Context *ctx, const QString &id)
     ctx->stash()[QLatin1String("template")] = "setup.html";
 }
 
-void AdminSetup::remove_user(Context *ctx, const QString &id)
+void AdminSetup::remove_user(Context *c, const QString &id)
 {
-    ctx->res()->redirect(ctx->uriFor("/"));
+    c->res()->redirect(c->uriFor("/"));
 }
 
-void AdminSetup::status(Context *ctx)
+void AdminSetup::status(Context *c)
 {
-    ctx->stash()[QLatin1String("template")] = "setupStatus.html";
+    c->stash()[QLatin1String("template")] = "setupStatus.html";
 }
 
-void AdminSetup::End(Context *ctx)
+bool AdminSetup::End(Context *c)
 {
-    qDebug() << "*** AdminSetseup::End()";
+    Q_UNUSED(c);
+    return true;
 }

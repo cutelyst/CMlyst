@@ -55,9 +55,10 @@ void Admin::notFound(Context *c)
     c->res()->setStatus(404);
 }
 
-void Admin::End(Context *c)
+bool Admin::End(Context *c)
 {
     Q_UNUSED(c)
+    return true;
 }
 
 void Admin::logout(Cutelyst::Context *c)

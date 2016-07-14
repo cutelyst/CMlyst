@@ -42,7 +42,7 @@ private slots:
 
 private:
     C_ATTR(End, :ActionClass(RenderView) :View(admin))
-    void End(Context *c);
+    bool End(Context *c);
 };
 
 #endif // ADMIN_H

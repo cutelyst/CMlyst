@@ -62,7 +62,7 @@ bool CMlyst::init()
     GrantleeView *view = new GrantleeView(this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
-    view->setCache(true);
+    view->setCache(false);
 
     QDir dataDir = config("DataLocation", QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
@@ -143,7 +143,8 @@ bool CMlyst::postFork()
 {
     QDir dataDir = config("DataLocation").toString();
 
-    CMS::FileEngine *engine = new CMS::FileEngine(this);
+//    CMS::FileEngine *engine = new CMS::FileEngine(this);
+    CMS::SqlEngine *engine = new CMS::SqlEngine(this);
     engine->init({
                      {"root", dataDir.absolutePath()}
                  });

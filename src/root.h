@@ -55,13 +55,14 @@ public:
     C_ATTR(feed, :Path(.feed))
     void feed(Cutelyst::Context *c);
 
-protected:
-    virtual bool postFork(Application *app) Q_DECL_FINAL;
-
 private:
     C_ATTR(End, :ActionClass(RenderView))
     bool End(Context *c);
 
+protected:
+    virtual bool postFork(Application *app) Q_DECL_FINAL;
+
+private:
     QDir m_themeDir;
     QString m_theme;
 };

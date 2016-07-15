@@ -27,11 +27,13 @@ using namespace CMS;
 Page::Page() :
     d_ptr(new PagePrivate)
 {
+    qDebug() << Q_FUNC_INFO;
 }
 
 Page::~Page()
 {
     delete d_ptr;
+    qDebug() << Q_FUNC_INFO;
 }
 
 QString Page::name() const

@@ -79,8 +79,8 @@ bool Root::postFork(Application *app)
 
 void Root::page(Cutelyst::Context *c)
 {
-    //    qDebug() << "*** Root::page()";
-    //    qDebug() << "*** Root::page()" << c->req()->path() << c->req()->base();
+    qDebug() << "*** Root::page()";
+    qDebug() << "*** Root::page()" << c->req()->path() << c->req()->base();
 
     Response *res = c->res();
     Request *req = c->req();
@@ -104,6 +104,8 @@ void Root::page(Cutelyst::Context *c)
                  {QStringLiteral("template"), QStringLiteral("page.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
              });
+    qDebug() << "*** Root::page()" << cmsPagePath;
+    qDebug() << "*** Root::page()" << page->content();
 }
 
 void Root::post(Context *c)

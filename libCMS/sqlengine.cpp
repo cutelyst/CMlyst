@@ -98,6 +98,8 @@ QString sortString(Engine::SortFlags sort)
             return QStringLiteral(" ORDER BY date DESC ");
         }
     }
+    
+    return QString();
 }
 
 QList<Page *> SqlEngine::listPages(Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)

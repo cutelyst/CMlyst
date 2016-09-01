@@ -60,7 +60,7 @@ protected:
 
 private:
     C_ATTR(End, :ActionClass(RenderView))
-    void End(Context *c);
+    bool End(Context *c);
 
     QDir m_themeDir;
     QString m_theme;

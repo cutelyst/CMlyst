@@ -21,7 +21,7 @@ CMDispatcher::~CMDispatcher()
 
 QByteArray CMDispatcher::list() const
 {
-    QList<QStringList> table;
+    QVector<QStringList> table;
     QStringList l1;
     l1.append(QStringList("Page"));
     l1.append(QLatin1Char('/') % m_pageAction->reverse());

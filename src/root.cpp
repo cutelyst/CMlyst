@@ -50,7 +50,7 @@ void Root::notFound(Context *c)
     c->res()->setStatus(404);
 }
 
-void Root::End(Context *c)
+bool Root::End(Context *c)
 {
     Q_UNUSED(c)
     //    qDebug() << "*** Root::End()" << c->view();
@@ -66,6 +66,7 @@ void Root::End(Context *c)
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
     c->stash()["basetheme"] = c->uriFor(staticTheme).toString();
+return true;
 }
 
 bool Root::postFork(Application *app)

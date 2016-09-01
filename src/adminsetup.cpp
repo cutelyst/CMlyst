@@ -120,7 +120,8 @@ void AdminSetup::status(Context *ctx)
     ctx->stash()[QLatin1String("template")] = "setupStatus.html";
 }
 
-void AdminSetup::End(Context *ctx)
+bool AdminSetup::End(Context *ctx)
 {
     qDebug() << "*** AdminSetseup::End()";
+return true;
 }

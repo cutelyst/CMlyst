@@ -47,7 +47,7 @@ public:
     void status(Context *c);
 
     C_ATTR(End, :Private :ActionClass(RenderView) :View(admin))
-    void End(Context *c);
+    bool End(Context *c);
 };
 
 #endif // ADMINSETUP_H

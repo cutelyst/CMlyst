@@ -21,7 +21,6 @@
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
-#include <Cutelyst/Plugins/StaticSimple/StaticSimple>
 #include <Cutelyst/Plugins/Session/Session>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
@@ -100,16 +99,6 @@ bool CMlyst::init()
     password->setPasswordType(CredentialPassword::Hashed);
 
     AuthenticationRealm *realm = new AuthenticationRealm(store, password);
-
-//    StaticSimple *staticSimple = new StaticSimple(this);
-//    staticSimple->setIncludePaths({
-//                                      pathTo({ "root" }),
-//                                      dataDir.absolutePath()
-//                                  });
-//    staticSimple->setDirs({
-//                              "static",
-//                              ".media"
-//                          });
 
     new Session(this);
 

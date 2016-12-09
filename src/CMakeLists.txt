@@ -41,7 +41,6 @@ target_link_libraries(cmlyst
     Cutelyst::Core
     Cutelyst::View::Grantlee
     Cutelyst::Utils::Sql
-    Cutelyst::StaticSimple
     Cutelyst::Authentication
     Qt5::Core
     Qt5::Network

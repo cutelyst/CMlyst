@@ -132,8 +132,8 @@ bool CMlyst::postFork()
 {
     QDir dataDir = config("DataLocation").toString();
 
-//    CMS::FileEngine *engine = new CMS::FileEngine(this);
-    CMS::SqlEngine *engine = new CMS::SqlEngine(this);
+    CMS::FileEngine *engine = new CMS::FileEngine(this);
+//    CMS::SqlEngine *engine = new CMS::SqlEngine(this);
     engine->init({
                      {"root", dataDir.absolutePath()}
                  });

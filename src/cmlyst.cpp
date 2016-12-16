@@ -58,7 +58,7 @@ CMlyst::~CMlyst()
 
 bool CMlyst::init()
 {
-    GrantleeView *view = new GrantleeView(this);
+    auto view = new GrantleeView(this);
     view->setTemplateExtension(".html");
     view->setWrapper("wrapper.html");
     view->setCache(false);
@@ -72,7 +72,7 @@ bool CMlyst::init()
 
     view->setIncludePaths({ pathTo({ "root", "themes", "default" }) });
 
-    GrantleeView *adminView = new GrantleeView(this, "admin");
+    auto adminView = new GrantleeView(this, "admin");
     adminView->setTemplateExtension(".html");
     adminView->setWrapper("wrapper.html");
     adminView->setIncludePaths({ pathTo({ "root", "admin" }) });
@@ -92,17 +92,17 @@ bool CMlyst::init()
 
     new CMDispatcher(this);
 
-    StoreHtpasswd *store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
+    auto store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
 
-    CredentialPassword *password = new CredentialPassword;
+    auto password = new CredentialPassword;
     password->setPasswordField(QLatin1String("password"));
     password->setPasswordType(CredentialPassword::Hashed);
 
-    AuthenticationRealm *realm = new AuthenticationRealm(store, password);
+    auto realm = new AuthenticationRealm(store, password);
 
     new Session(this);
 
-    Authentication *auth = new Authentication(this);
+    auto auth = new Authentication(this);
     auth->addRealm(realm);
 
     qDebug() << "Root location" << pathTo({ "root" });
@@ -110,12 +110,12 @@ bool CMlyst::init()
     qDebug() << "Data location" << dataDir.absolutePath();
 
     // Migrate
-    CMS::FileEngine *fileEngine = new CMS::FileEngine(this);
+    auto fileEngine = new CMS::FileEngine(this);
     fileEngine->init({
                      {"root", dataDir.absolutePath()}
                  });
 
-    CMS::SqlEngine *sqlEngine = new CMS::SqlEngine(this);
+    auto sqlEngine = new CMS::SqlEngine(this);
     sqlEngine->init({
                      {"root", dataDir.absolutePath()}
                  });
@@ -132,21 +132,21 @@ bool CMlyst::postFork()
 {
     QDir dataDir = config("DataLocation").toString();
 
-    CMS::FileEngine *engine = new CMS::FileEngine(this);
+    auto engine = new CMS::FileEngine(this);
 //    CMS::SqlEngine *engine = new CMS::SqlEngine(this);
     engine->init({
                      {"root", dataDir.absolutePath()}
                  });
 
     Q_FOREACH (Controller *controller, controllers()) {
-        CMEngine *cmengine = dynamic_cast<CMEngine *>(controller);
+        auto cmengine = dynamic_cast<CMEngine *>(controller);
         if (cmengine) {
             cmengine->engine = engine;
         }
     }
 
     Q_FOREACH (DispatchType *type, dispatchers()) {
-        CMEngine *cmengine = dynamic_cast<CMEngine *>(type);
+        auto cmengine = dynamic_cast<CMEngine *>(type);
         if (cmengine) {
             cmengine->engine = engine;
         }

@@ -46,6 +46,11 @@
 #include "../libCMS/fileengine.h"
 #include "../libCMS/sqlengine.h"
 #include "../libCMS/page.h"
+#include "../libCMS/menu.h"
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
@@ -125,6 +130,41 @@ bool CMlyst::init()
         sqlEngine->savePage(page);
     }
 
+    QHash<QString, QString> settings = fileEngine->settings();
+    auto it = settings.constBegin();
+    while (it != settings.constEnd()) {
+        sqlEngine->setSettingsValue(it.key(), it.value());
+        ++it;
+    }
+
+    QJsonArray array;
+    const auto menus = fileEngine->menus();
+    for (CMS::Menu *menu : menus) {
+        QJsonObject objMenu;
+        objMenu.insert(QStringLiteral("id"), menu->id());
+        objMenu.insert(QStringLiteral("name"), menu->name());
+
+        QJsonArray locations;
+        const auto menuLocations = menu->locations();
+        for (const auto location : menuLocations) {
+            locations.append(location);
+        }
+        objMenu.insert(QStringLiteral("locations"), locations);
+
+        QJsonArray entriesJson;
+        const QList<QVariantHash> entries = menu->entries();
+        for (const auto entry : entries) {
+            entriesJson.append(QJsonObject::fromVariantHash(entry));
+        }
+        objMenu.insert(QStringLiteral("entries"), entriesJson);
+
+        array.append(objMenu);
+    }
+    sqlEngine->setSettingsValue(QStringLiteral("menus"), QJsonDocument(array).toJson(QJsonDocument::Compact));
+
+    qDebug() << QJsonDocument(array).toVariant();
+
+
     return true;
 }
 
@@ -132,8 +172,8 @@ bool CMlyst::postFork()
 {
     QDir dataDir = config("DataLocation").toString();
 
-    auto engine = new CMS::FileEngine(this);
-//    CMS::SqlEngine *engine = new CMS::SqlEngine(this);
+//    auto engine = new CMS::FileEngine(this);
+    auto engine = new CMS::SqlEngine(this);
     engine->init({
                      {"root", dataDir.absolutePath()}
                  });

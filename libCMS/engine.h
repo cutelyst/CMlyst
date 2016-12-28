@@ -80,11 +80,11 @@ public:
                                     int depth = -1,
                                     int limit = -1) = 0;
 
-    virtual QList<Menu *> menus();
+    virtual QList<Menu *> menus() = 0;
 
     virtual Menu *menu(const QString &id);
 
-    virtual QHash<QString, Menu *> menuLocations();
+    virtual QHash<QString, Menu *> menuLocations() = 0;
 
     QVariant menusProperty();
 
@@ -94,11 +94,11 @@ public:
 
     virtual QDateTime lastModified();
 
-    virtual bool settingsIsWritable();
-    virtual QHash<QString, QString> settings();
+    virtual bool settingsIsWritable() const = 0;
+    virtual QHash<QString, QString> settings() = 0;
     virtual QVariant settingsProperty();
-    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const;
-    virtual bool setSettingsValue(const QString &key, const QString &value);
+    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const = 0;
+    virtual bool setSettingsValue(const QString &key, const QString &value) = 0;
 
     static QString normalizePath(const QString &path);
     static QString normalizeTitle(const QString &path);

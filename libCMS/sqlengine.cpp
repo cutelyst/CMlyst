@@ -1,5 +1,6 @@
 #include "sqlengine.h"
 #include "page.h"
+#include "menu.h"
 
 #include <Cutelyst/Plugins/Utils/Sql>
 
@@ -7,6 +8,10 @@
 #include <QSqlDatabase>
 #include <QSqlQuery>
 #include <QSqlError>
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonDocument>
 
 #include <QDebug>
 
@@ -29,13 +34,14 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
     bool create = !QFile::exists(dbPath);
 
     if (QSqlDatabase::contains(QStringLiteral("cmlyst"))) {
+        loadMenus();
         return true;
     }
 
-    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), QStringLiteral("cmlyst"));
+    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Sql::databaseNameThread(QStringLiteral("cmlyst")));
     db.setDatabaseName(dbPath);
     if (db.open()) {
-        qDebug() << "Database is open:" << dbPath;
+        qDebug() << "Database is open:" << dbPath << db.connectionName();
         if (create) {
             createDb();
             qDebug() << "Database tables created";
@@ -44,6 +50,9 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
         qCritical() << "Error opening database" << dbPath << db.lastError().driverText();
         return false;
     }
+
+    loadMenus();
+
     return true;
 }
 
@@ -65,15 +74,21 @@ Page *createPageObj(const QSqlQuery &query)
 Page *SqlEngine::getPage(const QString &path)
 {
     qDebug() << Q_FUNC_INFO << path;
-    QSqlQuery query = CPreparedSqlQueryForDatabase(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                                   " modified, created, tags, blog, allow_comments "
                                                                   "FROM pages "
                                                                   "WHERE path = :path"),
-                                                   QSqlDatabase::database(QStringLiteral("cmlyst")));
-    query.bindValue(QStringLiteral(":path"), path);
+                                                   QStringLiteral("cmlyst"));
+    if (!path.isNull()) {
+        query.bindValue(QStringLiteral(":path"), path);
+    } else {
+        query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
+    }
+
     if (query.exec() && query.next()) {
         return createPageObj(query);
     }
+    qWarning() << "Failed to get page" << query.lastError().databaseText();
     return 0;
 }
 
@@ -108,28 +123,28 @@ QList<Page *> SqlEngine::listPages(Engine::Filters filters, Engine::SortFlags so
     QList<Page *> ret;
     QSqlQuery query;
     if (filters == Engine::Pages) {
-        query = CPreparedSqlQueryForDatabase(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 0 "
                                                             "LIMIT :limit "
                                                             ),
-                                             QSqlDatabase::database(QStringLiteral("cmlyst")));
+                                             QStringLiteral("cmlyst"));
     } else if (filters == Engine::Posts) {
-        query = CPreparedSqlQueryForDatabase(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 1 "
                                                             "LIMIT :limit "
                                                             ),
-                                             QSqlDatabase::database(QStringLiteral("cmlyst")));
+                                             QStringLiteral("cmlyst"));
     } else {
-        query = CPreparedSqlQueryForDatabase(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "LIMIT :limit "
                                                             ),
-                                             QSqlDatabase::database(QStringLiteral("cmlyst")));
+                                             QStringLiteral("cmlyst"));
     }
 
     query.bindValue(QStringLiteral(":limit"), limit);
@@ -141,16 +156,74 @@ QList<Page *> SqlEngine::listPages(Engine::Filters filters, Engine::SortFlags so
     return ret;
 }
 
+QHash<QString, QString> SqlEngine::settings()
+{
+    QHash<QString, QString> ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT name, value FROM settings"),
+                                                   QStringLiteral("cmlyst"));
+    if (query.exec()) {
+        while (query.next()) {
+            ret.insert(query.value(0).toString(), query.value(1).toString());
+        }
+    }
+    return ret;
+}
+
+QString SqlEngine::settingsValue(const QString &key, const QString &defaultValue) const
+{
+    QString ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT value FROM settings WHERE name = :name"),
+                                                   QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":name"), key);
+    if (query.exec() && query.next()) {
+        ret = query.value(0).toString();
+    } else {
+        ret = defaultValue;
+    }
+    return ret;
+}
+
+bool SqlEngine::setSettingsValue(const QString &key, const QString &value)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO settings "
+                                                                  "(name, value) "
+                                                                  "VALUES "
+                                                                  "(:key, :value)"),
+                                                   QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":key"), key);
+    query.bindValue(QStringLiteral(":value"), value);
+    if (!query.exec()) {
+        qWarning() << "Failed to save settings" << query.lastError().driverText();
+        return false;
+    }
+    return true;
+}
+
+QList<Menu *> SqlEngine::menus()
+{
+    return m_menus;
+}
+
+QHash<QString, Menu *> SqlEngine::menuLocations()
+{
+    return m_menuLocations;
+}
+
+bool SqlEngine::settingsIsWritable() const
+{
+    return true;
+}
+
 bool SqlEngine::savePageBackend(Page *page)
 {
     qDebug() << Q_FUNC_INFO << page->path();
-    QSqlQuery query = CPreparedSqlQueryForDatabase(QStringLiteral("INSERT OR REPLACE INTO pages "
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO pages "
                                                                   "(path, name, navigation_label, author, content,"
                                                                   " modified, created, tags, blog, allow_comments) "
                                                                   "VALUES "
                                                                   "(:path, :name, :navigation_label, :author, :content,"
                                                                   " :modified, :created, :tags, :blog, :allow_comments)"),
-                                                   QSqlDatabase::database(QStringLiteral("cmlyst")));
+                                                   QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":path"), page->path());
     query.bindValue(QStringLiteral(":name"), page->name());
     query.bindValue(QStringLiteral(":navigation_label"), page->navigationLabel());
@@ -168,9 +241,56 @@ bool SqlEngine::savePageBackend(Page *page)
     return true;
 }
 
+void SqlEngine::loadMenus()
+{
+    QList<CMS::Menu *> menus;
+    QHash<QString, CMS::Menu *> menuLocations;
+
+    QString menusSetting = settingsValue(QStringLiteral("menus"));
+    QJsonDocument doc = QJsonDocument::fromJson(menusSetting.toUtf8());
+    const QJsonArray array = doc.array();
+    for (const QJsonValue &value : array) {
+        QJsonObject obj = value.toObject();
+        Menu *menu = new Menu(obj.value(QStringLiteral("id")).toString());
+
+        menu->setName(obj.value(QStringLiteral("name")).toString());
+        menu->setAutoAddPages(obj.value(QStringLiteral("autoAddPages")).toBool());
+
+        QList<QVariantHash> urls;
+        const QJsonArray urlsJson = obj.value(QStringLiteral("entries")).toArray();
+        for (const QJsonValue &url : urlsJson) {
+            urls.append(url.toObject().toVariantHash());
+        }
+        menu->setEntries(urls);
+
+        QStringList locations;
+        const QJsonArray locationsJson = obj.value(QStringLiteral("locations")).toArray();
+        for (const QJsonValue &location : locationsJson) {
+            locations.append(location.toString());
+        }
+        menu->setLocations(locations);
+
+        bool added = false;
+        Q_FOREACH (const QString &location, locations) {
+            if (!menuLocations.contains(location)) {
+                menuLocations.insert(location, menu);
+                added = true;
+            }
+        }
+        qDebug() << "MENU";
+        qDebug() << menu->id() << menu->name() << menu->entries() << menu->locations() << menu->autoAddPages();
+
+        menus.push_back(menu);
+    }
+    qDebug() << "MENUS" << menus;
+    m_menus = menus;
+    qDebug() << "MENUS" << menuLocations;
+    m_menuLocations = menuLocations;
+}
+
 void SqlEngine::createDb()
 {
-    QSqlQuery query(QSqlDatabase::database(QStringLiteral("cmlyst")));
+    QSqlQuery query(QStringLiteral("cmlyst"));
 
     bool ret = query.exec("PRAGMA journal_mode = WAL");
     qDebug() << "PRAGMA journal_mode = WAL" << ret << query.lastError().driverText();

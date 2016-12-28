@@ -47,6 +47,7 @@ void AdminAppearance::menus(Context *c)
                  {"template", "appearance/menus.html"},
                  {"menus", QVariant::fromValue(engine->menus())}
              });
+    qDebug() << engine << engine->menus();
 }
 
 void AdminAppearance::menus_remove(Context *c, const QString &id)

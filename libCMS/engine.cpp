@@ -53,11 +53,6 @@ bool Engine::savePage(Page *page)
     return ret;
 }
 
-QList<Menu *> Engine::menus()
-{
-    return QList<Menu *>();
-}
-
 Menu *Engine::menu(const QString &id)
 {
     Q_FOREACH (Menu *menu, menus()) {
@@ -66,21 +61,6 @@ Menu *Engine::menu(const QString &id)
         }
     }
     return 0;
-}
-
-QHash<QString, Menu *> Engine::menuLocations()
-{
-    QHash<QString, Menu *> ret;
-
-    Q_FOREACH (Menu *menu, menus()) {
-        Q_FOREACH (const QString &location, menu->locations()) {
-            if (!ret.contains(location)) {
-                ret.insert(location, menu);
-            }
-        }
-    }
-
-    return ret;
 }
 
 QVariant Engine::menusProperty()
@@ -117,32 +97,9 @@ QDateTime Engine::lastModified()
     return QDateTime();
 }
 
-bool Engine::settingsIsWritable()
-{
-    return false;
-}
-
-QHash<QString, QString> Engine::settings()
-{
-    return QHash<QString, QString>();
-}
-
 QVariant Engine::settingsProperty()
 {
     return QVariant::fromValue(settings());
-}
-
-QString Engine::settingsValue(const QString &key, const QString &defaultValue) const
-{
-    Q_UNUSED(key)
-    return defaultValue;
-}
-
-bool Engine::setSettingsValue(const QString &key, const QString &value)
-{
-    Q_UNUSED(key)
-    Q_UNUSED(value)
-    return false;
 }
 
 QString Engine::normalizePath(const QString &path)

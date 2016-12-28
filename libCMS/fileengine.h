@@ -59,7 +59,7 @@ public:
 
     virtual QDateTime lastModified();
 
-    virtual bool settingsIsWritable();
+    virtual bool settingsIsWritable() const override;
     virtual QHash<QString, QString> settings();
     virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
     virtual bool setSettingsValue(const QString &key, const QString &value);

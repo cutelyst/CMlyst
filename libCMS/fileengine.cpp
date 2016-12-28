@@ -398,9 +398,9 @@ QDateTime FileEngine::lastModified()
     return d->mainSettingsDT;
 }
 
-bool FileEngine::settingsIsWritable()
+bool FileEngine::settingsIsWritable() const
 {
-    Q_D(FileEngine);
+    Q_D(const FileEngine);
     return d->settings->isWritable();
 }
 

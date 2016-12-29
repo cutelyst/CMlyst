@@ -65,9 +65,9 @@ public:
     QString title() const;
     QString description() const;
 
-    virtual Page *getPage(const QString &path) = 0;
+    virtual Page *getPage(const QString &path, QObject *parent) = 0;
 
-    Page *getPageToEdit(const QString &path);
+    Page *getPageToEdit(const QString &path, QObject *parent);
 
     bool savePage(Page *page);
 
@@ -75,7 +75,8 @@ public:
      * Returns the available pages,
      * when depth is -1 all pages are listed
      */
-    virtual QList<Page *> listPages(Filters filters = NoFilter,
+    virtual QList<Page *> listPages(QObject *parent,
+                                    Filters filters = NoFilter,
                                     SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
                                     int limit = -1) = 0;
@@ -112,5 +113,8 @@ protected:
 typedef QHash<QString, QString> StringHash;
 
 }
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(CMS::Engine::Filters)
+Q_DECLARE_OPERATORS_FOR_FLAGS(CMS::Engine::SortFlags)
 
 #endif // ENGINE_H

@@ -55,7 +55,8 @@ void AdminSettings::index(Context *c)
                                              QDir::Name | QDir:: IgnoreCase);
 
 
-    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Filters(
+    QList<CMS::Page *> pages = engine->listPages(c,
+                                                 CMS::Engine::Filters(
                                                      CMS::Engine::Pages |
                                                      CMS::Engine::OnlyPublished));
 

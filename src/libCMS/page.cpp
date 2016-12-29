@@ -24,16 +24,16 @@
 
 using namespace CMS;
 
-Page::Page() :
-    d_ptr(new PagePrivate)
+Page::Page(QObject *parent) : QObject(parent)
+    , d_ptr(new PagePrivate)
 {
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
 }
 
 Page::~Page()
 {
     delete d_ptr;
-    qDebug() << Q_FUNC_INFO;
+//    qDebug() << Q_FUNC_INFO;
 }
 
 QString Page::name() const

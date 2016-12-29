@@ -42,7 +42,7 @@ class Page : public QObject
     Q_PROPERTY(bool blog READ blog WRITE setBlog)
     Q_PROPERTY(bool allowComments READ allowComments WRITE setAllowComments)
 public:
-    Page();
+    Page(QObject *parent);
     virtual ~Page();
 
     QString name() const;

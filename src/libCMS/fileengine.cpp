@@ -93,9 +93,10 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
     return true;
 }
 
-Page *FileEngine::getPage(const QString &path)
+Page *FileEngine::getPage(const QString &path, QObject *parent)
 {
     Q_D(FileEngine);
+    Q_UNUSED(parent)
 
     QHash<QString, Page*>::ConstIterator it = d->pathPages.constFind(path);
     if (it != d->pathPages.constEnd()) {
@@ -139,7 +140,7 @@ Page *FileEngine::loadPage(const QString &filename)
 
     if (!page) {
         QSettings data(filename, QSettings::IniFormat);
-        page = new Page;
+        page = new Page(this);
 
         page->setPath(relPath);
         page->setName(data.value(QStringLiteral("Name")).toString());
@@ -263,9 +264,10 @@ bool dateNameGreaterThan(Page *page1, Page *page2)
     }
 }
 
-QList<Page *> FileEngine::listPages(Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
+QList<Page *> FileEngine::listPages(QObject *parent, Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
 {
     Q_D(const FileEngine);
+    Q_UNUSED(parent)
 
     QList<Page *> ret;
     QList<Page *> pages;

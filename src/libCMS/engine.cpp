@@ -145,11 +145,11 @@ QString Engine::description() const
     return settingsValue(QStringLiteral("tagline"));
 }
 
-Page *Engine::getPageToEdit(const QString &path)
+Page *Engine::getPageToEdit(const QString &path, QObject *parent)
 {
-    Page *page = getPage(path);
+    Page *page = getPage(path, parent);
     if (!page) {
-        page = new Page;
+        page = new Page(parent);
         page->setPath(path);
         QDateTime dt = QDateTime::currentDateTimeUtc();
         page->setCreated(dt);

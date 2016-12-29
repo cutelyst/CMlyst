@@ -79,14 +79,11 @@ bool Root::postFork(Application *app)
 
 void Root::page(Cutelyst::Context *c)
 {
-    qDebug() << "*** Root::page()";
-    qDebug() << "*** Root::page()" << c->req()->path() << c->req()->base();
-
     Response *res = c->res();
     Request *req = c->req();
 
     // Get the desired page (dispatcher already found it)
-    CMS::Page *page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
+    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
@@ -98,14 +95,12 @@ void Root::page(Cutelyst::Context *c)
     }
     res->headers().setLastModified(currentDateTime);
 
-    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("page.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
              });
-    qDebug() << "*** Root::page()" << cmsPagePath;
-    qDebug() << "*** Root::page()" << page->content();
 }
 
 void Root::post(Context *c)
@@ -137,7 +132,8 @@ void Root::lastPosts(Context *c)
     Response *res = c->res();
     Request *req = c->req();
     QList<CMS::Page *> posts;
-    posts = engine->listPages(CMS::Engine::Posts,
+    posts = engine->listPages(c,
+                              CMS::Engine::Posts,
                               CMS::Engine::SortFlags(
                                   CMS::Engine::Name |
                                   CMS::Engine::Date |
@@ -175,11 +171,11 @@ void Root::feed(Context *c)
     res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
     QList<CMS::Page *> posts;
-    posts = engine->listPages(CMS::Engine::Posts,
-                              CMS::Engine::SortFlags(
-                                  CMS::Engine::Name |
-                                  CMS::Engine::Date |
-                                  CMS::Engine::Reversed),
+    posts = engine->listPages(c,
+                              CMS::Engine::Posts,
+                              CMS::Engine::Name |
+                              CMS::Engine::Date |
+                              CMS::Engine::Reversed,
                               -1,
                               10);
     if (!posts.isEmpty()) {

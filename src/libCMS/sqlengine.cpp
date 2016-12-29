@@ -56,9 +56,9 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
     return true;
 }
 
-Page *createPageObj(const QSqlQuery &query)
+Page *createPageObj(const QSqlQuery &query, QObject *parent)
 {
-    auto page = new Page;
+    auto page = new Page(parent);
     page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
     page->setAuthor(query.value(QStringLiteral("author")).toString());
     page->setBlog(query.value(QStringLiteral("blog")).toBool());
@@ -71,9 +71,8 @@ Page *createPageObj(const QSqlQuery &query)
     return page;
 }
 
-Page *SqlEngine::getPage(const QString &path)
+Page *SqlEngine::getPage(const QString &path, QObject *parent)
 {
-    qDebug() << Q_FUNC_INFO << path;
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                                   " modified, created, tags, blog, allow_comments "
                                                                   "FROM pages "
@@ -86,7 +85,7 @@ Page *SqlEngine::getPage(const QString &path)
     }
 
     if (query.exec() && query.next()) {
-        return createPageObj(query);
+        return createPageObj(query, parent);
     }
     qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     return 0;
@@ -111,7 +110,7 @@ QString sortString(Engine::SortFlags sort)
     return QString();
 }
 
-QList<Page *> SqlEngine::listPages(Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
+QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
 {
     qDebug() << Q_FUNC_INFO;
     QList<Page *> ret;
@@ -144,7 +143,7 @@ QList<Page *> SqlEngine::listPages(Engine::Filters filters, Engine::SortFlags so
     query.bindValue(QStringLiteral(":limit"), limit);
     if (query.exec()) {
         while (query.next()) {
-            ret.append(createPageObj(query));
+            ret.append(createPageObj(query, parent));
         }
     }
     return ret;

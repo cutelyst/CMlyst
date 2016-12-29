@@ -38,13 +38,14 @@ public:
 
     virtual bool init(const QHash<QString, QString> &settings) override;
 
-    virtual Page *getPage(const QString &path) override;
+    virtual Page *getPage(const QString &path, QObject *parent) override;
 
     virtual Page *loadPage(const QString &filename);
 
     virtual bool savePageBackend(Page *page) override;
 
-    virtual QList<Page *> listPages(Filters filters = NoFilter,
+    virtual QList<Page *> listPages(QObject *parent,
+                                    Filters filters = NoFilter,
                                     SortFlags sort = SortFlags(Date | Reversed),
                                     int depth = -1,
                                     int limit = -1) override;

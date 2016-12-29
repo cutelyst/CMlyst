@@ -36,7 +36,7 @@ void AdminPosts::index(Context *c)
 {
     c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
 
-    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Posts);
+    QList<CMS::Page *> pages = engine->listPages(c, CMS::Engine::Posts);
 
     c->setStash(QStringLiteral("posts"), QVariant::fromValue(pages));
 
@@ -61,7 +61,7 @@ void AdminPosts::create(Context *c)
         savePath.prepend(QDate::currentDate().toString(QStringLiteral("yyyy/MM/dd/")));
 //        qDebug() << "save path"  << savePath;
 
-        CMS::Page *page = engine->getPageToEdit(savePath);
+        CMS::Page *page = engine->getPageToEdit(savePath, c);
         page->setContent(content);
         page->setName(title);
         page->setBlog(true);
@@ -97,7 +97,7 @@ void AdminPosts::edit(Context *c, const QStringList &args)
     QString content;
 
 //    qDebug() << Q_FUNC_INFO << path <<  c->request()->args();
-    CMS::Page *page = engine->getPageToEdit(path);
+    CMS::Page *page = engine->getPageToEdit(path, c);
 //    qDebug() << Q_FUNC_INFO << page;
 
     if (page) {

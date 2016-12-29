@@ -57,7 +57,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
         return ExactMatch;
     }
 
-    CMS::Page *page = engine->getPage(path);
+    CMS::Page *page = engine->getPage(path, c);
     if (page) {
         c->stash().insert(QStringLiteral("page"), QVariant::fromValue(page));
         if (page->blog()) {

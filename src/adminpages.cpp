@@ -40,7 +40,7 @@ void AdminPages::index(Context *c)
 {
     c->setStash(QStringLiteral("post_type"), QStringLiteral("page"));
 
-    QList<CMS::Page *> pages = engine->listPages(CMS::Engine::Pages);
+    QList<CMS::Page *> pages = engine->listPages(c, CMS::Engine::Pages);
 
     c->setStash(QStringLiteral("posts"), QVariant::fromValue(pages));
 
@@ -61,7 +61,7 @@ void AdminPages::create(Context *c)
 //        qDebug() << path;
 //        qDebug() << content;
 
-        CMS::Page *page = engine->getPageToEdit(CMS::Engine::normalizePath(path));
+        CMS::Page *page = engine->getPageToEdit(CMS::Engine::normalizePath(path), c);
         page->setContent(content);
         page->setName(title);
 //        qDebug() << page->path();
@@ -93,7 +93,7 @@ void AdminPages::edit(Context *c, const QStringList &args)
     QString content;
 
 //    qDebug() << Q_FUNC_INFO << path <<  c->request()->args();
-    CMS::Page *page = engine->getPageToEdit(path);
+    CMS::Page *page = engine->getPageToEdit(path, c);
     qDebug() << Q_FUNC_INFO << page << path;
 
     if (page) {

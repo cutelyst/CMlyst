@@ -63,10 +63,13 @@ CMlyst::~CMlyst()
 
 bool CMlyst::init()
 {
+    bool production = config(QStringLiteral("production")).toBool();
+    qDebug() << "Production" << production;
+
     auto view = new GrantleeView(this);
     view->setTemplateExtension(QStringLiteral(".html"));
     view->setWrapper(QStringLiteral("wrapper.html"));
-    view->setCache(false);
+    view->setCache(production);
 
     QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
@@ -81,6 +84,7 @@ bool CMlyst::init()
     adminView->setTemplateExtension(QStringLiteral(".html"));
     adminView->setWrapper(QStringLiteral("wrapper.html"));
     adminView->setIncludePaths({ pathTo({ QStringLiteral("root"), QStringLiteral("admin") }) });
+    adminView->setCache(production);
 
     if (qEnvironmentVariableIsSet("SETUP")) {
         new AdminSetup(this);
@@ -125,7 +129,7 @@ bool CMlyst::init()
                      {QStringLiteral("root"), dataDir.absolutePath()}
                  });
 
-    Q_FOREACH (CMS::Page *page, fileEngine->listPages()) {
+    Q_FOREACH (CMS::Page *page, fileEngine->listPages(fileEngine)) {
         qDebug() << page->blog();
         sqlEngine->savePage(page);
     }

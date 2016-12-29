@@ -112,7 +112,8 @@ void AdminSetup::edit(Context *ctx, const QString &id)
 
 void AdminSetup::remove_user(Context *c, const QString &id)
 {
-    c->res()->redirect(c->uriFor("/"));
+    c->res()->redirect(c
+                       ->uriFor("/"));
 }
 
 void AdminSetup::status(Context *c)

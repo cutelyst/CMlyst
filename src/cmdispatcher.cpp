@@ -1,6 +1,6 @@
 #include "cmdispatcher.h"
 
-#include "../libCMS/page.h"
+#include "libCMS/page.h"
 
 #include <Cutelyst/Action>
 #include <Cutelyst/Context>

@@ -6,15 +6,15 @@ include_directories(
 # Our sources
 set(cmlyst_SRCS
     ${TEMPLATES_SRC}
-    ../libCMS/page.cpp
-    ../libCMS/page_p.h
-    ../libCMS/engine.cpp
-    ../libCMS/engine_p.h
-    ../libCMS/fileengine.cpp
-    ../libCMS/fileengine_p.h
-    ../libCMS/menu.cpp
-    ../libCMS/menu_p.h
-    ../libCMS/sqlengine.cpp
+    libCMS/page.cpp
+    libCMS/page_p.h
+    libCMS/engine.cpp
+    libCMS/engine_p.h
+    libCMS/fileengine.cpp
+    libCMS/fileengine_p.h
+    libCMS/menu.cpp
+    libCMS/menu_p.h
+    libCMS/sqlengine.cpp
     cmengine.cpp
     cmdispatcher.cpp
     root.cpp

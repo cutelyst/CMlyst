@@ -24,7 +24,7 @@
 
 #include <QDebug>
 
-#include "../libCMS/page.h"
+#include "libCMS/page.h"
 
 AdminPages::AdminPages(Application *app) : Controller(app)
 {

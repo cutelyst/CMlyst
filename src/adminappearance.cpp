@@ -19,7 +19,7 @@
 
 #include "adminappearance.h"
 
-#include "../libCMS/menu.h"
+#include "libCMS/menu.h"
 
 #include <QDir>
 #include <QSettings>

@@ -19,7 +19,7 @@
 
 #include "adminsettings.h"
 
-#include "../libCMS/page.h"
+#include "libCMS/page.h"
 
 #include <Cutelyst/Application>
 

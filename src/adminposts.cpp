@@ -24,7 +24,7 @@
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Application>
 
-#include "../libCMS/page.h"
+#include "libCMS/page.h"
 
 #include <QDebug>
 

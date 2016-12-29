@@ -27,8 +27,8 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-#include "../libCMS/page.h"
-#include "../libCMS/menu.h"
+#include "libCMS/page.h"
+#include "libCMS/menu.h"
 
 #include "rsswriter.h"
 

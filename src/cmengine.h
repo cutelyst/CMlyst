@@ -1,7 +1,7 @@
 #ifndef CMENGINE_H
 #define CMENGINE_H
 
-#include "../libCMS/engine.h"
+#include "libCMS/engine.h"
 
 class CMEngine
 {

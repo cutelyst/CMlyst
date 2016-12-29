@@ -43,10 +43,10 @@
 
 #include "cmdispatcher.h"
 
-#include "../libCMS/fileengine.h"
-#include "../libCMS/sqlengine.h"
-#include "../libCMS/page.h"
-#include "../libCMS/menu.h"
+#include "libCMS/fileengine.h"
+#include "libCMS/sqlengine.h"
+#include "libCMS/page.h"
+#include "libCMS/menu.h"
 
 #include <QJsonArray>
 #include <QJsonObject>

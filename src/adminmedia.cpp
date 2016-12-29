@@ -38,7 +38,7 @@ AdminMedia::~AdminMedia()
 
 void AdminMedia::index(Context *c)
 {
-    QDir mediaDir(c->config("DataLocation").toString() % QLatin1String("/media"));
+    QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
 
     QStringList files;
     QDirIterator it(mediaDir.absolutePath(),
@@ -51,66 +51,66 @@ void AdminMedia::index(Context *c)
 
     int removeSize = mediaDir.absolutePath().size();
     QList<QHash<QString, QString> > filesHash;
-    foreach (const QString &file, files) {
+    for (const QString &file : files) {
         QFileInfo fileInfo(file);
         QString urlPath = file;
         urlPath.remove(0 ,removeSize);
-        urlPath.prepend("/.media");
+        urlPath.prepend(QStringLiteral("/.media"));
 
         QHash<QString, QString> hash;
-        hash.insert("name", fileInfo.fileName());
-        hash.insert("modified", fileInfo.lastModified().toString());
-        hash.insert("author", fileInfo.owner());
-        hash.insert("url", c->uriFor(urlPath).toString());
+        hash.insert(QStringLiteral("name"), fileInfo.fileName());
+        hash.insert(QStringLiteral("modified"), fileInfo.lastModified().toString());
+        hash.insert(QStringLiteral("author"), fileInfo.owner());
+        hash.insert(QStringLiteral("url"), c->uriFor(urlPath).toString());
         filesHash.append(hash);
     }
 
     c->stash({
-                   {"template", "media/index.html"},
-                   {"files", QVariant::fromValue(filesHash)}
+                   {QStringLiteral("template"), QStringLiteral("media/index.html")},
+                   {QStringLiteral("files"), QVariant::fromValue(filesHash)}
                });
 }
 
 void AdminMedia::upload(Context *c)
 {
-    QDir mediaDir(c->config("DataLocation").toString() % QLatin1String("/media"));
+    QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
     if (!mediaDir.exists() && !mediaDir.mkpath(mediaDir.absolutePath())) {
         qWarning() << "Could not create media directory" << mediaDir.absolutePath();
-        c->response()->redirect(c->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
                                               ParamsMultiMap({
-                                                                 {"error_msg", "Failed to save file"}
+                                                                 {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
     }
 
     // TODO this is NOT working...
-    QFile link(c->config("DataLocation").toString() % QLatin1String("/.media"));
+    QFile link(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/.media"));
     if (!link.exists() && !QFile::link(QStringLiteral("media"), link.fileName())) {
         qWarning() << "Could not create link media directory" << mediaDir.absolutePath() << link.fileName();
-        c->response()->redirect(c->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
                                               ParamsMultiMap({
-                                                                 {"error_msg", "Failed to save file"}
+                                                                 {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
     }
 
-    QDir fileDir(mediaDir.absolutePath() % QDateTime::currentDateTimeUtc().toString("/yyyy/MM"));
+    QDir fileDir(mediaDir.absolutePath() + QDateTime::currentDateTimeUtc().toString(QStringLiteral("/yyyy/MM")));
     if (!fileDir.exists() && !fileDir.mkpath(fileDir.absolutePath())) {
         qWarning() << "Could not create media directory" << fileDir.absolutePath();
-        c->response()->redirect(c->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
                                               ParamsMultiMap({
-                                                                 {"error_msg", "Failed to save file"}
+                                                                 {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
     }
 
     Request *request = c->request();
-    Upload *upload = request->upload("file");
+    Upload *upload = request->upload(QStringLiteral("file"));
     if (!upload) {
         qWarning() << "Could not find upload";
-        c->response()->redirect(c->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
                                               ParamsMultiMap({
-                                                                 {"error_msg", "Failed to save file"}
+                                                                 {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
     }
@@ -118,13 +118,13 @@ void AdminMedia::upload(Context *c)
     QString filepath = fileDir.absoluteFilePath(upload->filename());
     if (!upload->save(filepath)) {
         qWarning() << "Could not save upload" << filepath;
-        c->response()->redirect(c->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
                                               ParamsMultiMap({
-                                                                 {"error_msg", "Failed to save file"}
+                                                                 {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
     }
 
-    c->response()->redirect(c->uriFor(actionFor("index")));
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
 }
 

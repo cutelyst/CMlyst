@@ -19,8 +19,6 @@ public:
 
     virtual Page *getPage(const QString &path) override;
 
-    virtual Page *getPageToEdit(const QString &path) override;
-
     /**
      * Returns the available pages,
      * when depth is -1 all pages are listed

@@ -65,14 +65,14 @@ bool Root::End(Context *c)
     }
 
     QString staticTheme = QLatin1String("/static/themes/") % theme;
-    c->stash()["basetheme"] = c->uriFor(staticTheme).toString();
+    c->setStash(QStringLiteral("basetheme"), c->uriFor(staticTheme).toString());
 
     return true;
 }
 
 bool Root::postFork(Application *app)
 {
-    m_themeDir = app->pathTo({ "root", "themes" });
+    m_themeDir = app->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
 
     return true;
 }
@@ -196,7 +196,7 @@ void Root::feed(Context *c)
         res->headers().setLastModified(currentDateTime);
     }
 
-//    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
     RSSWriter writer(c->response());
 
     writer.startRSS();

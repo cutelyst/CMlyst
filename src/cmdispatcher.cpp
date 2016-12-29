@@ -21,26 +21,25 @@ CMDispatcher::~CMDispatcher()
 
 QByteArray CMDispatcher::list() const
 {
-    QVector<QStringList> table;
-    QStringList l1;
-    l1.append(QStringList("Page"));
-    l1.append(QLatin1Char('/') % m_pageAction->reverse());
-    table.append(l1);
+    QStringList l1 = {
+        QStringLiteral("Page"),
+        QLatin1Char('/') + m_pageAction->reverse()
+    };
 
-    QStringList post;
-    post.append(QStringList("Post"));
-    post.append(QLatin1Char('/') % m_postAction->reverse());
-    table.append(post);
+    QStringList post = {
+        QStringLiteral("Post"),
+        QLatin1Char('/') + m_postAction->reverse()
+    };
 
-    return Utils::buildTable(table,
-    { "Handle", "Private" },
-                      "Loaded Content Manager actions:");
+    return Utils::buildTable({ l1, post },
+    { QStringLiteral("Handle"), QStringLiteral("Private") },
+                      QStringLiteral("Loaded Content Manager actions:"));
 }
 
 DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, const QStringList &args) const
 {
     // we only match absolute paths
-    if (!args.isEmpty() || path.endsWith(QChar('/'))) {
+    if (!args.isEmpty() || path.endsWith(QLatin1Char('/'))) {
         return NoMatch;
     }
 
@@ -85,17 +84,17 @@ bool CMDispatcher::registerAction(Action *action)
 {
 //    qDebug() << action->attributes();
 
-    if (action->attributes().contains("Page") && !m_pageAction) {
+    if (action->attributes().contains(QLatin1String("Page")) && !m_pageAction) {
         m_pageAction = action;
         return true;
     }
 
-    if (action->attributes().contains("Post") && !m_postAction) {
+    if (action->attributes().contains(QLatin1String("Post")) && !m_postAction) {
         m_postAction = action;
         return true;
     }
 
-    if (action->attributes().contains("LatestPosts") && !m_latestPostsAction) {
+    if (action->attributes().contains(QLatin1String("LatestPosts")) && !m_latestPostsAction) {
         m_latestPostsAction = action;
         return true;
     }

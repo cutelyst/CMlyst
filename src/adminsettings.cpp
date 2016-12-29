@@ -35,22 +35,22 @@ void AdminSettings::index(Context *c)
 {
     if (!engine->settingsIsWritable()) {
         c->stash({
-                       {"error_msg", "Settings file is read only!"}
+                       {QStringLiteral("error_msg"), QStringLiteral("Settings file is read only!")}
                    });
     }
 
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         ParamsMultiMap params = c->request()->bodyParams();
         qDebug() << params;
-        engine->setSettingsValue("title", params.value("title"));
-        engine->setSettingsValue("tagline", params.value("tagline"));
-        engine->setSettingsValue("theme", params.value("theme"));
-        engine->setSettingsValue("show_on_front", params.value("show_on_front"));
-        engine->setSettingsValue("page_on_front", params.value("page_on_front"));
-        engine->setSettingsValue("page_for_posts", params.value("page_for_posts"));
+        engine->setSettingsValue(QStringLiteral("title"), params.value(QStringLiteral("title")));
+        engine->setSettingsValue(QStringLiteral("tagline"), params.value(QStringLiteral("tagline")));
+        engine->setSettingsValue(QStringLiteral("theme"), params.value(QStringLiteral("theme")));
+        engine->setSettingsValue(QStringLiteral("show_on_front"), params.value(QStringLiteral("show_on_front")));
+        engine->setSettingsValue(QStringLiteral("page_on_front"), params.value(QStringLiteral("page_on_front")));
+        engine->setSettingsValue(QStringLiteral("page_for_posts"), params.value(QStringLiteral("page_for_posts")));
     }
 
-    QDir themesDir = c->app()->pathTo({ "root", "themes" });
+    QDir themesDir = c->app()->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
     QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
                                              QDir::Name | QDir:: IgnoreCase);
 
@@ -60,14 +60,14 @@ void AdminSettings::index(Context *c)
                                                      CMS::Engine::OnlyPublished));
 
     c->stash({
-                   {"template", "settings/index.html"},
-                   {"title", engine->settingsValue("title")},
-                   {"tagline", engine->settingsValue("tagline")},
-                   {"currentTheme", engine->settingsValue("theme")},
-                   {"themes", themes},
-                   {"pages", QVariant::fromValue(pages)},
-                   {"show_on_front", engine->settingsValue("show_on_front", "posts")},
-                   {"page_on_front", engine->settingsValue("page_on_front")},
-                   {"page_for_posts", engine->settingsValue("page_for_posts")},
+                   {QStringLiteral("template"), QStringLiteral("settings/index.html")},
+                   {QStringLiteral("title"), engine->settingsValue(QStringLiteral("title"))},
+                   {QStringLiteral("tagline"), engine->settingsValue(QStringLiteral("tagline"))},
+                   {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},
+                   {QStringLiteral("themes"), themes},
+                   {QStringLiteral("pages"), QVariant::fromValue(pages)},
+                   {QStringLiteral("show_on_front"), engine->settingsValue(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
+                   {QStringLiteral("page_on_front"), engine->settingsValue(QStringLiteral("page_on_front"))},
+                   {QStringLiteral("page_for_posts"), engine->settingsValue(QStringLiteral("page_for_posts"))},
                });
 }

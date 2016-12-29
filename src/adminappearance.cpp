@@ -38,88 +38,88 @@ AdminAppearance::~AdminAppearance()
 
 void AdminAppearance::index(Context *c)
 {
-    c->response()->redirect(c->uriFor(actionFor("menus")));
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
 }
 
 void AdminAppearance::menus(Context *c)
 {
     c->stash({
-                 {"template", "appearance/menus.html"},
-                 {"menus", QVariant::fromValue(engine->menus())}
+                 {QStringLiteral("template"), QStringLiteral("appearance/menus.html")},
+                 {QStringLiteral("menus"), QVariant::fromValue(engine->menus())}
              });
     qDebug() << engine << engine->menus();
 }
 
 void AdminAppearance::menus_remove(Context *c, const QString &id)
 {
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         engine->removeMenu(id);
     }
 
-    c->response()->redirect(c->uriFor(actionFor("menus")));
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
 }
 
 void AdminAppearance::menus_new(Context *c)
 {
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         ParamsMultiMap params = c->req()->bodyParams();
 
-        QString id = QUuid::createUuid().toString().remove('{').remove('}');
+        QString id = QUuid::createUuid().toString().remove(QLatin1Char('{')).remove(QLatin1Char('}'));
         CMS::Menu *menu = new CMS::Menu(id, c);
         if (saveMenu(menu, params, false)) {
-            c->response()->redirect(c->uriFor(actionFor("menus")));
+            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
             return;
         }
 
         c->stash({
-                     {"error_msg", tr("Could not save menu")}
+                     {QStringLiteral("error_msg"), tr("Could not save menu")}
                  });
 
     }
 
     c->stash({
-                 {"template", "appearance/menus_new.html"},
-                 {"no_wrapper", true},
+                 {QStringLiteral("template"), QStringLiteral("appearance/menus_new.html")},
+                 {QStringLiteral("no_wrapper"), true},
              });
 }
 
 void AdminAppearance::menus_edit(Context *c, const QString &id)
 {
-    c->stash()["editing"] = true;
+    c->setStash(QStringLiteral("editing"), true);
 
     CMS::Menu *menu = engine->menu(id.toHtmlEscaped());
     if (!menu) {
         qWarning() << "menu not found" << id;
-        c->response()->redirect(c->uriFor(actionFor("menus")));
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
         return;
     }
 
     qWarning() << "params" << c->req()->method();
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         if (saveMenu(menu, c->req()->bodyParams(), true)) {
-            c->response()->redirect(c->uriFor(actionFor("menus")));
+            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
             return;
         } else {
             c->stash({
-                         {"error_msg", tr("Could not save menu")}
+                         {QStringLiteral("error_msg"), tr("Could not save menu")}
                      });
         }
     }
 
     c->stash({
-                 {"template", "appearance/menus_new.html"},
-                 {"menu", QVariant::fromValue(menu)},
-                 {"no_wrapper", true},
+                 {QStringLiteral("template"), QStringLiteral("appearance/menus_new.html")},
+                 {QStringLiteral("menu"), QVariant::fromValue(menu)},
+                 {QStringLiteral("no_wrapper"), true},
              });
 }
 
 bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace)
 {
     qDebug() << "saving menu" << menu->name();
-    menu->setName(params.value("name").toHtmlEscaped());
+    menu->setName(params.value(QStringLiteral("name")).toHtmlEscaped());
 
     // TODO remove this hack
-    menu->setLocations({ "main" });
+    menu->setLocations({ QStringLiteral("main") });
 
     QStringList menuNames = params.values(QStringLiteral("menuName"));
     QStringList menuUrl = params.values(QStringLiteral("menuUrl"));

@@ -82,9 +82,9 @@ void Menu::appendEntry(const QString &text, const QString &url, const QString &a
 {
     Q_D(Menu);
     d->urls.append({
-                       {"text", text},
-                       {"url", url},
-                       {"attr", attr}
+                       {QStringLiteral("text"), text},
+                       {QStringLiteral("url"), url},
+                       {QStringLiteral("attr"), attr}
                    });
 }
 

@@ -38,20 +38,20 @@ bool Admin::Auto(Context *c)
 
     if (!Authentication::userExists(c)) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        c->res()->redirect(c->uriForAction("/.admin/login/index"));
+        c->res()->redirect(c->uriForAction((QStringLiteral("/.admin/login/index"))));
         return false;
     }
 
-    c->setObjectName("CMlyst");
+    c->setObjectName(QStringLiteral("CMlyst"));
 
-    c->stash()["adminbase"] = true;
+    c->setStash(QStringLiteral("adminbase"), true);
 
     return true;
 }
 
 void Admin::notFound(Context *c)
 {
-    c->stash()[QLatin1String("template")] = "404.html";
+    c->setStash(QStringLiteral("template"), QStringLiteral("404.html"));
     c->res()->setStatus(404);
 }
 
@@ -67,5 +67,5 @@ void Admin::logout(Cutelyst::Context *c)
     if (auth) {
         auth->logout(c);
     }
-    c->res()->redirect(c->uriFor("/.admin/login"));
+    c->res()->redirect(c->uriFor(QStringLiteral("/.admin/login")));
 }

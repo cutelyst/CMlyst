@@ -22,15 +22,15 @@
 #include <QStringBuilder>
 #include <QDebug>
 
-#define NAMESPACE_CONTENT "http://purl.org/rss/1.0/modules/content/"
-#define NAMESPACE_WFW     "http://wellformedweb.org/CommentAPI/"
-#define NAMESPACE_DC      "http://purl.org/dc/elements/1.1/"
-#define NAMESPACE_ATOM    "http://www.w3.org/2005/Atom"
-#define NAMESPACE_SY      "http://purl.org/rss/1.0/modules/syndication/"
-#define NAMESPACE_SLASH   "http://purl.org/rss/1.0/modules/slash/"
-#define NAMESPACE_GEORSS  "http://www.georss.org/georss"
-#define NAMESPACE_GEO     "http://www.w3.org/2003/01/geo/wgs84_pos#"
-#define NAMESPACE_MEDIA   "http://search.yahoo.com/mrss/"
+static QString NAMESPACE_CONTENT QStringLiteral("http://purl.org/rss/1.0/modules/content/");
+static QString NAMESPACE_WFW     QStringLiteral("http://wellformedweb.org/CommentAPI/");
+static QString NAMESPACE_DC      QStringLiteral("http://purl.org/dc/elements/1.1/");
+static QString NAMESPACE_ATOM    QStringLiteral("http://www.w3.org/2005/Atom");
+static QString NAMESPACE_SY      QStringLiteral("http://purl.org/rss/1.0/modules/syndication/");
+static QString NAMESPACE_SLASH   QStringLiteral("http://purl.org/rss/1.0/modules/slash/");
+static QString NAMESPACE_GEORSS  QStringLiteral("http://www.georss.org/georss");
+static QString NAMESPACE_GEO     QStringLiteral("http://www.w3.org/2003/01/geo/wgs84_pos#");
+static QString NAMESPACE_MEDIA   QStringLiteral("http://search.yahoo.com/mrss/");
 
 RSSWriter::RSSWriter(QIODevice *device, QObject *parent) : QObject(parent)
 {

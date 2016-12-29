@@ -26,4 +26,14 @@ include_directories(
     ${CutelystQt5_INCLUDE_DIR}
 )
 
+add_definitions(
+    -DQT_NO_KEYWORDS
+    -DQT_NO_CAST_TO_ASCII
+    -DQT_NO_CAST_FROM_ASCII
+    -DQT_STRICT_ITERATORS
+    -DQT_NO_URL_CAST_FROM_STRING
+    -DQT_NO_CAST_FROM_BYTEARRAY
+    -DQT_USE_QSTRINGBUILDER
+)
+
 add_subdirectory(src)

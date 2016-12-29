@@ -49,7 +49,7 @@ void AdminLogin::index(Context *c)
                 c->res()->redirect(c->uriFor(QStringLiteral("/.admin")));
                 return;
             } else {
-                c->stash()["error_msg"] = trUtf8("Wrong password or username");
+                c->setStash(QStringLiteral("error_msg"), trUtf8("Wrong password or username"));
                 qDebug() << Q_FUNC_INFO << username << "user or password invalid";
             }
         } else {

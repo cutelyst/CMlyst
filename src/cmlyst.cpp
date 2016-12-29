@@ -64,23 +64,23 @@ CMlyst::~CMlyst()
 bool CMlyst::init()
 {
     auto view = new GrantleeView(this);
-    view->setTemplateExtension(".html");
-    view->setWrapper("wrapper.html");
+    view->setTemplateExtension(QStringLiteral(".html"));
+    view->setWrapper(QStringLiteral("wrapper.html"));
     view->setCache(false);
 
-    QDir dataDir = config("DataLocation", QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
+    QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
         qCritical() << "Could not create DataLocation" << dataDir.absolutePath();
         return false;
     }
-    setConfig("DataLocation", dataDir.absolutePath());
+    setConfig(QStringLiteral("DataLocation"), dataDir.absolutePath());
 
-    view->setIncludePaths({ pathTo({ "root", "themes", "default" }) });
+    view->setIncludePaths({ pathTo({ QStringLiteral("root"), QStringLiteral("themes"), QStringLiteral("default") }) });
 
-    auto adminView = new GrantleeView(this, "admin");
-    adminView->setTemplateExtension(".html");
-    adminView->setWrapper("wrapper.html");
-    adminView->setIncludePaths({ pathTo({ "root", "admin" }) });
+    auto adminView = new GrantleeView(this, QStringLiteral("admin"));
+    adminView->setTemplateExtension(QStringLiteral(".html"));
+    adminView->setWrapper(QStringLiteral("wrapper.html"));
+    adminView->setIncludePaths({ pathTo({ QStringLiteral("root"), QStringLiteral("admin") }) });
 
     if (qEnvironmentVariableIsSet("SETUP")) {
         new AdminSetup(this);
@@ -97,7 +97,7 @@ bool CMlyst::init()
 
     new CMDispatcher(this);
 
-    auto store = new StoreHtpasswd(dataDir.absoluteFilePath("htpasswd"));
+    auto store = new StoreHtpasswd(dataDir.absoluteFilePath(QStringLiteral("htpasswd")));
 
     auto password = new CredentialPassword;
     password->setPasswordField(QLatin1String("password"));
@@ -110,19 +110,19 @@ bool CMlyst::init()
     auto auth = new Authentication(this);
     auth->addRealm(realm);
 
-    qDebug() << "Root location" << pathTo({ "root" });
-    qDebug() << "Root Admin location" << pathTo({ "root", "src", "admin" });
+    qDebug() << "Root location" << pathTo({ QStringLiteral("root") });
+    qDebug() << "Root Admin location" << pathTo({ QStringLiteral("root"), QStringLiteral("src"), QStringLiteral("admin") });
     qDebug() << "Data location" << dataDir.absolutePath();
 
     // Migrate
     auto fileEngine = new CMS::FileEngine(this);
     fileEngine->init({
-                     {"root", dataDir.absolutePath()}
+                     {QStringLiteral("root"), dataDir.absolutePath()}
                  });
 
     auto sqlEngine = new CMS::SqlEngine(this);
     sqlEngine->init({
-                     {"root", dataDir.absolutePath()}
+                     {QStringLiteral("root"), dataDir.absolutePath()}
                  });
 
     Q_FOREACH (CMS::Page *page, fileEngine->listPages()) {
@@ -160,7 +160,7 @@ bool CMlyst::init()
 
         array.append(objMenu);
     }
-    sqlEngine->setSettingsValue(QStringLiteral("menus"), QJsonDocument(array).toJson(QJsonDocument::Compact));
+    sqlEngine->setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(QJsonDocument(array).toJson(QJsonDocument::Compact)));
 
     qDebug() << QJsonDocument(array).toVariant();
 
@@ -170,12 +170,12 @@ bool CMlyst::init()
 
 bool CMlyst::postFork()
 {
-    QDir dataDir = config("DataLocation").toString();
+    QDir dataDir = config(QStringLiteral("DataLocation")).toString();
 
 //    auto engine = new CMS::FileEngine(this);
     auto engine = new CMS::SqlEngine(this);
     engine->init({
-                     {"root", dataDir.absolutePath()}
+                     {QStringLiteral("root"), dataDir.absolutePath()}
                  });
 
     Q_FOREACH (Controller *controller, controllers()) {

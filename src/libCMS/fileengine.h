@@ -40,8 +40,6 @@ public:
 
     virtual Page *getPage(const QString &path) override;
 
-    virtual Page *getPageToEdit(const QString &path) override;
-
     virtual Page *loadPage(const QString &filename);
 
     virtual bool savePageBackend(Page *page) override;

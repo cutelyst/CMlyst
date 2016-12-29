@@ -67,7 +67,7 @@ public:
 
     virtual Page *getPage(const QString &path) = 0;
 
-    virtual Page *getPageToEdit(const QString &path) = 0;
+    Page *getPageToEdit(const QString &path);
 
     bool savePage(Page *page);
 

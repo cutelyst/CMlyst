@@ -37,7 +37,7 @@ public:
     C_ATTR(logout, :Local :AutoArgs)
     void logout(Context *c);
 
-private slots:
+private Q_SLOTS:
     bool Auto(Context *c);
 
 private:

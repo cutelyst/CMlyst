@@ -56,13 +56,13 @@ bool FileEngine::init(const QHash<QString, QString> &settings)
 {
     Q_D(FileEngine);
 
-    QString root = settings["root"];
+    QString root = settings.value(QStringLiteral("root"));
     if (root.isEmpty()) {
         root = QDir::currentPath();
     }
     d->rootPath = root;
-    d->pagesPath = root % QLatin1String("/pages");
-    d->settingsInfo = d->rootPath.absoluteFilePath("site.conf");
+    d->pagesPath = root + QLatin1String("/pages");
+    d->settingsInfo = d->rootPath.absoluteFilePath(QStringLiteral("site.conf"));
     d->settings = new QSettings(d->settingsInfo.absoluteFilePath(), QSettings::IniFormat);
 
     if (!d->pagesPath.exists() &&
@@ -104,20 +104,6 @@ Page *FileEngine::getPage(const QString &path)
     return 0;
 }
 
-Page *FileEngine::getPageToEdit(const QString &path)
-{
-    Page *page = getPage(path);
-    if (!page) {
-        page = new Page;
-        page->setPath(path);
-        QDateTime dt = QDateTime::currentDateTimeUtc();
-        page->setCreated(dt);
-        page->setModified(dt);
-    }
-
-    return page;
-}
-
 Page *FileEngine::loadPage(const QString &filename)
 {
     Q_D(FileEngine);
@@ -156,35 +142,35 @@ Page *FileEngine::loadPage(const QString &filename)
         page = new Page;
 
         page->setPath(relPath);
-        page->setName(data.value("Name").toString());
+        page->setName(data.value(QStringLiteral("Name")).toString());
 
-        QString author = data.value("Author").toString();
+        QString author = data.value(QStringLiteral("Author")).toString();
         if (author.isEmpty()) {
             author = fileInfo.owner();
         }
         page->setAuthor(author);
 
-        QDateTime modified = QDateTime::fromString(data.value("Modified").toString(), Qt::ISODate);
+        QDateTime modified = QDateTime::fromString(data.value(QStringLiteral("Modified")).toString(), Qt::ISODate);
         if (modified.isValid()) {
         } else {
             modified = fileInfo.lastModified().toUTC();
         }
         page->setModified(modified);
 
-        QDateTime created = QDateTime::fromString(data.value("Created").toString(), Qt::ISODate);
+        QDateTime created = QDateTime::fromString(data.value(QStringLiteral("Created")).toString(), Qt::ISODate);
         if (created.isValid()) {
         } else {
             created = fileInfo.created().toUTC();
         }
         page->setCreated(created);
 
-        page->setNavigationLabel(data.value("NavigationLabel").toString());
-        page->setTags(data.value("Tags").toStringList());
-        page->setBlog(data.value("Blog").toBool());
-        page->setAllowComments(data.value("AllowComments").toBool());
+        page->setNavigationLabel(data.value(QStringLiteral("NavigationLabel")).toString());
+        page->setTags(data.value(QStringLiteral("Tags")).toStringList());
+        page->setBlog(data.value(QStringLiteral("Blog")).toBool());
+        page->setAllowComments(data.value(QStringLiteral("AllowComments")).toBool());
 
-        data.beginGroup("Body");
-        page->setContent(data.value("Content").toString());
+        data.beginGroup(QStringLiteral("Body"));
+        page->setContent(data.value(QStringLiteral("Content")).toString());
         data.endGroup();
 
         d->pathPages.insert(relPath, page);
@@ -203,12 +189,12 @@ bool FileEngine::savePageBackend(Page *page)
     Q_D(FileEngine);
 
     QString path = page->path();
-    path.remove(QRegularExpression("^/"));
+    path.remove(QRegularExpression(QStringLiteral("^/")));
     if (path.isEmpty()) {
         path = QStringLiteral("index");
     }
 
-    const QString &file = d->pagesPath.absoluteFilePath(path.toLatin1().toPercentEncoding());
+    const QString file = d->pagesPath.absoluteFilePath(QString::fromLatin1(path.toLatin1().toPercentEncoding()));
 //    qDebug() << "save Page" << page->path() << path;
     QSettings data(file, QSettings::IniFormat);
     data.setValue(QStringLiteral("Name"), page->name());
@@ -220,8 +206,8 @@ bool FileEngine::savePageBackend(Page *page)
     data.setValue(QStringLiteral("Blog"), page->blog());
     data.setValue(QStringLiteral("AllowComments"), page->allowComments());
 
-    data.beginGroup("Body");
-    data.setValue("Content", page->content());
+    data.beginGroup(QStringLiteral("Body"));
+    data.setValue(QStringLiteral("Content"), page->content());
     data.endGroup();
     data.sync();
 
@@ -301,7 +287,7 @@ QList<Page *> FileEngine::listPages(Engine::Filters filters, Engine::SortFlags s
         ret = pages;
     } else {
         Q_FOREACH (Page *page, pages) {
-            if (depth != -1 && page->path().count(QChar('/')) > depth) {
+            if (depth != -1 && page->path().count(QLatin1Char('/')) > depth) {
                 continue;
             }
 
@@ -348,17 +334,17 @@ bool FileEngine::saveMenu(Menu *menu, bool replace)
     if (replace || !d->settings->childGroups().contains(menu->id())) {
         d->settings->beginGroup(menu->id());
 
-        d->settings->setValue("Name", menu->name());
-        d->settings->setValue("AutoAddPages", menu->autoAddPages());
-        d->settings->setValue("Locations", menu->locations());
+        d->settings->setValue(QStringLiteral("Name"), menu->name());
+        d->settings->setValue(QStringLiteral("AutoAddPages"), menu->autoAddPages());
+        d->settings->setValue(QStringLiteral("Locations"), menu->locations());
 
         QList<QVariantHash> urls = menu->entries();
-        d->settings->beginWriteArray("urls", urls.size());
+        d->settings->beginWriteArray(QStringLiteral("urls"), urls.size());
         for (int i = 0; i < urls.size(); ++i) {
             d->settings->setArrayIndex(i);
             // TODO save all values
-            d->settings->setValue("text", urls.at(i).value("text"));
-            d->settings->setValue("url", urls.at(i).value("url"));
+            d->settings->setValue(QStringLiteral("text"), urls.at(i).value(QStringLiteral("text")));
+            d->settings->setValue(QStringLiteral("url"), urls.at(i).value(QStringLiteral("url")));
         }
         d->settings->endArray();
 
@@ -490,7 +476,7 @@ void FileEngine::loadSettings()
     d->settings->beginGroup(QStringLiteral("Menus"));
     QList<CMS::Menu *> menus;
     QHash<QString, CMS::Menu *> menuLocations;
-    foreach (const QString &menu, d->settings->childGroups()) {
+    Q_FOREACH (const QString &menu, d->settings->childGroups()) {
         Menu *obj = d->createMenu(menu, this);
 
         bool added = false;
@@ -517,21 +503,21 @@ Menu *FileEnginePrivate::createMenu(const QString &id, QObject *parent)
 
     Menu *menu = new Menu(id);
 
-    menu->setName(settings->value("Name").toString());
-    menu->setLocations(settings->value("Locations").toStringList());
-    menu->setAutoAddPages(settings->value("AutoAddPages").toBool());
+    menu->setName(settings->value(QStringLiteral("Name")).toString());
+    menu->setLocations(settings->value(QStringLiteral("Locations")).toStringList());
+    menu->setAutoAddPages(settings->value(QStringLiteral("AutoAddPages")).toBool());
 
     QList<QVariantHash> urls;
 
-    int size = settings->beginReadArray("urls");
+    int size = settings->beginReadArray(QStringLiteral("urls"));
     for (int i = 0; i < size; ++i) {
         settings->setArrayIndex(i);
         QVariantHash data;
         // TODO read all data
-        data.insert("id", i);
-        data.insert("text", settings->value("text"));
-        data.insert("url", settings->value("url"));
-        data.insert("attr", settings->value("attr"));
+        data.insert(QStringLiteral("id"), i);
+        data.insert(QStringLiteral("text"), settings->value(QStringLiteral("text")));
+        data.insert(QStringLiteral("url"), settings->value(QStringLiteral("url")));
+        data.insert(QStringLiteral("attr"), settings->value(QStringLiteral("attr")));
         urls.append(data);
     }
     settings->endArray();

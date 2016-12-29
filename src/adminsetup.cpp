@@ -37,88 +37,82 @@ AdminSetup::AdminSetup(QObject *app) : Controller(app)
 void AdminSetup::setup(Context *c)
 {
     qDebug() << Q_FUNC_INFO;
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         ParamsMultiMap param = c->req()->params();
         QString email = param.value(QLatin1String("email"));
         QString username = param.value(QLatin1String("username"));
         QString password = param.value(QLatin1String("password"));
         QString password2 = param.value(QLatin1String("password2"));
-        c->stash()["username"] = username;
-        c->stash()["email"] = email;
+        c->setStash(QStringLiteral("username"), username);
+        c->setStash(QStringLiteral("email"), email);
 
         if (password == password2) {
             if (password.size() < 10) {
-                c->stash()["error_msg"] = tr("Password must be longer than 10 characters");
+                c->setStash(QStringLiteral("error_msg"), tr("Password must be longer than 10 characters"));
             } else {
-                Authentication *auth = c->plugin<Authentication*>();
+                password = QString::fromLatin1(CredentialPassword::createPassword(password.toUtf8(),
+                                                                                  QCryptographicHash::Sha256,
+                                                                                  1000, 24, 24));
 
-                password = CredentialPassword::createPassword(password.toUtf8(),
-                                                              QCryptographicHash::Sha256,
-                                                              1000, 24, 24);
-
+                auto auth = c->plugin<Authentication*>();
                 AuthenticationRealm *realm = auth->realm();
-                StoreHtpasswd *store = static_cast<StoreHtpasswd*>(realm->store());
+                auto store = static_cast<StoreHtpasswd*>(realm->store());
                 store->addUser({
-                                   {"username", username},
-                                   {"password", password},
-                                   {"email", email}
+                                   {QStringLiteral("username"), username},
+                                   {QStringLiteral("password"), password},
+                                   {QStringLiteral("email"), email}
                                });
             }
         } else {
-            c->stash()["error_msg"] = tr("The two password didn't match");
+            c->setStash(QStringLiteral("error_msg"), tr("The two password didn't match"));
         }
     }
 
-    c->stash()[QLatin1String("template")] = "setup.html";
+    c->setStash(QStringLiteral("template"), QStringLiteral("setup.html"));
 }
 
 void AdminSetup::notFound(Context *c)
 {
-    c->response()->redirect(c->uriFor(actionFor("setup")));
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("setup"))));
 }
 
 void AdminSetup::edit(Context *c, const QString &id)
 {
     ParamsMultiMap param = c->req()->params();
-    QString email = param.value(QLatin1String("email"));
-    QString username = param.value(QLatin1String("username"));
-    QString password = param.value(QLatin1String("password"));
-    QString password2 = param.value(QLatin1String("password2"));
-    c->stash()["username"] = username;
-    c->stash()["email"] = email;
+    QString email = param.value(QStringLiteral("email"));
+    QString username = param.value(QStringLiteral("username"));
+    QString password = param.value(QStringLiteral("password"));
+    QString password2 = param.value(QStringLiteral("password2"));
+    c->setStash(QStringLiteral("username"), username);
+    c->setStash(QStringLiteral("email"), email);
 
-    if (c->req()->method() != "POST") {
-
-    }
-
-    if (c->req()->method() == "POST") {
+    if (c->req()->isPost()) {
         if (password == password2) {
-            if (param.value("password").isEmpty()) {
+            if (param.value(QStringLiteral("password")).isEmpty()) {
 
             } else if (password.size() < 10) {
-                c->stash()["error_msg"] = tr("Password must be longer than 10 characters");
+                c->setStash(QStringLiteral("error_msg"), tr("Password must be longer than 10 characters"));
             } else {
-                password = CredentialPassword::createPassword(password.toUtf8(),
-                                                              QCryptographicHash::Sha256,
-                                                              1000, 24, 24);
+                password = QString::fromLatin1(CredentialPassword::createPassword(password.toUtf8(),
+                                                                                  QCryptographicHash::Sha256,
+                                                                                  1000, 24, 24));
             }
         } else {
-            c->stash()["error_msg"] = tr("The two password didn't match");
+            c->setStash(QStringLiteral("error_msg"), tr("The two password didn't match"));
         }
     }
 
-    c->stash()[QLatin1String("template")] = "setup.html";
+    c->setStash(QStringLiteral("template"), QStringLiteral("setup.html"));
 }
 
 void AdminSetup::remove_user(Context *c, const QString &id)
 {
-    c->res()->redirect(c
-                       ->uriFor("/"));
+    c->res()->redirect(c->uriFor(QStringLiteral("/")));
 }
 
 void AdminSetup::status(Context *c)
 {
-    c->stash()[QLatin1String("template")] = "setupStatus.html";
+    c->setStash(QStringLiteral("template"), QStringLiteral("setupStatus.html"));
 }
 
 bool AdminSetup::End(Context *c)

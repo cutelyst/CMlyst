@@ -88,14 +88,8 @@ Page *SqlEngine::getPage(const QString &path)
     if (query.exec() && query.next()) {
         return createPageObj(query);
     }
-    qWarning() << "Failed to get page" << query.lastError().databaseText();
+    qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     return 0;
-}
-
-Page *SqlEngine::getPageToEdit(const QString &path)
-{
-    qDebug() << Q_FUNC_INFO;
-    return getPage(path);
 }
 
 QString sortString(Engine::SortFlags sort)
@@ -292,7 +286,7 @@ void SqlEngine::createDb()
 {
     QSqlQuery query(QStringLiteral("cmlyst"));
 
-    bool ret = query.exec("PRAGMA journal_mode = WAL");
+    bool ret = query.exec(QStringLiteral("PRAGMA journal_mode = WAL"));
     qDebug() << "PRAGMA journal_mode = WAL" << ret << query.lastError().driverText();
 
     if (!query.exec(QStringLiteral("CREATE TABLE pages ( "

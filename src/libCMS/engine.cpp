@@ -106,11 +106,11 @@ QString Engine::normalizePath(const QString &path)
 {
     // "/foo/bar/Iam a big...path" turns into
     // "/foo/bar/iam-a-big-path"
-    QStringList parts = path.split(QChar('/'));
+    QStringList parts = path.split(QLatin1Char('/'));
     for (int i = 0; i < parts.size(); ++i) {
         parts.replace(i, normalizeTitle(parts.at(i)));
     }
-    return parts.join(QChar('/'));
+    return parts.join(QLatin1Char('/'));
 }
 
 QString Engine::normalizeTitle(const QString &title)
@@ -120,17 +120,17 @@ QString Engine::normalizeTitle(const QString &title)
     QString ret = title.toLower();
 
     // turn separators into space
-    ret.replace(QChar('.'), QChar::Space);
-    ret.replace(QChar('-'), QChar::Space);
+    ret.replace(QLatin1Char('.'), QChar::Space);
+    ret.replace(QLatin1Char('-'), QChar::Space);
 
     // remove everything that is not a word or space
-    ret.remove(QRegularExpression("[^\\w\\s]"));
+    ret.remove(QRegularExpression(QStringLiteral("[^\\w\\s]")));
 
     // remove abused space
     ret = ret.simplified();
 
     // turn space into dashes
-    ret.replace(QChar::Space, QChar('-'));
+    ret.replace(QChar::Space, QLatin1Char('-'));
 
     return ret;
 }
@@ -143,4 +143,18 @@ QString CMS::Engine::title() const
 QString Engine::description() const
 {
     return settingsValue(QStringLiteral("tagline"));
+}
+
+Page *Engine::getPageToEdit(const QString &path)
+{
+    Page *page = getPage(path);
+    if (!page) {
+        page = new Page;
+        page->setPath(path);
+        QDateTime dt = QDateTime::currentDateTimeUtc();
+        page->setCreated(dt);
+        page->setModified(dt);
+    }
+
+    return page;
 }

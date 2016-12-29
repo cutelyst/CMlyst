@@ -1,12 +1,12 @@
 <h2 class="sub-header">{% if editing %}Edit Menu
-<form method="post" class="pull-right" action="menus/remove/{{ menu.id }}">
+<form method="post" class="pull-right" action="/.admin/appearance/menus/remove/{{ menu.id }}">
 <button type="submit" name="submit" value="delete" class="btn">
   <span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>
 </form>
 {% else %}Add New Menu{% endif %}
 </h2>
 
-<form method="post" class="form" role="form" action="menus/{% if editing %}edit/{{ menu.id }}{% else %}new{% endif %}" autocomplete="off">
+<form method="post" class="form" role="form" action="/.admin/appearance/menus/{% if editing %}edit/{{ menu.id }}{% else %}new{% endif %}" autocomplete="off">
   <div class="form-group">
     <input type="text" class="form-control" name="name" id="name" value="{{ menu.name }}" required>
   </div>

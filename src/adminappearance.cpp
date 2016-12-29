@@ -75,12 +75,10 @@ void AdminAppearance::menus_new(Context *c)
                      {QStringLiteral("error_msg"), tr("Could not save menu")}
                  });
 
+    } else {
+        c->setStash(QStringLiteral("no_wrapper"), true);
     }
-
-    c->stash({
-                 {QStringLiteral("template"), QStringLiteral("appearance/menus_new.html")},
-                 {QStringLiteral("no_wrapper"), true},
-             });
+    c->setStash(QStringLiteral("template"), QStringLiteral("appearance/menus_new.html"));
 }
 
 void AdminAppearance::menus_edit(Context *c, const QString &id)

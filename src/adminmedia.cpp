@@ -36,9 +36,9 @@ AdminMedia::~AdminMedia()
 
 }
 
-void AdminMedia::index(Context *ctx)
+void AdminMedia::index(Context *c)
 {
-    QDir mediaDir(ctx->config("DataLocation").toString() % QLatin1String("/media"));
+    QDir mediaDir(c->config("DataLocation").toString() % QLatin1String("/media"));
 
     QStringList files;
     QDirIterator it(mediaDir.absolutePath(),
@@ -61,22 +61,22 @@ void AdminMedia::index(Context *ctx)
         hash.insert("name", fileInfo.fileName());
         hash.insert("modified", fileInfo.lastModified().toString());
         hash.insert("author", fileInfo.owner());
-        hash.insert("url", ctx->uriFor(urlPath).toString());
+        hash.insert("url", c->uriFor(urlPath).toString());
         filesHash.append(hash);
     }
 
-    ctx->stash({
+    c->stash({
                    {"template", "media/index.html"},
                    {"files", QVariant::fromValue(filesHash)}
                });
 }
 
-void AdminMedia::upload(Context *ctx)
+void AdminMedia::upload(Context *c)
 {
-    QDir mediaDir(ctx->config("DataLocation").toString() % QLatin1String("/media"));
+    QDir mediaDir(c->config("DataLocation").toString() % QLatin1String("/media"));
     if (!mediaDir.exists() && !mediaDir.mkpath(mediaDir.absolutePath())) {
         qWarning() << "Could not create media directory" << mediaDir.absolutePath();
-        ctx->response()->redirect(ctx->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(actionFor("index"),
                                               ParamsMultiMap({
                                                                  {"error_msg", "Failed to save file"}
                                                              })));
@@ -84,10 +84,10 @@ void AdminMedia::upload(Context *ctx)
     }
 
     // TODO this is NOT working...
-    QFile link(ctx->config("DataLocation").toString() % QLatin1String("/.media"));
+    QFile link(c->config("DataLocation").toString() % QLatin1String("/.media"));
     if (!link.exists() && !QFile::link(QStringLiteral("media"), link.fileName())) {
         qWarning() << "Could not create link media directory" << mediaDir.absolutePath() << link.fileName();
-        ctx->response()->redirect(ctx->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(actionFor("index"),
                                               ParamsMultiMap({
                                                                  {"error_msg", "Failed to save file"}
                                                              })));
@@ -97,18 +97,18 @@ void AdminMedia::upload(Context *ctx)
     QDir fileDir(mediaDir.absolutePath() % QDateTime::currentDateTimeUtc().toString("/yyyy/MM"));
     if (!fileDir.exists() && !fileDir.mkpath(fileDir.absolutePath())) {
         qWarning() << "Could not create media directory" << fileDir.absolutePath();
-        ctx->response()->redirect(ctx->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(actionFor("index"),
                                               ParamsMultiMap({
                                                                  {"error_msg", "Failed to save file"}
                                                              })));
         return;
     }
 
-    Request *request = ctx->request();
+    Request *request = c->request();
     Upload *upload = request->upload("file");
     if (!upload) {
         qWarning() << "Could not find upload";
-        ctx->response()->redirect(ctx->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(actionFor("index"),
                                               ParamsMultiMap({
                                                                  {"error_msg", "Failed to save file"}
                                                              })));
@@ -118,13 +118,13 @@ void AdminMedia::upload(Context *ctx)
     QString filepath = fileDir.absoluteFilePath(upload->filename());
     if (!upload->save(filepath)) {
         qWarning() << "Could not save upload" << filepath;
-        ctx->response()->redirect(ctx->uriFor(actionFor("index"),
+        c->response()->redirect(c->uriFor(actionFor("index"),
                                               ParamsMultiMap({
                                                                  {"error_msg", "Failed to save file"}
                                                              })));
         return;
     }
 
-    ctx->response()->redirect(ctx->uriFor(actionFor("index")));
+    c->response()->redirect(c->uriFor(actionFor("index")));
 }
 

@@ -35,21 +35,21 @@ AdminLogin::AdminLogin(QObject *app) : Controller(app)
 {
 }
 
-void AdminLogin::index(Context *ctx)
+void AdminLogin::index(Context *c)
 {
-    Request *req = ctx->request();
+    Request *req = c->request();
     const QString username = req->param(QStringLiteral("username"));
     if (req->isPost()) {
         const QString password = req->param(QStringLiteral("password"));
         if (!username.isEmpty() && !password.isEmpty()) {
 
             // Authenticate
-            if (Authentication::authenticate(ctx, req->bodyParams())) {
+            if (Authentication::authenticate(c, req->bodyParams())) {
                 qDebug() << Q_FUNC_INFO << username << "is now Logged in";
-                ctx->res()->redirect(ctx->uriFor(QStringLiteral("/.admin")));
+                c->res()->redirect(c->uriFor(QStringLiteral("/.admin")));
                 return;
             } else {
-                ctx->stash()["error_msg"] = trUtf8("Wrong password or username");
+                c->stash()["error_msg"] = trUtf8("Wrong password or username");
                 qDebug() << Q_FUNC_INFO << username << "user or password invalid";
             }
         } else {
@@ -59,7 +59,7 @@ void AdminLogin::index(Context *ctx)
         qWarning() << "Non POST method";
     }
 
-    ctx->setStash(QStringLiteral("username"), username);
-    ctx->setStash(QStringLiteral("no_wrapper"), true);
-    ctx->setStash(QStringLiteral("template"), QStringLiteral("login.html"));
+    c->setStash(QStringLiteral("username"), username);
+    c->setStash(QStringLiteral("no_wrapper"), true);
+    c->setStash(QStringLiteral("template"), QStringLiteral("login.html"));
 }

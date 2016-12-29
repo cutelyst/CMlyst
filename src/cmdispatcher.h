@@ -23,7 +23,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual DispatchType::MatchType match(Context *ctx, const QString &path, const QStringList &args) const Q_DECL_FINAL;
+    virtual DispatchType::MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_FINAL;
 
     /**
      * Returns an uri for an action

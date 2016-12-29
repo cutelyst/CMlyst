@@ -37,7 +37,7 @@ QByteArray CMDispatcher::list() const
                       "Loaded Content Manager actions:");
 }
 
-DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, const QStringList &args) const
+DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, const QStringList &args) const
 {
     // we only match absolute paths
     if (!args.isEmpty() || path.endsWith(QChar('/'))) {
@@ -52,23 +52,23 @@ DispatchType::MatchType CMDispatcher::match(Context *ctx, const QString &path, c
 
     if ((path.isEmpty() && showOnFront) ||
             (!showOnFront && engine->settingsValue(QStringLiteral("page_for_posts")) == path)) {
-        ctx->req()->setArguments(args);
-        ctx->req()->setMatch(path);
-        setupMatchedAction(ctx, m_latestPostsAction);
+        c->req()->setArguments(args);
+        c->req()->setMatch(path);
+        setupMatchedAction(c, m_latestPostsAction);
         return ExactMatch;
     }
 
     CMS::Page *page = engine->getPage(path);
     if (page) {
-        ctx->stash().insert(QStringLiteral("page"), QVariant::fromValue(page));
+        c->stash().insert(QStringLiteral("page"), QVariant::fromValue(page));
         if (page->blog()) {
-            ctx->req()->setArguments(args);
-            ctx->req()->setMatch(path);
-            setupMatchedAction(ctx, m_postAction);
+            c->req()->setArguments(args);
+            c->req()->setMatch(path);
+            setupMatchedAction(c, m_postAction);
         } else {
-            ctx->req()->setArguments(args);
-            ctx->req()->setMatch(path);
-            setupMatchedAction(ctx, m_pageAction);
+            c->req()->setArguments(args);
+            c->req()->setMatch(path);
+            setupMatchedAction(c, m_pageAction);
         }
         return ExactMatch;
     }

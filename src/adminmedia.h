@@ -34,10 +34,10 @@ public:
     ~AdminMedia();
 
     C_ATTR(index, :Path :Args(0))
-    void index(Cutelyst::Context *ctx);
+    void index(Cutelyst::Context *c);
 
     C_ATTR(upload, :Local :Args(0))
-    void upload(Cutelyst::Context *ctx);
+    void upload(Cutelyst::Context *c);
 };
 
 #endif // ADMINMEDIA_H

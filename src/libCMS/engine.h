@@ -67,6 +67,8 @@ public:
 
     virtual Page *getPage(const QString &path, QObject *parent) = 0;
 
+    virtual QVariantHash getPage(const QString &path);
+
     Page *getPageToEdit(const QString &path, QObject *parent);
 
     bool savePage(Page *page);

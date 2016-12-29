@@ -56,7 +56,7 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
     return true;
 }
 
-Page *createPageObj(const QSqlQuery &query, QObject *parent)
+inline Page *createPageObj(const QSqlQuery &query, QObject *parent)
 {
     auto page = new Page(parent);
     page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
@@ -85,10 +85,66 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
     }
 
     if (query.exec() && query.next()) {
-        return createPageObj(query, parent);
+        auto page = new Page(parent);
+        page->setPath(query.value(0).toString());
+        page->setName(query.value(1).toString());
+        page->setNavigationLabel(query.value(2).toString());
+        page->setAuthor(query.value(3).toString());
+        page->setContent(query.value(4).toString());
+        page->setModified(query.value(5).toDateTime());
+        page->setCreated(query.value(6).toDateTime());
+        // tags 7
+        page->setBlog(query.value(8).toBool());
+        page->setAllowComments(query.value(9).toBool());
+        return page;
     }
     qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     return 0;
+}
+
+QVariantHash SqlEngine::getPage(const QString &path)
+{
+    QVariantHash ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+                                                                  " modified, created, tags, blog, allow_comments "
+                                                                  "FROM pages "
+                                                                  "WHERE path = :path"),
+                                                   QStringLiteral("cmlyst"));
+    if (!path.isNull()) {
+        query.bindValue(QStringLiteral(":path"), path);
+    } else {
+        query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
+    }
+
+    if (query.exec() && query.next()) {
+        ret.insert(QStringLiteral("path"), query.value(0));
+        ret.insert(QStringLiteral("name"), query.value(1));
+        ret.insert(QStringLiteral("navigationLabel"), query.value(2));
+        ret.insert(QStringLiteral("author"), query.value(3));
+        ret.insert(QStringLiteral("content"), query.value(4));
+        ret.insert(QStringLiteral("modified"), query.value(5));
+        ret.insert(QStringLiteral("created"), query.value(6));
+        ret.insert(QStringLiteral("tags"), query.value(7));
+        ret.insert(QStringLiteral("blog"), query.value(8));
+        ret.insert(QStringLiteral("allowComments"), query.value(9));
+
+//        auto page = new Page();
+//        page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
+//        page->setAuthor(query.value(QStringLiteral("author")).toString());
+//        page->setBlog(query.value(QStringLiteral("blog")).toBool());
+//        page->setContent(query.value(QStringLiteral("content")).toString());
+//        page->setCreated(query.value(QStringLiteral("created")).toDateTime());
+//        page->setModified(query.value(QStringLiteral("modified")).toDateTime());
+//        page->setName(query.value(QStringLiteral("name")).toString());
+//        page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
+//        page->setPath(query.value(QStringLiteral("path")).toString());
+
+
+//        return createPageObj(query, parent);
+    } else {
+        qWarning() << "Failed to get page" << path << query.lastError().databaseText();
+    }
+    return ret;
 }
 
 QString sortString(Engine::SortFlags sort)

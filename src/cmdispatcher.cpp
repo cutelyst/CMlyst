@@ -72,6 +72,21 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
         return ExactMatch;
     }
 
+//    QVariantHash page = engine->getPage(path);
+//    if (!page.isEmpty()) {
+//        c->stash().insert(QStringLiteral("page"), page);
+//        if (page.value(QStringLiteral("blog")).toBool()) {
+//            c->req()->setArguments(args);
+//            c->req()->setMatch(path);
+//            setupMatchedAction(c, m_postAction);
+//        } else {
+//            c->req()->setArguments(args);
+//            c->req()->setMatch(path);
+//            setupMatchedAction(c, m_pageAction);
+//        }
+//        return ExactMatch;
+//    }
+
     return NoMatch;
 }
 

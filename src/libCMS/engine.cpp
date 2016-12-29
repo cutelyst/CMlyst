@@ -145,6 +145,11 @@ QString Engine::description() const
     return settingsValue(QStringLiteral("tagline"));
 }
 
+QVariantHash Engine::getPage(const QString &path)
+{
+    return QVariantHash();
+}
+
 Page *Engine::getPageToEdit(const QString &path, QObject *parent)
 {
     Page *page = getPage(path, parent);

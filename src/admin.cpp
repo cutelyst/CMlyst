@@ -63,9 +63,6 @@ bool Admin::End(Context *c)
 
 void Admin::logout(Cutelyst::Context *c)
 {
-    Authentication *auth = c->plugin<Authentication*>();
-    if (auth) {
-        auth->logout(c);
-    }
+    Authentication::logout(c);
     c->res()->redirect(c->uriFor(QStringLiteral("/.admin/login")));
 }

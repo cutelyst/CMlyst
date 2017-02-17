@@ -208,7 +208,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
 QHash<QString, QString> SqlEngine::settings()
 {
     QHash<QString, QString> ret;
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT name, value FROM settings"),
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT key, value FROM settings"),
                                                    QStringLiteral("cmlyst"));
     if (query.exec()) {
         while (query.next()) {
@@ -221,9 +221,9 @@ QHash<QString, QString> SqlEngine::settings()
 QString SqlEngine::settingsValue(const QString &key, const QString &defaultValue) const
 {
     QString ret;
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT value FROM settings WHERE name = :name"),
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT value FROM settings WHERE key = :key"),
                                                    QStringLiteral("cmlyst"));
-    query.bindValue(QStringLiteral(":name"), key);
+    query.bindValue(QStringLiteral(":key"), key);
     if (query.exec() && query.next()) {
         ret = query.value(0).toString();
     } else {
@@ -235,7 +235,7 @@ QString SqlEngine::settingsValue(const QString &key, const QString &defaultValue
 bool SqlEngine::setSettingsValue(const QString &key, const QString &value)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO settings "
-                                                                  "(name, value) "
+                                                                  "(key, value) "
                                                                   "VALUES "
                                                                   "(:key, :value)"),
                                                    QStringLiteral("cmlyst"));
@@ -268,10 +268,10 @@ bool SqlEngine::savePageBackend(Page *page)
     qDebug() << Q_FUNC_INFO << page->path();
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO pages "
                                                                   "(path, name, navigation_label, author, content,"
-                                                                  " modified, created, tags, blog, allow_comments) "
+                                                                  " modified, created, tags, blog, published, allow_comments) "
                                                                   "VALUES "
                                                                   "(:path, :name, :navigation_label, :author, :content,"
-                                                                  " :modified, :created, :tags, :blog, :allow_comments)"),
+                                                                  " :modified, :created, :tags, :blog, :published, :allow_comments)"),
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":path"), page->path());
     query.bindValue(QStringLiteral(":name"), page->name());
@@ -282,6 +282,7 @@ bool SqlEngine::savePageBackend(Page *page)
     query.bindValue(QStringLiteral(":created"), page->created());
     query.bindValue(QStringLiteral(":tags"), page->tags());
     query.bindValue(QStringLiteral(":blog"), page->blog());
+    query.bindValue(QStringLiteral(":published"), true);
     query.bindValue(QStringLiteral(":allow_comments"), page->allowComments());
     if (!query.exec()) {
         qWarning() << "Failed to save page" << query.lastError().driverText();
@@ -297,8 +298,8 @@ void SqlEngine::loadMenus()
 
     QString menusSetting = settingsValue(QStringLiteral("menus"));
     QJsonDocument doc = QJsonDocument::fromJson(menusSetting.toUtf8());
-    const QJsonArray array = doc.array();
-    for (const QJsonValue &value : array) {
+    const QJsonObject menusObj = doc.object();
+    for (const QJsonValue &value : menusObj) {
         QJsonObject obj = value.toObject();
         Menu *menu = new Menu(obj.value(QStringLiteral("id")).toString());
 
@@ -339,21 +340,24 @@ void SqlEngine::loadMenus()
 
 void SqlEngine::createDb()
 {
-    QSqlQuery query(QStringLiteral("cmlyst"));
+    QSqlQuery query(QSqlDatabase::database(Sql::databaseNameThread(QStringLiteral("cmlyst"))));
+    qDebug() << "createDb";
 
     bool ret = query.exec(QStringLiteral("PRAGMA journal_mode = WAL"));
     qDebug() << "PRAGMA journal_mode = WAL" << ret << query.lastError().driverText();
 
-    if (!query.exec(QStringLiteral("CREATE TABLE pages ( "
-                                   "path TEXT NOT NULL UNIQUE PRIMARY KEY "
+    if (!query.exec(QStringLiteral("CREATE TABLE pages "
+                                   "( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
+                                   ", path TEXT NOT NULL UNIQUE "
                                    ", name TEXT "
                                    ", navigation_label TEXT "
-                                   ", author TEXT "
+                                   ", author INTEGER "
                                    ", content TEXT "
                                    ", modified TEXT "
                                    ", created TEXT "
                                    ", tags TEXT "
                                    ", blog BOOL NOT NULL "
+                                   ", published BOOL NOT NULL "
                                    ", allow_comments BOOL NOT NULL "
                                    ")"))) {
         qCritical() << "Error creating database" << query.lastError().text();
@@ -361,8 +365,19 @@ void SqlEngine::createDb()
     }
 
     if (!query.exec(QStringLiteral("CREATE TABLE settings "
-                                   "( name TEXT NOT NULL PRIMARY KEY "
+                                   "( key TEXT NOT NULL PRIMARY KEY "
                                    ", value TEXT"
+                                   ")"))) {
+        qCritical() << "Error creating database" << query.lastError().text();
+        exit(1);
+    }
+
+    if (!query.exec(QStringLiteral("CREATE TABLE users "
+                                   "( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT "
+                                   ", name TEXT NOT NULL "
+                                   ", password TEXT NOT NULL "
+                                   ", email TEXT NOT NULL UNIQUE "
+                                   ", json TEXT "
                                    ")"))) {
         qCritical() << "Error creating database" << query.lastError().text();
         exit(1);

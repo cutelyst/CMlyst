@@ -141,11 +141,11 @@ bool CMlyst::init()
         ++it;
     }
 
-    QJsonArray array;
+    QJsonObject menusObj;
     const auto menus = fileEngine->menus();
     for (CMS::Menu *menu : menus) {
         QJsonObject objMenu;
-        objMenu.insert(QStringLiteral("id"), menu->id());
+//        objMenu.insert(QStringLiteral("id"), menu->id());
         objMenu.insert(QStringLiteral("name"), menu->name());
 
         QJsonArray locations;
@@ -162,11 +162,12 @@ bool CMlyst::init()
         }
         objMenu.insert(QStringLiteral("entries"), entriesJson);
 
-        array.append(objMenu);
+        menusObj.insert(menu->id(), objMenu);
     }
-    sqlEngine->setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(QJsonDocument(array).toJson(QJsonDocument::Compact)));
+    QJsonDocument doc(menusObj);
+    sqlEngine->setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
 
-    qDebug() << QJsonDocument(array).toVariant();
+    qDebug() << "JSON menu" << doc.toVariant();
 
 
     return true;

@@ -38,6 +38,9 @@ public:
 
     virtual QList<Menu *> menus() override;
 
+    virtual bool saveMenu(Menu *menu, bool replace) override;
+    virtual bool removeMenu(const QString &name) override;
+
     virtual QHash<QString, Menu *> menuLocations() override;
 
     virtual bool settingsIsWritable() const override;

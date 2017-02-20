@@ -113,8 +113,9 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
 
 bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace)
 {
-    qDebug() << "saving menu" << menu->name();
+    qDebug() << "saving menu id" << menu->id();
     menu->setName(params.value(QStringLiteral("name")).toHtmlEscaped());
+    qDebug() << "saving menu name" << menu->name();
 
     // TODO remove this hack
     menu->setLocations({ QStringLiteral("main") });

@@ -253,6 +253,60 @@ QList<Menu *> SqlEngine::menus()
     return m_menus;
 }
 
+bool SqlEngine::saveMenu(Menu *menu, bool replace)
+{
+    QJsonObject menusObj;
+    auto menus = m_menus;
+
+    if (menu) {
+        for (const auto menuIt : menus) {
+            if (menuIt->id() == menu->id()) {
+                menus.removeOne(menuIt);
+                break;
+            }
+        }
+        menus.push_back(menu);
+    }
+
+    for (CMS::Menu *menu : menus) {
+        QJsonObject objMenu;
+//        objMenu.insert(QStringLiteral("id"), menu->id());
+        objMenu.insert(QStringLiteral("name"), menu->name());
+
+        QJsonArray locations;
+        const auto menuLocations = menu->locations();
+        for (const auto location : menuLocations) {
+            locations.append(location);
+        }
+        objMenu.insert(QStringLiteral("locations"), locations);
+
+        QJsonArray entriesJson;
+        const QList<QVariantHash> entries = menu->entries();
+        for (const auto entry : entries) {
+            entriesJson.append(QJsonObject::fromVariantHash(entry));
+        }
+        objMenu.insert(QStringLiteral("entries"), entriesJson);
+
+        menusObj.insert(menu->id(), objMenu);
+    }
+
+    QJsonDocument doc(menusObj);
+    setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
+
+    loadMenus();
+}
+
+bool SqlEngine::removeMenu(const QString &name)
+{
+    for (const auto menuIt : m_menus) {
+        if (menuIt->id() == name) {
+            m_menus.removeOne(menuIt);
+            saveMenu(nullptr, false);
+            break;
+        }
+    }
+}
+
 QHash<QString, Menu *> SqlEngine::menuLocations()
 {
     return m_menuLocations;
@@ -299,9 +353,14 @@ void SqlEngine::loadMenus()
     QString menusSetting = settingsValue(QStringLiteral("menus"));
     QJsonDocument doc = QJsonDocument::fromJson(menusSetting.toUtf8());
     const QJsonObject menusObj = doc.object();
-    for (const QJsonValue &value : menusObj) {
-        QJsonObject obj = value.toObject();
-        Menu *menu = new Menu(obj.value(QStringLiteral("id")).toString());
+    qDebug() << Q_FUNC_INFO << menusObj;
+    auto it = menusObj.constBegin();
+    while (it != menusObj.constEnd()) {
+//    for (const QJsonValue &value : menusObj) {
+//        qDebug() << Q_FUNC_INFO << value;
+        QJsonObject obj = it.value().toObject();
+//        Menu *menu = new Menu(obj.value(QStringLiteral("id")).toString());
+        Menu *menu = new Menu(it.key());
 
         menu->setName(obj.value(QStringLiteral("name")).toString());
         menu->setAutoAddPages(obj.value(QStringLiteral("autoAddPages")).toBool());
@@ -331,6 +390,8 @@ void SqlEngine::loadMenus()
         qDebug() << menu->id() << menu->name() << menu->entries() << menu->locations() << menu->autoAddPages();
 
         menus.push_back(menu);
+
+        ++it;
     }
     qDebug() << "MENUS" << menus;
     m_menus = menus;

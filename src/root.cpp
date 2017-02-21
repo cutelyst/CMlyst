@@ -83,13 +83,13 @@ void Root::page(Cutelyst::Context *c)
     Request *req = c->req();
 
     // Get the desired page (dispatcher already found it)
-//    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
-    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
+    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
+//    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
 
     // See if the page has changed, if the settings have changed
-    // and have a newer date use that instead
-//    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
-    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
+//     and have a newer date use that instead
+    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
+//    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);
@@ -109,13 +109,13 @@ void Root::post(Context *c)
 {
     Response *res = c->res();
     Request *req = c->req();
-    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
-//    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
+//    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
+    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
-//    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
+//    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
+    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);

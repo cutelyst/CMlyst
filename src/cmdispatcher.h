@@ -18,21 +18,21 @@ public:
      * @brief list the registered actions
      * To be implemented by subclasses
      */
-    virtual QByteArray list() const Q_DECL_FINAL;
+    virtual QByteArray list() const final;
 
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual DispatchType::MatchType match(Context *c, const QString &path, const QStringList &args) const Q_DECL_FINAL;
+    virtual DispatchType::MatchType match(Context *c, const QString &path, const QStringList &args) const final;
 
     /**
      * Returns an uri for an action
      */
-    virtual QString uriForAction(Action *action, const QStringList &captures) const Q_DECL_FINAL;
+    virtual QString uriForAction(Action *action, const QStringList &captures) const final;
 
-    virtual bool registerAction(Action *action) Q_DECL_FINAL;
+    virtual bool registerAction(Action *action) final;
 
-    virtual bool inUse() Q_DECL_FINAL;
+    virtual bool inUse() final;
 
 private:
     Action *m_pageAction = 0;

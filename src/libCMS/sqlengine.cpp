@@ -91,8 +91,8 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
         page->setNavigationLabel(query.value(2).toString());
         page->setAuthor(query.value(3).toString());
         page->setContent(query.value(4).toString());
-        page->setModified(query.value(5).toDateTime());
-        page->setCreated(query.value(6).toDateTime());
+        page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
+        page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
         // tags 7
         page->setBlog(query.value(8).toBool());
         page->setAllowComments(query.value(9).toBool());
@@ -122,25 +122,11 @@ QVariantHash SqlEngine::getPage(const QString &path)
         ret.insert(QStringLiteral("navigationLabel"), query.value(2));
         ret.insert(QStringLiteral("author"), query.value(3));
         ret.insert(QStringLiteral("content"), query.value(4));
-        ret.insert(QStringLiteral("modified"), query.value(5));
-        ret.insert(QStringLiteral("created"), query.value(6));
+        ret.insert(QStringLiteral("modified"), QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
+        ret.insert(QStringLiteral("created"), QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
         ret.insert(QStringLiteral("tags"), query.value(7));
         ret.insert(QStringLiteral("blog"), query.value(8));
         ret.insert(QStringLiteral("allowComments"), query.value(9));
-
-//        auto page = new Page();
-//        page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
-//        page->setAuthor(query.value(QStringLiteral("author")).toString());
-//        page->setBlog(query.value(QStringLiteral("blog")).toBool());
-//        page->setContent(query.value(QStringLiteral("content")).toString());
-//        page->setCreated(query.value(QStringLiteral("created")).toDateTime());
-//        page->setModified(query.value(QStringLiteral("modified")).toDateTime());
-//        page->setName(query.value(QStringLiteral("name")).toString());
-//        page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
-//        page->setPath(query.value(QStringLiteral("path")).toString());
-
-
-//        return createPageObj(query, parent);
     } else {
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
@@ -321,10 +307,10 @@ bool SqlEngine::savePageBackend(Page *page)
 {
     qDebug() << Q_FUNC_INFO << page->path();
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO pages "
-                                                                  "(path, name, navigation_label, author, content,"
+                                                                  "(path, name, navigation_label, author, content, html,"
                                                                   " modified, created, tags, blog, published, allow_comments) "
                                                                   "VALUES "
-                                                                  "(:path, :name, :navigation_label, :author, :content,"
+                                                                  "(:path, :name, :navigation_label, :author, :content, :html,"
                                                                   " :modified, :created, :tags, :blog, :published, :allow_comments)"),
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":path"), page->path());
@@ -332,8 +318,9 @@ bool SqlEngine::savePageBackend(Page *page)
     query.bindValue(QStringLiteral(":navigation_label"), page->navigationLabel());
     query.bindValue(QStringLiteral(":author"), page->author());
     query.bindValue(QStringLiteral(":content"), page->content());
-    query.bindValue(QStringLiteral(":modified"), page->modified());
-    query.bindValue(QStringLiteral(":created"), page->created());
+    query.bindValue(QStringLiteral(":html"), page->content());
+    query.bindValue(QStringLiteral(":modified"), page->modified().toMSecsSinceEpoch() / 1000);
+    query.bindValue(QStringLiteral(":created"), page->created().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":tags"), page->tags());
     query.bindValue(QStringLiteral(":blog"), page->blog());
     query.bindValue(QStringLiteral(":published"), true);
@@ -414,8 +401,9 @@ void SqlEngine::createDb()
                                    ", navigation_label TEXT "
                                    ", author INTEGER "
                                    ", content TEXT "
-                                   ", modified TEXT "
-                                   ", created TEXT "
+                                   ", html TEXT "
+                                   ", modified INTEGER "
+                                   ", created INTEGER "
                                    ", tags TEXT "
                                    ", blog BOOL NOT NULL "
                                    ", published BOOL NOT NULL "

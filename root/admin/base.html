@@ -10,8 +10,8 @@
 
     <title>CMlyst</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="/static/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
     <!-- Custom styles for this template -->
     <link href="/static/admin/dashboard.css" rel="stylesheet">
@@ -60,9 +60,12 @@
             <li{% if c.controllerName == "AdminAppearance" %} class="active"{% endif %}>
               <a href="/.admin/appearance">Menus <span class="glyphicon glyphicon-th-list pull-right" aria-hidden="true"></span></a>
             </li>
-            <li class="dropdown-header">CONFIGURATION</li>
-            <li{% if c.controllerName == "AdminSettings" %} class="active"{% endif %}>
-              <a href="/.admin/settings">Settings <span class="glyphicon glyphicon-cog pull-right" aria-hidden="true"></span></a>
+            <li class="dropdown-header">SETTINGS</li>
+            <li{% if c.controllerName == "AdminSettings" and c.actionName == "index" %} class="active"{% endif %}>
+              <a href="/.admin/settings">General <span class="glyphicon glyphicon-cog pull-right" aria-hidden="true"></span></a>
+            </li>
+            <li{% if c.controllerName == "AdminSettings" and c.actionName == "code_injection" %} class="active"{% endif %}>
+              <a href="/.admin/settings/code-injection">Code Injection <span class="glyphicon glyphicon-import pull-right" aria-hidden="true"></span></a>
             </li>
           </ul>
       </div><!--/.nav-collapse -->
@@ -83,6 +86,7 @@
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="/static/dist/js/bootstrap.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
   </body>
 </html>

@@ -70,5 +70,21 @@ void AdminSettings::index(Context *c)
                    {QStringLiteral("show_on_front"), engine->settingsValue(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
                    {QStringLiteral("page_on_front"), engine->settingsValue(QStringLiteral("page_on_front"))},
                    {QStringLiteral("page_for_posts"), engine->settingsValue(QStringLiteral("page_for_posts"))},
-               });
+             });
+}
+
+void AdminSettings::code_injection(Context *c)
+{
+    if (c->req()->isPost()) {
+        ParamsMultiMap params = c->request()->bodyParams();
+        engine->setSettingsValue(QStringLiteral("cms_head"), params.value(QStringLiteral("cms_head")));
+        engine->setSettingsValue(QStringLiteral("cms_foot"), params.value(QStringLiteral("cms_foot")));
+    }
+
+    c->stash({
+                   {QStringLiteral("template"), QStringLiteral("settings/code_injection.html")},
+                   {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
+                   {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
+                   {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},
+             });
 }

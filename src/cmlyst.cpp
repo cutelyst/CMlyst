@@ -43,7 +43,6 @@
 
 #include "cmdispatcher.h"
 
-#include "libCMS/fileengine.h"
 #include "libCMS/sqlengine.h"
 #include "libCMS/page.h"
 #include "libCMS/menu.h"
@@ -118,58 +117,6 @@ bool CMlyst::init()
     qDebug() << "Root Admin location" << pathTo({ QStringLiteral("root"), QStringLiteral("src"), QStringLiteral("admin") });
     qDebug() << "Data location" << dataDir.absolutePath();
 
-    // Migrate
-    auto fileEngine = new CMS::FileEngine(this);
-    fileEngine->init({
-                     {QStringLiteral("root"), dataDir.absolutePath()}
-                 });
-
-    auto sqlEngine = new CMS::SqlEngine(this);
-    sqlEngine->init({
-                     {QStringLiteral("root"), dataDir.absolutePath()}
-                 });
-
-    Q_FOREACH (CMS::Page *page, fileEngine->listPages(fileEngine)) {
-        qDebug() << page->blog();
-        sqlEngine->savePage(page);
-    }
-
-    QHash<QString, QString> settings = fileEngine->settings();
-    auto it = settings.constBegin();
-    while (it != settings.constEnd()) {
-        sqlEngine->setSettingsValue(it.key(), it.value());
-        ++it;
-    }
-
-    QJsonObject menusObj;
-    const auto menus = fileEngine->menus();
-    for (CMS::Menu *menu : menus) {
-        QJsonObject objMenu;
-//        objMenu.insert(QStringLiteral("id"), menu->id());
-        objMenu.insert(QStringLiteral("name"), menu->name());
-
-        QJsonArray locations;
-        const auto menuLocations = menu->locations();
-        for (const auto location : menuLocations) {
-            locations.append(location);
-        }
-        objMenu.insert(QStringLiteral("locations"), locations);
-
-        QJsonArray entriesJson;
-        const QList<QVariantHash> entries = menu->entries();
-        for (const auto entry : entries) {
-            entriesJson.append(QJsonObject::fromVariantHash(entry));
-        }
-        objMenu.insert(QStringLiteral("entries"), entriesJson);
-
-        menusObj.insert(menu->id(), objMenu);
-    }
-    QJsonDocument doc(menusObj);
-    sqlEngine->setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
-
-    qDebug() << "JSON menu" << doc.toVariant();
-
-
     return true;
 }
 
@@ -177,7 +124,6 @@ bool CMlyst::postFork()
 {
     QDir dataDir = config(QStringLiteral("DataLocation")).toString();
 
-//    auto engine = new CMS::FileEngine(this);
     auto engine = new CMS::SqlEngine(this);
     engine->init({
                      {QStringLiteral("root"), dataDir.absolutePath()}

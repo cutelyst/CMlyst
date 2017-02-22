@@ -102,6 +102,8 @@ void Root::page(Cutelyst::Context *c)
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("page.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
+                 {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
+                 {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
              });
 }
 
@@ -128,6 +130,8 @@ void Root::post(Context *c)
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("blog.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
+                 {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
+                 {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
              });
 }
 

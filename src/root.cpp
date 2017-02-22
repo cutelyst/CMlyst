@@ -24,6 +24,8 @@
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 
+#include <grantlee/safestring.h>
+
 #include <QStringBuilder>
 #include <QDebug>
 
@@ -99,11 +101,13 @@ void Root::page(Cutelyst::Context *c)
 
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
+    Grantlee::SafeString cms_head(engine->settingsValue(QStringLiteral("cms_head")), true);
+    Grantlee::SafeString cms_foot(engine->settingsValue(QStringLiteral("cms_head")), true);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("page.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
-                 {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
-                 {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
+                 {QStringLiteral("cms_head"), QVariant::fromValue(cms_head)},
+                 {QStringLiteral("cms_foot"), QVariant::fromValue(cms_foot)},
              });
 }
 
@@ -127,11 +131,13 @@ void Root::post(Context *c)
 
     QString cmsPagePath = QLatin1Char('/') % c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
+    Grantlee::SafeString cms_head(engine->settingsValue(QStringLiteral("cms_head")), true);
+    Grantlee::SafeString cms_foot(engine->settingsValue(QStringLiteral("cms_head")), true);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("blog.html")},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
-                 {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
-                 {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
+                 {QStringLiteral("cms_head"), QVariant::fromValue(cms_head)},
+                 {QStringLiteral("cms_foot"), QVariant::fromValue(cms_foot)},
              });
 }
 

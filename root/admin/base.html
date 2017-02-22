@@ -61,8 +61,8 @@
               <a href="/.admin/appearance">Menus <span class="glyphicon glyphicon-th-list pull-right" aria-hidden="true"></span></a>
             </li>
             <li class="dropdown-header">SETTINGS</li>
-            <li{% if c.controllerName == "AdminSettings" and c.actionName == "index" %} class="active"{% endif %}>
-              <a href="/.admin/settings">General <span class="glyphicon glyphicon-cog pull-right" aria-hidden="true"></span></a>
+            <li{% if c.controllerName == "AdminSettings" and c.actionName == "general" %} class="active"{% endif %}>
+              <a href="/.admin/settings/general">General <span class="glyphicon glyphicon-cog pull-right" aria-hidden="true"></span></a>
             </li>
             <li{% if c.controllerName == "AdminSettings" and c.actionName == "code_injection" %} class="active"{% endif %}>
               <a href="/.admin/settings/code-injection">Code Injection <span class="glyphicon glyphicon-import pull-right" aria-hidden="true"></span></a>

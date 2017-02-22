@@ -31,7 +31,7 @@ AdminSettings::AdminSettings(Application *app) : Controller(app)
 
 }
 
-void AdminSettings::index(Context *c)
+void AdminSettings::general(Context *c)
 {
     if (!engine->settingsIsWritable()) {
         c->stash({
@@ -61,7 +61,7 @@ void AdminSettings::index(Context *c)
                                                      CMS::Engine::OnlyPublished));
 
     c->stash({
-                   {QStringLiteral("template"), QStringLiteral("settings/index.html")},
+                   {QStringLiteral("template"), QStringLiteral("settings/general.html")},
                    {QStringLiteral("title"), engine->settingsValue(QStringLiteral("title"))},
                    {QStringLiteral("tagline"), engine->settingsValue(QStringLiteral("tagline"))},
                    {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},

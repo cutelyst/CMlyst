@@ -33,8 +33,8 @@ class AdminSettings : public Controller, public CMEngine
 public:
     explicit AdminSettings(Application *app = 0);
 
-    C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+    C_ATTR(general, :Local :AutoArgs)
+    void general(Context *c);
 
     C_ATTR(code_injection, :Path('code-injection') :AutoArgs)
     void code_injection(Context *c);

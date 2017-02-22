@@ -101,14 +101,21 @@ void Root::page(Cutelyst::Context *c)
 
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
-    Grantlee::SafeString cms_head(engine->settingsValue(QStringLiteral("cms_head")), true);
-    Grantlee::SafeString cms_foot(engine->settingsValue(QStringLiteral("cms_head")), true);
-    c->stash({
-                 {QStringLiteral("template"), QStringLiteral("page.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
-                 {QStringLiteral("cms_head"), QVariant::fromValue(cms_head)},
-                 {QStringLiteral("cms_foot"), QVariant::fromValue(cms_foot)},
-             });
+
+    const QString cms_head = engine->settingsValue(QStringLiteral("cms_head"));
+    if (!cms_head.isEmpty()) {
+        const Grantlee::SafeString safe(cms_head, true);
+        c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
+    }
+
+    const QString cms_foot = engine->settingsValue(QStringLiteral("cms_head"));
+    if (!cms_foot.isEmpty()) {
+        const Grantlee::SafeString safe(cms_foot, true);
+        c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
+    }
+
+    c->setStash(QStringLiteral("template"), QStringLiteral("page.html"));
+    c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
 }
 
 void Root::post(Context *c)
@@ -131,14 +138,21 @@ void Root::post(Context *c)
 
     QString cmsPagePath = QLatin1Char('/') % c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
-    Grantlee::SafeString cms_head(engine->settingsValue(QStringLiteral("cms_head")), true);
-    Grantlee::SafeString cms_foot(engine->settingsValue(QStringLiteral("cms_head")), true);
-    c->stash({
-                 {QStringLiteral("template"), QStringLiteral("blog.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
-                 {QStringLiteral("cms_head"), QVariant::fromValue(cms_head)},
-                 {QStringLiteral("cms_foot"), QVariant::fromValue(cms_foot)},
-             });
+
+    const QString cms_head = engine->settingsValue(QStringLiteral("cms_head"));
+    if (!cms_head.isEmpty()) {
+        const Grantlee::SafeString safe(cms_head, true);
+        c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
+    }
+
+    const QString cms_foot = engine->settingsValue(QStringLiteral("cms_head"));
+    if (!cms_foot.isEmpty()) {
+        const Grantlee::SafeString safe(cms_foot, true);
+        c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
+    }
+
+    c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
+    c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
 }
 
 void Root::lastPosts(Context *c)

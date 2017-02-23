@@ -41,6 +41,12 @@ public:
 
     C_ATTR(users, :Local :AutoArgs)
     void users(Context *c);
+
+    C_ATTR(users_edit, :Path('users') :AutoArgs)
+    void users_edit(Context *c, const QString &id);
+
+    C_ATTR(users_new, :Path('users/new') :AutoArgs)
+    void users_new(Context *c);
 };
 
 #endif // ADMINSETTINGS_H

@@ -22,7 +22,9 @@
 #include "libCMS/page.h"
 
 #include <Cutelyst/Application>
+#include <Cutelyst/Plugins/Utils/Sql>
 
+#include <QSqlQuery>
 #include <QDir>
 #include <QDebug>
 
@@ -90,6 +92,34 @@ void AdminSettings::code_injection(Context *c)
 }
 
 void AdminSettings::users(Context *c)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, name, email "
+                                                                  "FROM users "
+                                                                  "ORDER BY name"),
+                                                   QStringLiteral("cmlyst"));
+    if (query.exec()) {
+        c->setStash(QStringLiteral("users"), Sql::queryToHashList(query));
+    }
+
+    c->setStash(QStringLiteral("template"), QStringLiteral("settings/users.html"));
+}
+
+void AdminSettings::users_edit(Context *c, const QString &id)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, name, email, json "
+                                                                  "FROM users "
+                                                                  "WHERE id = :id "
+                                                                  "ORDER BY name"),
+                                                   QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":id"), id);
+    if (query.exec()) {
+        c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
+    }
+
+    c->setStash(QStringLiteral("template"), QStringLiteral("settings/user.html"));
+}
+
+void AdminSettings::users_new(Context *c)
 {
 
 }

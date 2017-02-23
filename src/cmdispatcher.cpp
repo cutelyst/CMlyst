@@ -59,7 +59,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
 
     CMS::Page *page = engine->getPage(path, c);
     if (page) {
-        c->stash().insert(QStringLiteral("page"), QVariant::fromValue(page));
+        c->setStash(QStringLiteral("page"), page);
         if (page->blog()) {
             c->req()->setArguments(args);
             c->req()->setMatch(path);
@@ -74,7 +74,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
 
 //    QVariantHash page = engine->getPage(path);
 //    if (!page.isEmpty()) {
-//        c->stash().insert(QStringLiteral("page"), page);
+//        c->setStash(QStringLiteral("page"), page);
 //        if (page.value(QStringLiteral("blog")).toBool()) {
 //            c->req()->setArguments(args);
 //            c->req()->setMatch(path);

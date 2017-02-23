@@ -88,3 +88,8 @@ void AdminSettings::code_injection(Context *c)
                    {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},
              });
 }
+
+void AdminSettings::users(Context *c)
+{
+
+}

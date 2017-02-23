@@ -20,10 +20,10 @@
 #include "adminsetup.h"
 
 #include "root.h"
+#include "sqluserstore.h"
 
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
-#include <Cutelyst/Plugins/Authentication/htpasswd.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/view.h>
 
@@ -38,17 +38,17 @@ void AdminSetup::setup(Context *c)
 {
     qDebug() << Q_FUNC_INFO;
     if (c->req()->isPost()) {
-        ParamsMultiMap param = c->req()->params();
-        QString email = param.value(QLatin1String("email"));
-        QString username = param.value(QLatin1String("username"));
-        QString password = param.value(QLatin1String("password"));
-        QString password2 = param.value(QLatin1String("password2"));
-        c->setStash(QStringLiteral("username"), username);
+        ParamsMultiMap params = c->req()->params();
+        QString username = params.value(QLatin1String("username"));
+        QString email = params.value(QLatin1String("email"));
+        QString password = params.value(QLatin1String("password"));
+        QString password2 = params.value(QLatin1String("password2"));
+        c->setStash(QStringLiteral("usernname"), username);
         c->setStash(QStringLiteral("email"), email);
 
         if (password == password2) {
             if (password.size() < 10) {
-                c->setStash(QStringLiteral("error_msg"), tr("Password must be longer than 10 characters"));
+                c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password must be longer than 10 characters"));
             } else {
                 password = QString::fromLatin1(CredentialPassword::createPassword(password.toUtf8(),
                                                                                   QCryptographicHash::Sha256,
@@ -56,15 +56,20 @@ void AdminSetup::setup(Context *c)
 
                 auto auth = c->plugin<Authentication*>();
                 AuthenticationRealm *realm = auth->realm();
-                auto store = static_cast<StoreHtpasswd*>(realm->store());
-                store->addUser({
-                                   {QStringLiteral("username"), username},
-                                   {QStringLiteral("password"), password},
-                                   {QStringLiteral("email"), email}
-                               });
+                auto store = static_cast<SqlUserStore*>(realm->store());
+                bool ret = store->addUser({
+                                              {QStringLiteral("name"), username},
+                                              {QStringLiteral("email"), email},
+                                              {QStringLiteral("password"), password},
+                                          });
+                if (ret) {
+                    c->setStash(QStringLiteral("status_msg"), QStringLiteral("User successfuly added, restart the application without SETUP environment set"));
+                } else {
+                    c->setStash(QStringLiteral("error_msg"), QStringLiteral("Failed to add user, check application logs"));
+                }
             }
         } else {
-            c->setStash(QStringLiteral("error_msg"), tr("The two password didn't match"));
+            c->setStash(QStringLiteral("error_msg"), QStringLiteral("The two password didn't match"));
         }
     }
 

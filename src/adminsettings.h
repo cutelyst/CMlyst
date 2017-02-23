@@ -38,6 +38,9 @@ public:
 
     C_ATTR(code_injection, :Path('code-injection') :AutoArgs)
     void code_injection(Context *c);
+
+    C_ATTR(users, :Local :AutoArgs)
+    void users(Context *c);
 };
 
 #endif // ADMINSETTINGS_H

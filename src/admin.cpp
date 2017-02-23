@@ -45,6 +45,7 @@ bool Admin::Auto(Context *c)
     c->setObjectName(QStringLiteral("CMlyst"));
 
     c->setStash(QStringLiteral("adminbase"), true);
+    c->setStash(QStringLiteral("user"), Authentication::user(c));
 
     return true;
 }

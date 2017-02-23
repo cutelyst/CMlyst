@@ -38,15 +38,16 @@ AdminLogin::AdminLogin(QObject *app) : Controller(app)
 void AdminLogin::index(Context *c)
 {
     Request *req = c->request();
-    const QString username = req->param(QStringLiteral("username"));
+    const ParamsMultiMap params = req->bodyParams();
+    const QString username = params.value(QStringLiteral("email"));
     if (req->isPost()) {
-        const QString password = req->param(QStringLiteral("password"));
+        const QString password = params.value(QStringLiteral("password"));
         if (!username.isEmpty() && !password.isEmpty()) {
 
             // Authenticate
-            if (Authentication::authenticate(c, req->bodyParams())) {
+            if (Authentication::authenticate(c, params)) {
                 qDebug() << Q_FUNC_INFO << username << "is now Logged in";
-                c->res()->redirect(c->uriFor(QStringLiteral("/.admin")));
+                c->res()->redirect(c->uriFor(QStringLiteral("/.admin/posts")));
                 return;
             } else {
                 c->setStash(QStringLiteral("error_msg"), trUtf8("Wrong password or username"));
@@ -55,6 +56,7 @@ void AdminLogin::index(Context *c)
         } else {
             qWarning() << "Empty username and password";
         }
+        c->res()->setStatus(Response::Forbidden);
     } else {
         qWarning() << "Non POST method";
     }

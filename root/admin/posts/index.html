@@ -1,6 +1,5 @@
-<h2 class="sub-header">{% if post_type == "page" %}Pages{% else %}Posts{% endif %}</h2>
-
-<a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/new">Add New</a>
+<h2 class="sub-header">{% if post_type == "page" %}Pages{% else %}Posts{% endif %}
+<a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/new" class="btn btn-info pull-right" role="button">Add New</a></h2>
 
 <div class="table-responsive">
   <table class="table table-striped">

@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
+ *   Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -42,6 +42,7 @@
 #include "adminsetup.h"
 
 #include "cmdispatcher.h"
+#include "sqluserstore.h"
 
 #include "libCMS/sqlengine.h"
 #include "libCMS/page.h"
@@ -100,10 +101,10 @@ bool CMlyst::init()
 
     new CMDispatcher(this);
 
-    auto store = new StoreHtpasswd(dataDir.absoluteFilePath(QStringLiteral("htpasswd")));
+    auto store = new SqlUserStore;
 
     auto password = new CredentialPassword;
-    password->setPasswordField(QLatin1String("password"));
+    password->setPasswordField(QStringLiteral("password"));
     password->setPasswordType(CredentialPassword::Hashed);
 
     auto realm = new AuthenticationRealm(store, password);

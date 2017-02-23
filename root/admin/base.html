@@ -28,24 +28,14 @@
 
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="/.admin">{{ c.objectName }}</a>
-        </div>
-      </div>
-    </div>
-
     <div class="container-fluid">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
+            <li class="dropdown-header">{{user.name}}</li>
+            <li>
+              <a href="/.admin/logout">Sign out <span class="glyphicon glyphicon-log-out pull-right" aria-hidden="true"></span></a>
+            </li>
             <li class="dropdown-header">PUBLISH</li>
             <li{% if c.controllerName == "AdminPosts" %} class="active"{% endif %}>
               <a href="/.admin/posts">Blog Posts <span class="glyphicon glyphicon-bullhorn pull-right" aria-hidden="true"></span></a>
@@ -66,6 +56,9 @@
             </li>
             <li{% if c.controllerName == "AdminSettings" and c.actionName == "code_injection" %} class="active"{% endif %}>
               <a href="/.admin/settings/code-injection">Code Injection <span class="glyphicon glyphicon-import pull-right" aria-hidden="true"></span></a>
+            </li>
+            <li{% if c.controllerName == "AdminSettings" and c.actionName == "users" %} class="active"{% endif %}>
+              <a href="/.admin/settings/users">Users<span class="glyphicon glyphicon-user pull-right" aria-hidden="true"></span></a>
             </li>
           </ul>
       </div><!--/.nav-collapse -->

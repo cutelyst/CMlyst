@@ -1,10 +1,16 @@
-<h3>Configure an User</h3>
-
 <form method="post" class="form-horizontal" role="form" autocomplete="off">
+  <h2 class="sub-header">Configure an User <button type="submit" name="submit" value="Submit" class="btn btn-info pull-right">Setup</button></h2>
+
   <div class="form-group">
-    <label class="col-sm-2 control-label" for="username">Username</label>
+    <label class="col-sm-2 control-label" for="username">Full Name</label>
     <div class="col-sm-4">
-      <input type="text" class="form-control" name="username" id="username" value="{{ username }}">
+      <input type="text" class="form-control" name="username" id="name" value="{{ usernname }}">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="email">E-mail</label>
+    <div class="col-sm-4">
+      <input type="email" class="form-control" name="email" id="email" value="{{ email }}">
     </div>
   </div>
   <div class="form-group">
@@ -17,17 +23,6 @@
     <label class="col-sm-2 control-label" for="password2">Password confirmation</label>
     <div class="col-sm-2">
       <input type="password" class="form-control" name="password2" id="password2">
-    </div>
-  </div>
-  <div class="form-group">
-    <label class="col-sm-2 control-label" for="email">Your E-mail</label>
-    <div class="col-sm-4">
-      <input type="email" class="form-control" name="email" id="email" value="{{ email }}">
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="col-sm-4">
-      <button type="submit" name="submit" value="Submit" class="btn">Setup</button>
     </div>
   </div>
 </form>

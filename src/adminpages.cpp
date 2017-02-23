@@ -134,5 +134,6 @@ void AdminPages::edit(Context *c, const QStringList &args)
     c->setStash(QStringLiteral("title"), title);
     c->setStash(QStringLiteral("path"), path);
     c->setStash(QStringLiteral("edit_content"), content);
+    c->setStash(QStringLiteral("editting"), true);
     c->setStash(QStringLiteral("template"), QStringLiteral("posts/create.html"));
 }

@@ -15,6 +15,7 @@ set(cmlyst_SRCS
     libCMS/menu.cpp
     libCMS/menu_p.h
     libCMS/sqlengine.cpp
+    sqluserstore.cpp
     cmengine.cpp
     cmdispatcher.cpp
     root.cpp

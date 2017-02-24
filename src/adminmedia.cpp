@@ -38,7 +38,7 @@ AdminMedia::~AdminMedia()
 
 void AdminMedia::index(Context *c)
 {
-    QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
+    const static QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
 
     QStringList files;
     QDirIterator it(mediaDir.absolutePath(),
@@ -50,30 +50,32 @@ void AdminMedia::index(Context *c)
     files.sort(Qt::CaseInsensitive);
 
     int removeSize = mediaDir.absolutePath().size();
-    QList<QHash<QString, QString> > filesHash;
+    QVariantList filesHash;
     for (const QString &file : files) {
         QFileInfo fileInfo(file);
-        QString urlPath = file;
-        urlPath.remove(0 ,removeSize);
-        urlPath.prepend(QStringLiteral("/.media"));
 
-        QHash<QString, QString> hash;
+        QString id = file.mid(removeSize);
+
+        QString urlPath = QLatin1String("/.media") + id;
+
+        QVariantHash hash;
+        hash.insert(QStringLiteral("id"), id);
         hash.insert(QStringLiteral("name"), fileInfo.fileName());
-        hash.insert(QStringLiteral("modified"), fileInfo.lastModified().toString());
-        hash.insert(QStringLiteral("author"), fileInfo.owner());
+        hash.insert(QStringLiteral("modified"), fileInfo.lastModified());
         hash.insert(QStringLiteral("url"), c->uriFor(urlPath).toString());
-        filesHash.append(hash);
+        filesHash.push_back(hash);
     }
 
     c->stash({
                    {QStringLiteral("template"), QStringLiteral("media/index.html")},
-                   {QStringLiteral("files"), QVariant::fromValue(filesHash)}
+                   {QStringLiteral("files"), filesHash}
                });
 }
 
 void AdminMedia::upload(Context *c)
 {
-    QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
+    const static QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
+
     if (!mediaDir.exists() && !mediaDir.mkpath(mediaDir.absolutePath())) {
         qWarning() << "Could not create media directory" << mediaDir.absolutePath();
         c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index")),
@@ -123,6 +125,32 @@ void AdminMedia::upload(Context *c)
                                                                  {QStringLiteral("error_msg"), QStringLiteral("Failed to save file")}
                                                              })));
         return;
+    }
+
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
+}
+
+void AdminMedia::remove(Context *c, const QStringList &path)
+{
+    const static QDir mediaDir(c->config(QStringLiteral("DataLocation")).toString() + QLatin1String("/media"));
+
+    QString file;
+
+    for (const QString &part : path) {
+        if (part.isEmpty() || part == QLatin1String("..")) {
+            continue;
+        }
+
+        if (!file.isEmpty()) {
+            file.append(QLatin1Char('/') + part);
+        } else {
+            file = part;
+        }
+    }
+
+    QFile removeFile(mediaDir.absoluteFilePath(file));
+    if (!removeFile.remove()) {
+        qDebug() << "Failed to remove media file" << removeFile.fileName() << removeFile.errorString();
     }
 
     c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));

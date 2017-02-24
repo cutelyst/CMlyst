@@ -12,8 +12,8 @@
     <thead>
       <tr>
         <th>File</th>
-        <th>Author</th>
         <th>Date</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -25,8 +25,10 @@
           </a>
           {{ file.name }}
         </td>
-        <td>{{ file.author }}</td>
-        <td>{{ file.modified }}</td>
+        <td>{{ file.modified|date:"hh:mm dd/MM/yyyy" }}</td>
+        <td>
+           <a href="/.admin/media/remove/{{ file.id }}"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+        </td>
       </tr>
     {% endfor %}
     </tbody>

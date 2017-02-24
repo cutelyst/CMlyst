@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -33,11 +33,14 @@ public:
     explicit AdminMedia(QObject *app = 0);
     ~AdminMedia();
 
-    C_ATTR(index, :Path :Args(0))
-    void index(Cutelyst::Context *c);
+    C_ATTR(index, :Path :AutoArgs)
+    void index(Context *c);
 
-    C_ATTR(upload, :Local :Args(0))
-    void upload(Cutelyst::Context *c);
+    C_ATTR(upload, :Local :AutoArgs)
+    void upload(Context *c);
+
+    C_ATTR(remove, :Local :AutoArgs)
+    void remove(Context *c, const QStringList &path);
 };
 
 #endif // ADMINMEDIA_H

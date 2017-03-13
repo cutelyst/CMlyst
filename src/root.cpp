@@ -220,7 +220,7 @@ void Root::feed(Context *c)
         res->headers().setLastModified(currentDateTime);
     }
 
-    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
+//    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
     RSSWriter writer(c->response());
 
     writer.startRSS();

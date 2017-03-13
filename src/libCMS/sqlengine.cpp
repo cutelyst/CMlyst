@@ -162,6 +162,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 0 "
+                                                            "ORDER BY created DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));
@@ -170,6 +171,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 1 "
+                                                            "ORDER BY created DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));
@@ -177,6 +179,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
         query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
+                                                            "ORDER BY created DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));

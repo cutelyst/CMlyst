@@ -63,8 +63,8 @@ inline Page *createPageObj(const QSqlQuery &query, QObject *parent)
     page->setAuthor(query.value(QStringLiteral("author")).toString());
     page->setBlog(query.value(QStringLiteral("blog")).toBool());
     page->setContent(query.value(QStringLiteral("content")).toString());
-    page->setCreated(query.value(QStringLiteral("created")).toDateTime());
-    page->setModified(query.value(QStringLiteral("modified")).toDateTime());
+    page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000));
+    page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000));
     page->setName(query.value(QStringLiteral("name")).toString());
     page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());

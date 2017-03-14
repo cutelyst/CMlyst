@@ -57,7 +57,7 @@ bool Root::End(Context *c)
     Q_UNUSED(c)
     //    qDebug() << "*** Root::End()" << c->view();
 
-    const QString &theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
+    const QString theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
     // Check if the theme changed
     if (m_theme != theme) {
         m_theme = theme;
@@ -66,7 +66,7 @@ bool Root::End(Context *c)
         view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
     }
 
-    QString staticTheme = QLatin1String("/static/themes/") % theme;
+    QString staticTheme = QLatin1String("/static/themes/") + theme;
     c->setStash(QStringLiteral("basetheme"), c->uriFor(staticTheme).toString());
 
     return true;
@@ -115,6 +115,7 @@ void Root::page(Cutelyst::Context *c)
     }
 
     c->setStash(QStringLiteral("template"), QStringLiteral("page.html"));
+    c->setStash(QStringLiteral("meta_title"), page->name());
     c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
 }
 
@@ -122,13 +123,13 @@ void Root::post(Context *c)
 {
     Response *res = c->res();
     Request *req = c->req();
-//    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
-    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
+    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
+//    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
-//    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
-    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
+    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
+//    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
     const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);
@@ -136,7 +137,7 @@ void Root::post(Context *c)
     }
     res->headers().setLastModified(currentDateTime);
 
-    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
 
     const QString cms_head = engine->settingsValue(QStringLiteral("cms_head"));
@@ -152,6 +153,7 @@ void Root::post(Context *c)
     }
 
     c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
+    c->setStash(QStringLiteral("meta_title"), page->name());
     c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
 }
 
@@ -187,6 +189,8 @@ void Root::lastPosts(Context *c)
     engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("posts.html")},
+                 {QStringLiteral("meta_title"), engine->settingsValue(QStringLiteral("title"))},
+                 {QStringLiteral("meta_description"), engine->settingsValue(QStringLiteral("tagline"))},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
                  {QStringLiteral("posts"), QVariant::fromValue(posts)}
              });

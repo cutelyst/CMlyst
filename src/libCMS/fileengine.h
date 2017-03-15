@@ -60,8 +60,8 @@ public:
 
     virtual bool settingsIsWritable() const override;
     virtual QHash<QString, QString> settings();
-    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
-    virtual bool setSettingsValue(const QString &key, const QString &value);
+    virtual QString settingsValue(Cutelyst::Context *c, const QString &key, const QString &defaultValue = QString()) const override;
+    virtual bool setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value);
 
 protected:
     FileEnginePrivate *d_ptr;

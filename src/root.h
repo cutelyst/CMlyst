@@ -46,9 +46,6 @@ public:
     C_ATTR(page, :Page)
     void page(Cutelyst::Context *c);
 
-    C_ATTR(post, :Post)
-    void post(Cutelyst::Context *c);
-
     C_ATTR(lastPosts, :LatestPosts)
     void lastPosts(Cutelyst::Context *c);
 

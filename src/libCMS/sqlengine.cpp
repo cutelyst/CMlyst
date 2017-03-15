@@ -3,6 +3,7 @@
 #include "menu.h"
 
 #include <Cutelyst/Plugins/Utils/Sql>
+#include <Cutelyst/Context>
 
 #include <QDir>
 #include <QSqlDatabase>
@@ -16,7 +17,6 @@
 #include <QDebug>
 
 using namespace CMS;
-using namespace Cutelyst;
 
 SqlEngine::SqlEngine(QObject *parent) : Engine(parent)
 {
@@ -34,11 +34,10 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
     bool create = !QFile::exists(dbPath);
 
     if (QSqlDatabase::contains(QStringLiteral("cmlyst"))) {
-        loadMenus();
         return true;
     }
 
-    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Sql::databaseNameThread(QStringLiteral("cmlyst")));
+    auto db = QSqlDatabase::addDatabase(QStringLiteral("QSQLITE"), Cutelyst::Sql::databaseNameThread(QStringLiteral("cmlyst")));
     db.setDatabaseName(dbPath);
     if (db.open()) {
         qDebug() << "Database is open:" << dbPath << db.connectionName();
@@ -50,8 +49,6 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
         qCritical() << "Error opening database" << dbPath << db.lastError().driverText();
         return false;
     }
-
-    loadMenus();
 
     return true;
 }
@@ -194,47 +191,53 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
     return ret;
 }
 
-QHash<QString, QString> SqlEngine::settings()
+QHash<QString, QString> SqlEngine::settings() const
 {
-    QHash<QString, QString> ret;
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT key, value FROM settings"),
-                                                   QStringLiteral("cmlyst"));
-    if (query.exec()) {
-        while (query.next()) {
-            ret.insert(query.value(0).toString(), query.value(1).toString());
-        }
-    }
-    return ret;
+    return m_settings;
 }
 
 QString SqlEngine::settingsValue(const QString &key, const QString &defaultValue) const
 {
-    QString ret;
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT value FROM settings WHERE key = :key"),
-                                                   QStringLiteral("cmlyst"));
-    query.bindValue(QStringLiteral(":key"), key);
-    if (query.exec() && query.next()) {
-        ret = query.value(0).toString();
-    } else {
-        ret = defaultValue;
-    }
-    return ret;
+    return m_settings.value(key, defaultValue);
 }
 
-bool SqlEngine::setSettingsValue(const QString &key, const QString &value)
+bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value)
 {
+    static QSqlDatabase db = QSqlDatabase::database(Cutelyst::Sql::databaseNameThread(QStringLiteral("cmlyst")));
+    if (!db.transaction()) {
+        return false;
+    }
+
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO settings "
                                                                   "(key, value) "
                                                                   "VALUES "
                                                                   "(:key, :value)"),
                                                    QStringLiteral("cmlyst"));
+
     query.bindValue(QStringLiteral(":key"), key);
     query.bindValue(QStringLiteral(":value"), value);
     if (!query.exec()) {
         qWarning() << "Failed to save settings" << query.lastError().driverText();
+        db.rollback();
         return false;
     }
-    return true;
+
+    query.bindValue(QStringLiteral(":key"), QStringLiteral("modified"));
+    query.bindValue(QStringLiteral(":value"), m_settingsDate);
+    if (!query.exec()) {
+        qWarning() << "Failed to save settings" << query.lastError().driverText();
+        db.rollback();
+        return false;
+    }
+
+    if (db.commit()) {
+        m_settingsDate = -1;
+        c->setProperty("_sql_engine_date", QVariant());
+        loadSettings(c);
+
+        return true;
+    }
+    return false;
 }
 
 QList<Menu *> SqlEngine::menus()
@@ -242,7 +245,7 @@ QList<Menu *> SqlEngine::menus()
     return m_menus;
 }
 
-bool SqlEngine::saveMenu(Menu *menu, bool replace)
+bool SqlEngine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 {
     QJsonObject menusObj;
     auto menus = m_menus;
@@ -280,17 +283,15 @@ bool SqlEngine::saveMenu(Menu *menu, bool replace)
     }
 
     QJsonDocument doc(menusObj);
-    setSettingsValue(QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
-
-    loadMenus();
+    setSettingsValue(c, QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
 }
 
-bool SqlEngine::removeMenu(const QString &name)
+bool SqlEngine::removeMenu(Cutelyst::Context *c, const QString &name)
 {
     for (const auto menuIt : m_menus) {
         if (menuIt->id() == name) {
             m_menus.removeOne(menuIt);
-            saveMenu(nullptr, false);
+            saveMenu(c, nullptr, false);
             break;
         }
     }
@@ -304,6 +305,37 @@ QHash<QString, Menu *> SqlEngine::menuLocations()
 bool SqlEngine::settingsIsWritable() const
 {
     return true;
+}
+
+QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
+{
+    QVariant loadedDate = c->property("_sql_engine_date");
+    if (loadedDate.isNull()) {
+        QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT value FROM settings WHERE key = 'modified'"),
+                                                       QStringLiteral("cmlyst"));
+        if (query.exec() && query.next()) {
+            loadedDate = query.value(0).toLongLong();
+            c->setProperty("_sql_engine_date", loadedDate);
+        }
+
+        qint64 settingsDate = loadedDate.toLongLong();
+        if (settingsDate != m_settingsDate) {
+            m_settingsDate = settingsDate;
+            m_settings.clear();
+
+            QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT key, value FROM settings"),
+                                                           QStringLiteral("cmlyst"));
+            if (query.exec()) {
+                while (query.next()) {
+                    m_settings.insert(query.value(0).toString(), query.value(1).toString());
+                }
+            }
+
+            loadMenus();
+        }
+    }
+
+    return m_settings;
 }
 
 bool SqlEngine::savePageBackend(Page *page)
@@ -340,7 +372,7 @@ void SqlEngine::loadMenus()
     QList<CMS::Menu *> menus;
     QHash<QString, CMS::Menu *> menuLocations;
 
-    QString menusSetting = settingsValue(QStringLiteral("menus"));
+    const QString menusSetting = settingsValue(QStringLiteral("menus"));
     QJsonDocument doc = QJsonDocument::fromJson(menusSetting.toUtf8());
     const QJsonObject menusObj = doc.object();
     qDebug() << Q_FUNC_INFO << menusObj;
@@ -384,6 +416,9 @@ void SqlEngine::loadMenus()
         ++it;
     }
     qDebug() << "MENUS" << menus;
+
+    qDeleteAll(m_menus);
+
     m_menus = menus;
     qDebug() << "MENUS" << menuLocations;
     m_menuLocations = menuLocations;
@@ -391,7 +426,7 @@ void SqlEngine::loadMenus()
 
 void SqlEngine::createDb()
 {
-    QSqlQuery query(QSqlDatabase::database(Sql::databaseNameThread(QStringLiteral("cmlyst"))));
+    QSqlQuery query(QSqlDatabase::database(Cutelyst::Sql::databaseNameThread(QStringLiteral("cmlyst"))));
     qDebug() << "createDb";
 
     bool ret = query.exec(QStringLiteral("PRAGMA journal_mode = WAL"));

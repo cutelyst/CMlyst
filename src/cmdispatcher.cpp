@@ -21,17 +21,12 @@ CMDispatcher::~CMDispatcher()
 
 QByteArray CMDispatcher::list() const
 {
-    QStringList l1 = {
+    QStringList page = {
         QStringLiteral("Page"),
         QLatin1Char('/') + m_pageAction->reverse()
     };
 
-    QStringList post = {
-        QStringLiteral("Post"),
-        QLatin1Char('/') + m_postAction->reverse()
-    };
-
-    return Utils::buildTable({ l1, post },
+    return Utils::buildTable({ page },
     { QStringLiteral("Handle"), QStringLiteral("Private") },
                       QStringLiteral("Loaded Content Manager actions:"));
 }
@@ -43,16 +38,18 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
         return NoMatch;
     }
 
+    auto settings = engine->loadSettings(c);
+
     // See if we are on front page path and the settings says
     // it should show the latest posts, or if the desired page path is set
     // to show the latest posts
-    bool showOnFront = engine->settingsValue(QStringLiteral("show_on_front"),
-                                             QStringLiteral("posts")) == QLatin1String("posts");
+    bool showOnFront = settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts")) == QLatin1String("posts");
 
+    Request *req = c->request();
     if ((path.isEmpty() && showOnFront) ||
-            (!showOnFront && engine->settingsValue(QStringLiteral("page_for_posts")) == path)) {
-        c->req()->setArguments(args);
-        c->req()->setMatch(path);
+            (!showOnFront && settings.value(QStringLiteral("page_for_posts")) == path)) {
+        req->setArguments(args);
+        req->setMatch(path);
         setupMatchedAction(c, m_latestPostsAction);
         return ExactMatch;
     }
@@ -60,15 +57,9 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
     CMS::Page *page = engine->getPage(path, c);
     if (page) {
         c->setStash(QStringLiteral("page"), QVariant::fromValue(page));
-        if (page->blog()) {
-            c->req()->setArguments(args);
-            c->req()->setMatch(path);
-            setupMatchedAction(c, m_postAction);
-        } else {
-            c->req()->setArguments(args);
-            c->req()->setMatch(path);
-            setupMatchedAction(c, m_pageAction);
-        }
+        req->setArguments(args);
+        req->setMatch(path);
+        setupMatchedAction(c, m_pageAction);
         return ExactMatch;
     }
 
@@ -104,11 +95,6 @@ bool CMDispatcher::registerAction(Action *action)
         return true;
     }
 
-    if (action->attributes().contains(QLatin1String("Post")) && !m_postAction) {
-        m_postAction = action;
-        return true;
-    }
-
     if (action->attributes().contains(QLatin1String("LatestPosts")) && !m_latestPostsAction) {
         m_latestPostsAction = action;
         return true;
@@ -119,5 +105,5 @@ bool CMDispatcher::registerAction(Action *action)
 
 bool CMDispatcher::inUse()
 {
-    return m_pageAction && m_postAction && m_latestPostsAction;
+    return m_pageAction && m_latestPostsAction;
 }

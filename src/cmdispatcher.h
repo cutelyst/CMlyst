@@ -36,7 +36,6 @@ public:
 
 private:
     Action *m_pageAction = 0;
-    Action *m_postAction = 0;
     Action *m_latestPostsAction = 0;
 };
 

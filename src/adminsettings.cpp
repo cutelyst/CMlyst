@@ -44,12 +44,12 @@ void AdminSettings::general(Context *c)
     if (c->req()->isPost()) {
         ParamsMultiMap params = c->request()->bodyParams();
         qDebug() << params;
-        engine->setSettingsValue(QStringLiteral("title"), params.value(QStringLiteral("title")));
-        engine->setSettingsValue(QStringLiteral("tagline"), params.value(QStringLiteral("tagline")));
-        engine->setSettingsValue(QStringLiteral("theme"), params.value(QStringLiteral("theme")));
-        engine->setSettingsValue(QStringLiteral("show_on_front"), params.value(QStringLiteral("show_on_front")));
-        engine->setSettingsValue(QStringLiteral("page_on_front"), params.value(QStringLiteral("page_on_front")));
-        engine->setSettingsValue(QStringLiteral("page_for_posts"), params.value(QStringLiteral("page_for_posts")));
+        engine->setSettingsValue(c, QStringLiteral("title"), params.value(QStringLiteral("title")));
+        engine->setSettingsValue(c, QStringLiteral("tagline"), params.value(QStringLiteral("tagline")));
+        engine->setSettingsValue(c, QStringLiteral("theme"), params.value(QStringLiteral("theme")));
+        engine->setSettingsValue(c, QStringLiteral("show_on_front"), params.value(QStringLiteral("show_on_front")));
+        engine->setSettingsValue(c, QStringLiteral("page_on_front"), params.value(QStringLiteral("page_on_front")));
+        engine->setSettingsValue(c, QStringLiteral("page_for_posts"), params.value(QStringLiteral("page_for_posts")));
     }
 
     QDir themesDir = c->app()->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
@@ -61,17 +61,17 @@ void AdminSettings::general(Context *c)
                                                  CMS::Engine::Filters(
                                                      CMS::Engine::Pages |
                                                      CMS::Engine::OnlyPublished));
-
+    auto settings = engine->settings();
     c->stash({
                    {QStringLiteral("template"), QStringLiteral("settings/general.html")},
-                   {QStringLiteral("title"), engine->settingsValue(QStringLiteral("title"))},
-                   {QStringLiteral("tagline"), engine->settingsValue(QStringLiteral("tagline"))},
-                   {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},
+                   {QStringLiteral("title"), settings.value(QStringLiteral("title"))},
+                   {QStringLiteral("tagline"), settings.value(QStringLiteral("tagline"))},
+                   {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
                    {QStringLiteral("themes"), themes},
                    {QStringLiteral("pages"), QVariant::fromValue(pages)},
-                   {QStringLiteral("show_on_front"), engine->settingsValue(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
-                   {QStringLiteral("page_on_front"), engine->settingsValue(QStringLiteral("page_on_front"))},
-                   {QStringLiteral("page_for_posts"), engine->settingsValue(QStringLiteral("page_for_posts"))},
+                   {QStringLiteral("show_on_front"), settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
+                   {QStringLiteral("page_on_front"), settings.value(QStringLiteral("page_on_front"))},
+                   {QStringLiteral("page_for_posts"), settings.value(QStringLiteral("page_for_posts"))},
              });
 }
 
@@ -79,15 +79,16 @@ void AdminSettings::code_injection(Context *c)
 {
     if (c->req()->isPost()) {
         ParamsMultiMap params = c->request()->bodyParams();
-        engine->setSettingsValue(QStringLiteral("cms_head"), params.value(QStringLiteral("cms_head")));
-        engine->setSettingsValue(QStringLiteral("cms_foot"), params.value(QStringLiteral("cms_foot")));
+        engine->setSettingsValue(c, QStringLiteral("cms_head"), params.value(QStringLiteral("cms_head")));
+        engine->setSettingsValue(c, QStringLiteral("cms_foot"), params.value(QStringLiteral("cms_foot")));
     }
 
+    auto settings = engine->settings();
     c->stash({
                    {QStringLiteral("template"), QStringLiteral("settings/code_injection.html")},
-                   {QStringLiteral("cms_head"), engine->settingsValue(QStringLiteral("cms_head"))},
-                   {QStringLiteral("cms_foot"), engine->settingsValue(QStringLiteral("cms_foot"))},
-                   {QStringLiteral("currentTheme"), engine->settingsValue(QStringLiteral("theme"))},
+                   {QStringLiteral("cms_head"), settings.value(QStringLiteral("cms_head"))},
+                   {QStringLiteral("cms_foot"), settings.value(QStringLiteral("cms_foot"))},
+                   {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
              });
 }
 

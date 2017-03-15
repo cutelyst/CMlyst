@@ -398,7 +398,7 @@ QHash<QString, QString> FileEngine::settings()
     return d->mainSettings;
 }
 
-QString FileEngine::settingsValue(const QString &key, const QString &defaultValue) const
+QString FileEngine::settingsValue(Cutelyst::Context *c, const QString &key, const QString &defaultValue) const
 {
     Q_D(const FileEngine);
 
@@ -409,7 +409,7 @@ QString FileEngine::settingsValue(const QString &key, const QString &defaultValu
     return defaultValue;
 }
 
-bool FileEngine::setSettingsValue(const QString &key, const QString &value)
+bool FileEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value)
 {
     Q_D(FileEngine);
     d->settings->beginGroup(QStringLiteral("Main"));

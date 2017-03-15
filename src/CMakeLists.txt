@@ -10,8 +10,8 @@ set(cmlyst_SRCS
     libCMS/page_p.h
     libCMS/engine.cpp
     libCMS/engine_p.h
-    libCMS/fileengine.cpp
-    libCMS/fileengine_p.h
+#    libCMS/fileengine.cpp
+#    libCMS/fileengine_p.h
     libCMS/menu.cpp
     libCMS/menu_p.h
     libCMS/sqlengine.cpp

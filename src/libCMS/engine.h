@@ -24,6 +24,10 @@
 #include <QVariant>
 #include <QHash>
 
+namespace Cutelyst {
+class Context;
+}
+
 namespace CMS {
 
 class Page;
@@ -62,16 +66,13 @@ public:
      */
     virtual bool init(const QHash<QString, QString> &settings) = 0;
 
-    QString title() const;
-    QString description() const;
-
     virtual Page *getPage(const QString &path, QObject *parent) = 0;
 
     virtual QVariantHash getPage(const QString &path);
 
     Page *getPageToEdit(const QString &path, QObject *parent);
 
-    bool savePage(Page *page);
+    bool savePage(Cutelyst::Context *c, Page *page);
 
     /**
      * Returns the available pages,
@@ -91,20 +92,22 @@ public:
 
     QVariant menusProperty();
 
-    virtual bool saveMenu(Menu *menu, bool replace);
-    virtual bool removeMenu(const QString &name);
-    bool saveMenus(const QList<Menu *> &menus);
+    virtual bool saveMenu(Cutelyst::Context *c, Menu *menu, bool replace);
+    virtual bool removeMenu(Cutelyst::Context *c, const QString &name);
+    bool saveMenus(Cutelyst::Context *c, const QList<Menu *> &menus);
 
     virtual QDateTime lastModified();
 
     virtual bool settingsIsWritable() const = 0;
-    virtual QHash<QString, QString> settings() = 0;
+    virtual QHash<QString, QString> settings() const = 0;
     virtual QVariant settingsProperty();
     virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const = 0;
-    virtual bool setSettingsValue(const QString &key, const QString &value) = 0;
+    virtual bool setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value) = 0;
 
     static QString normalizePath(const QString &path);
     static QString normalizeTitle(const QString &path);
+
+    virtual QHash<QString, QString> loadSettings(Cutelyst::Context *c) = 0;
 
 protected:
     virtual bool savePageBackend(Page *page) = 0;

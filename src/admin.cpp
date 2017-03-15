@@ -31,6 +31,8 @@ Admin::Admin(QObject *app) : Controller(app)
 
 bool Admin::Auto(Context *c)
 {
+    engine->loadSettings(c);
+
     if (*c->controller() == "AdminLogin" ||
             c->actionName() == QLatin1String("logout")) {
         return true;

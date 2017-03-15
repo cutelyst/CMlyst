@@ -6,6 +6,10 @@
 
 #include "engine.h"
 
+namespace Cutelyst {
+class Context;
+}
+
 namespace CMS {
 
 class FileEnginePrivate;
@@ -31,19 +35,21 @@ public:
                                     int depth = -1,
                                     int limit = -1) override;
 
-    virtual QHash<QString, QString> settings();
+    virtual QHash<QString, QString> settings() const override;
 
     virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
-    virtual bool setSettingsValue(const QString &key, const QString &value) override;
+    virtual bool setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value) override;
 
     virtual QList<Menu *> menus() override;
 
-    virtual bool saveMenu(Menu *menu, bool replace) override;
-    virtual bool removeMenu(const QString &name) override;
+    virtual bool saveMenu(Cutelyst::Context *c, Menu *menu, bool replace) override;
+    virtual bool removeMenu(Cutelyst::Context *c, const QString &name) override;
 
     virtual QHash<QString, Menu *> menuLocations() override;
 
     virtual bool settingsIsWritable() const override;
+
+    QHash<QString, QString> loadSettings(Cutelyst::Context *c) override;
 
 private:
     virtual bool savePageBackend(Page *page) override;
@@ -51,6 +57,8 @@ private:
     void loadMenus();
     void createDb();
 
+    QHash<QString, QString> m_settings;
+    qint64 m_settingsDate = -1;
     QList<CMS::Menu *> m_menus;
     QHash<QString, CMS::Menu *> m_menuLocations;
 };

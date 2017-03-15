@@ -66,7 +66,7 @@ void AdminPages::create(Context *c)
         page->setName(title);
 //        qDebug() << page->path();
 
-        bool ret = engine->savePage(page);
+        bool ret = engine->savePage(c, page);
         if (ret) {
             c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
         } else {
@@ -120,7 +120,7 @@ void AdminPages::edit(Context *c, const QStringList &args)
         page->setName(title);
 //        qDebug() << page->path();
 
-        bool ret = engine->savePage(page);
+        bool ret = engine->savePage(c, page);
         if (ret) {
             c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
         } else {

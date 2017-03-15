@@ -53,7 +53,7 @@ void AdminAppearance::menus(Context *c)
 void AdminAppearance::menus_remove(Context *c, const QString &id)
 {
     if (c->req()->isPost()) {
-        engine->removeMenu(id);
+        engine->removeMenu(c, id);
     }
 
     c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
@@ -137,5 +137,5 @@ bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bo
         }
     }
 
-    return engine->saveMenu(menu, replace);
+    return engine->saveMenu(nullptr, menu, replace);
 }

@@ -35,7 +35,7 @@
       <div class="container">
         <nav class="blog-nav">
         {% for entry in cms.menus.main.entries %}
-          <a class="blog-nav-item{% ifequal cmsPagePath entry.url %} active{% endifequal %}" href="{{ entry.url }}">{{ entry.text }}</a>
+          <a class="blog-nav-item{% if cmsPagePath == entry.url %} active{% endif %}" href="{{ entry.url }}">{{ entry.text }}</a>
         {% endfor %}
         </nav>
       </div>

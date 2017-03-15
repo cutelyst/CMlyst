@@ -38,7 +38,7 @@ Engine::~Engine()
 
 }
 
-bool Engine::savePage(Page *page)
+bool Engine::savePage(Cutelyst::Context *c, Page *page)
 {
     bool ret = savePageBackend(page);
     if (ret) {
@@ -46,7 +46,7 @@ bool Engine::savePage(Page *page)
         Q_FOREACH (Menu *menu, autoMenus) {
             if (menu->autoAddPages()) {
                 menu->appendEntry(page->name(), page->path());
-                saveMenu(menu, true);
+                saveMenu(c, menu, true);
             }
         }
     }
@@ -68,23 +68,23 @@ QVariant Engine::menusProperty()
     return QVariant::fromValue(menuLocations());
 }
 
-bool Engine::saveMenu(Menu *menu, bool replace)
+bool Engine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 {
     Q_UNUSED(menu)
     Q_UNUSED(replace)
     return false;
 }
 
-bool Engine::removeMenu(const QString &name)
+bool Engine::removeMenu(Cutelyst::Context *c, const QString &name)
 {
     Q_UNUSED(name)
     return false;
 }
 
-bool Engine::saveMenus(const QList<Menu *> &menus)
+bool Engine::saveMenus(Cutelyst::Context *c, const QList<Menu *> &menus)
 {
     Q_FOREACH (Menu *menu, menus) {
-        if (!saveMenu(menu, true)) {
+        if (!saveMenu(c, menu, true)) {
             return false;
         }
     }
@@ -133,16 +133,6 @@ QString Engine::normalizeTitle(const QString &title)
     ret.replace(QChar::Space, QLatin1Char('-'));
 
     return ret;
-}
-
-QString CMS::Engine::title() const
-{
-    return settingsValue(QStringLiteral("title"));
-}
-
-QString Engine::description() const
-{
-    return settingsValue(QStringLiteral("tagline"));
 }
 
 QVariantHash Engine::getPage(const QString &path)

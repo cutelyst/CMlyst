@@ -46,8 +46,7 @@ void Root::notFound(Context *c)
 {
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("404.html")},
-                 {QStringLiteral("cms"), QVariant::fromValue(engine->settings())},
-                 {QStringLiteral("menus"), QVariant::fromValue(engine->menuLocations())},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
              });
     c->res()->setStatus(404);
 }
@@ -102,57 +101,24 @@ void Root::page(Cutelyst::Context *c)
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
 
-    const QString cms_head = engine->settingsValue(QStringLiteral("cms_head"));
+    auto settings = engine->settings();
+    const QString cms_head = settings.value(QStringLiteral("cms_head"));
     if (!cms_head.isEmpty()) {
         const Grantlee::SafeString safe(cms_head, true);
         c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
     }
 
-    const QString cms_foot = engine->settingsValue(QStringLiteral("cms_head"));
+    const QString cms_foot = settings.value(QStringLiteral("cms_head"));
     if (!cms_foot.isEmpty()) {
         const Grantlee::SafeString safe(cms_foot, true);
         c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
     }
 
-    c->setStash(QStringLiteral("template"), QStringLiteral("page.html"));
-    c->setStash(QStringLiteral("meta_title"), page->name());
-    c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
-}
-
-void Root::post(Context *c)
-{
-    Response *res = c->res();
-    Request *req = c->req();
-    auto page = c->stash(QStringLiteral("page")).value<CMS::Page *>();
-//    QVariantHash page = c->stash(QStringLiteral("page")).toHash();
-
-    // See if the page has changed, if the settings have changed
-    // and have a newer date use that instead
-    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
-//    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
-    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
-    if (clientDate.isValid() && currentDateTime == clientDate) {
-        res->setStatus(Response::NotModified);
-        return;
+    if (page->blog())  {
+        c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
+    } else {
+        c->setStash(QStringLiteral("template"), QStringLiteral("page.html"));
     }
-    res->headers().setLastModified(currentDateTime);
-
-    QString cmsPagePath = QLatin1Char('/') + c->req()->path();
-    engine->setProperty("pagePath", cmsPagePath);
-
-    const QString cms_head = engine->settingsValue(QStringLiteral("cms_head"));
-    if (!cms_head.isEmpty()) {
-        const Grantlee::SafeString safe(cms_head, true);
-        c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
-    }
-
-    const QString cms_foot = engine->settingsValue(QStringLiteral("cms_head"));
-    if (!cms_foot.isEmpty()) {
-        const Grantlee::SafeString safe(cms_foot, true);
-        c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
-    }
-
-    c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
     c->setStash(QStringLiteral("meta_title"), page->name());
     c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));
 }
@@ -185,7 +151,7 @@ void Root::lastPosts(Context *c)
         res->headers().setLastModified(currentDateTime);
     }
 
-    QString cmsPagePath = QLatin1Char('/') % c->req()->path();
+    QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("posts.html")},
@@ -202,8 +168,7 @@ void Root::feed(Context *c)
     Response *res = c->res();
     res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
-    QList<CMS::Page *> posts;
-    posts = engine->listPages(c,
+    const QList<CMS::Page *> posts = engine->listPages(c,
                               CMS::Engine::Posts,
                               CMS::Engine::Name |
                               CMS::Engine::Date |
@@ -229,20 +194,20 @@ void Root::feed(Context *c)
 
     writer.startRSS();
     writer.writeStartChannel();
-    writer.writeChannelTitle(engine->title());
+    writer.writeChannelTitle(engine->settingsValue(QStringLiteral("title")));
     writer.writeChannelFeedLink(c->uriFor(c->action()).toString());
     writer.writeChannelLink(req->base());
-    writer.writeChannelDescription(engine->description());
+    writer.writeChannelDescription(engine->settingsValue(QStringLiteral("tagline")));
     if (!posts.isEmpty()) {
         writer.writeChannelLastBuildDate(posts.first()->created());
     }
 
-    Q_FOREACH (CMS::Page *post, posts) {
+    for (CMS::Page *post : posts) {
         writer.writeStartItem();
         writer.writeItemTitle(post->name());
         QString link = c->uriFor(post->path()).toString();
         writer.writeItemLink(link);
-        writer.writeItemCommentsLink(link % QLatin1String("#comments"));
+        writer.writeItemCommentsLink(link + QLatin1String("#comments"));
         writer.writeItemCreator(post->author());
         writer.writeItemPubDate(post->created());
         writer.writeItemDescription(post->content().left(300));

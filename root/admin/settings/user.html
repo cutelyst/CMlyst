@@ -1,0 +1,36 @@
+<form method="post" class="form-horizontal" role="form" autocomplete="off">
+
+  <h2 class="sub-header">{{user.name}} <button type="submit" class="btn btn-info pull-right">Save</button></h2>
+
+  <div class="col-sm-6">
+    <div class="form-group">
+      <label class="control-label" for="name">Full Name</label>
+      <input type="text" class="form-control" name="name" id="name" value="{{user.name}}" required>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" for="email">Email</label>
+      <input type="text" class="form-control" name="email" id="email" value="{{user.email}}" required>
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="location">Location</label>
+      <input type="text" class="form-control" name="location" id="location" value="{{user.location}}">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="website">Website</label>
+      <input type="text" class="form-control" name="website" id="website" value="{{user.website}}">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="fb_profile">Facebook Profile</label>
+      <input type="text" class="form-control" name="fb_profile" id="fb_profile" value="{{user.fb_profile}}">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="tw_profile">Twitter Profile</label>
+      <input type="text" class="form-control" name="tw_profile" id="tw_profile" value="{{user.tw_profile}}">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="bio">Bio</label>
+      <textarea class="form-control" name="bio" rows="5" autocorrect="off" autocapitalize="off" spellcheck="false">{{user.bio}}</textarea>
+    </div>
+  </div>
+</form>

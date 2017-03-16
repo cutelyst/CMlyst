@@ -57,8 +57,10 @@ private:
     virtual bool savePageBackend(Page *page) override;
 
     void loadMenus();
+    void configureView(Cutelyst::Context *c);
     void createDb();
 
+    QString m_theme;
     QHash<QString, QString> m_settings;
     QDateTime m_settingsDateTime;
     qint64 m_settingsDate = -1;

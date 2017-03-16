@@ -2,8 +2,10 @@
 #include "page.h"
 #include "menu.h"
 
+#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 #include <Cutelyst/Plugins/Utils/Sql>
 #include <Cutelyst/Context>
+#include <Cutelyst/Application>
 
 #include <QDir>
 #include <QSqlDatabase>
@@ -339,6 +341,8 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
             }
 
             loadMenus();
+
+            configureView(c);
         }
     }
 
@@ -434,6 +438,23 @@ void SqlEngine::loadMenus()
     m_menus = menus;
     qDebug() << "MENUS" << menuLocations;
     m_menuLocations = menuLocations;
+}
+
+void SqlEngine::configureView(Cutelyst::Context *c)
+{
+    const QString theme = m_settings.value(QStringLiteral("theme"), QStringLiteral("default"));
+
+    if (m_theme != theme) {
+        m_theme = theme;
+
+        Cutelyst::Application *app = c->app();
+
+        auto view = qobject_cast<Cutelyst::GrantleeView*>(app->view());
+
+        const QDir themeDir = app->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
+
+        view->setIncludePaths({ themeDir.absoluteFilePath(theme) });
+    }
 }
 
 void SqlEngine::createDb()

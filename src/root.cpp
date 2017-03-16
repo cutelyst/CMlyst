@@ -56,27 +56,12 @@ void Root::notFound(Context *c)
 
 bool Root::End(Context *c)
 {
-    Q_UNUSED(c)
     //    qDebug() << "*** Root::End()" << c->view();
 
     const QString theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
-    // Check if the theme changed
-    if (m_theme != theme) {
-        m_theme = theme;
-
-        GrantleeView *view = qobject_cast<GrantleeView*>(c->app()->view());
-        view->setIncludePaths({ m_themeDir.absoluteFilePath(theme) });
-    }
 
     QString staticTheme = QLatin1String("/static/themes/") + theme;
     c->setStash(QStringLiteral("basetheme"), c->uriFor(staticTheme).toString());
-
-    return true;
-}
-
-bool Root::postFork(Application *app)
-{
-    m_themeDir = app->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
 
     return true;
 }

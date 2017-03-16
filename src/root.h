@@ -55,13 +55,6 @@ public:
 private:
     C_ATTR(End, :ActionClass(RenderView))
     bool End(Context *c);
-
-protected:
-    virtual bool postFork(Application *app) Q_DECL_FINAL;
-
-private:
-    QDir m_themeDir;
-    QString m_theme;
 };
 
 #endif // ROOT_H

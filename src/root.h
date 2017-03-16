@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014-2015 Daniel Nicoletti <dantti12@gmail.com>         *
+ *   Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -36,7 +36,7 @@ class Root : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    Root(Application *app);
+    Root(QObject *app);
     ~Root();
 
 public:

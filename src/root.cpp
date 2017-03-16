@@ -37,7 +37,7 @@
 
 #include "rsswriter.h"
 
-Root::Root(Application *app) : Controller(app)
+Root::Root(QObject *app) : Controller(app)
 {
 }
 
@@ -56,11 +56,9 @@ void Root::notFound(Context *c)
 
 bool Root::End(Context *c)
 {
-    //    qDebug() << "*** Root::End()" << c->view();
-
     const QString theme = engine->settingsValue(QStringLiteral("theme"), QStringLiteral("default"));
 
-    QString staticTheme = QLatin1String("/static/themes/") + theme;
+    const QString staticTheme = QLatin1String("/static/themes/") + theme;
     c->setStash(QStringLiteral("basetheme"), c->uriFor(staticTheme).toString());
 
     return true;
@@ -128,8 +126,8 @@ void Root::lastPosts(Context *c)
     if (!posts.isEmpty()) {
         // See if the page has changed, if the settings have changed
         // and have a newer date use that instead
-        const QDateTime &currentDateTime = posts.first()->created();
-        const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+        const QDateTime currentDateTime = engine->lastModified();
+        const QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
         if (clientDate.isValid()) {
             if (currentDateTime == clientDate && currentDateTime.isValid()) {
                 res->setStatus(Response::NotModified);
@@ -154,17 +152,17 @@ void Root::feed(Context *c)
 {
     Request *req = c->req();
     Response *res = c->res();
-    Headers &headers = res->headers();
 
     // See if the page has changed, if the settings have changed
     // and have a newer date use that instead
     const QDateTime currentDateTime = engine->lastModified();
-    const QDateTime clientDate = headers.ifModifiedSinceDateTime();
+    const QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);
         return;
     }
 
+    Headers &headers = res->headers();
     headers.setLastModified(currentDateTime);
     headers.setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 

@@ -71,7 +71,7 @@ bool CMlyst::init()
     view->setWrapper(QStringLiteral("wrapper.html"));
     view->setCache(production);
 
-    QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
+    const QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
         qCritical() << "Could not create DataLocation" << dataDir.absolutePath();
         return false;

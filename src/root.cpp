@@ -23,10 +23,13 @@
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
+#include <Cutelyst/Plugins/Utils/Sql>
 
 #include <grantlee/safestring.h>
 
-#include <QStringBuilder>
+#include <QSqlQuery>
+
+#include <QBuffer>
 #include <QDebug>
 
 #include "libCMS/page.h"
@@ -166,55 +169,67 @@ void Root::feed(Context *c)
 {
     Request *req = c->req();
     Response *res = c->res();
-    res->setContentType(QStringLiteral("text/xml; charset=UTF-8"));
+    Headers &headers = res->headers();
 
-    const QList<CMS::Page *> posts = engine->listPages(c,
-                              CMS::Engine::Posts,
-                              CMS::Engine::Name |
-                              CMS::Engine::Date |
-                              CMS::Engine::Reversed,
-                              -1,
-                              10);
-    if (!posts.isEmpty()) {
-        // See if the page has changed, if the settings have changed
-        // and have a newer date use that instead
-        const QDateTime &currentDateTime = posts.first()->created();
-        const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
-        if (clientDate.isValid()) {
-            if (currentDateTime == clientDate && currentDateTime.isValid()) {
-                res->setStatus(Response::NotModified);
-                return;
-            }
-        }
-        res->headers().setLastModified(currentDateTime);
+    // See if the page has changed, if the settings have changed
+    // and have a newer date use that instead
+    const QDateTime currentDateTime = engine->lastModified();
+    const QDateTime clientDate = headers.ifModifiedSinceDateTime();
+    if (clientDate.isValid() && currentDateTime.isValid() && currentDateTime == clientDate) {
+        res->setStatus(Response::NotModified);
+        return;
     }
 
-//    c->response()->setHeader(QStringLiteral("Transfer-Encoding"), QStringLiteral("chunked"));
-    RSSWriter writer(c->response());
+    headers.setLastModified(currentDateTime);
+    headers.setContentType(QStringLiteral("text/xml; charset=UTF-8"));
+
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT name, path, author, created, content "
+                               "FROM pages "
+                               "WHERE blog = 1 "
+                               "ORDER BY created DESC "
+                               "LIMIT :limit "
+                               ),
+                QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":limit"), 10);
+
+    auto settings = engine->settings();
+
+    auto buffer = new QBuffer(c);
+    buffer->open(QIODevice::ReadWrite);
+    res->setBody(buffer);
+
+    RSSWriter writer(buffer);
 
     writer.startRSS();
     writer.writeStartChannel();
-    writer.writeChannelTitle(engine->settingsValue(QStringLiteral("title")));
+    writer.writeChannelTitle(settings.value(QStringLiteral("title")));
     writer.writeChannelFeedLink(c->uriFor(c->action()).toString());
     writer.writeChannelLink(req->base());
-    writer.writeChannelDescription(engine->settingsValue(QStringLiteral("tagline")));
-    if (!posts.isEmpty()) {
-        writer.writeChannelLastBuildDate(posts.first()->created());
-    }
+    writer.writeChannelDescription(settings.value(QStringLiteral("tagline")));
 
-    for (CMS::Page *post : posts) {
-        writer.writeStartItem();
-        writer.writeItemTitle(post->name());
-        QString link = c->uriFor(post->path()).toString();
-        writer.writeItemLink(link);
-        writer.writeItemCommentsLink(link + QLatin1String("#comments"));
-        writer.writeItemCreator(post->author());
-        writer.writeItemPubDate(post->created());
-        writer.writeItemDescription(post->content().left(300));
-        writer.writeItemContent(post->content());
-        writer.writeEndItem();
-    }
+    if (Q_LIKELY(query.exec())) {
+        writer.writeChannelLastBuildDate(currentDateTime);
 
-    writer.writeEndChannel();
+        while (query.next()) {
+            writer.writeStartItem();
+
+            writer.writeItemTitle(query.value(0).toString());
+
+            const QString link = c->uriFor(query.value(1).toString()).toString();
+            writer.writeItemLink(link);
+            writer.writeItemCommentsLink(link + QLatin1String("#comments"));
+            writer.writeItemCreator(query.value(2).toString());
+            writer.writeItemPubDate(QDateTime::fromMSecsSinceEpoch(query.value(3).toLongLong() * 1000));
+
+            const QString content = query.value(4).toString();
+            writer.writeItemDescription(content.left(300));
+            writer.writeItemContent(content);
+
+            writer.writeEndItem();
+        }
+
+        writer.writeEndChannel();
+    }
     writer.endRSS();
 }

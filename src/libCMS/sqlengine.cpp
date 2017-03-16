@@ -81,21 +81,24 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
         query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
     }
 
-    if (query.exec() && query.next()) {
-        auto page = new Page(parent);
-        page->setPath(query.value(0).toString());
-        page->setName(query.value(1).toString());
-        page->setNavigationLabel(query.value(2).toString());
-        page->setAuthor(query.value(3).toString());
-        page->setContent(query.value(4).toString());
-        page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
-        page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
-        // tags 7
-        page->setBlog(query.value(8).toBool());
-        page->setAllowComments(query.value(9).toBool());
-        return page;
+    if (Q_LIKELY(query.exec())) {
+        if (query.next()) {
+            auto page = new Page(parent);
+            page->setPath(query.value(0).toString());
+            page->setName(query.value(1).toString());
+            page->setNavigationLabel(query.value(2).toString());
+            page->setAuthor(query.value(3).toString());
+            page->setContent(query.value(4).toString());
+            page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
+            page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
+            // tags 7
+            page->setBlog(query.value(8).toBool());
+            page->setAllowComments(query.value(9).toBool());
+            return page;
+        }
+    } else {
+        qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
-    qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     return 0;
 }
 
@@ -113,17 +116,19 @@ QVariantHash SqlEngine::getPage(const QString &path)
         query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
     }
 
-    if (query.exec() && query.next()) {
-        ret.insert(QStringLiteral("path"), query.value(0));
-        ret.insert(QStringLiteral("name"), query.value(1));
-        ret.insert(QStringLiteral("navigationLabel"), query.value(2));
-        ret.insert(QStringLiteral("author"), query.value(3));
-        ret.insert(QStringLiteral("content"), query.value(4));
-        ret.insert(QStringLiteral("modified"), QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
-        ret.insert(QStringLiteral("created"), QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
-        ret.insert(QStringLiteral("tags"), query.value(7));
-        ret.insert(QStringLiteral("blog"), query.value(8));
-        ret.insert(QStringLiteral("allowComments"), query.value(9));
+    if (query.exec()) {
+        if (query.next()) {
+            ret.insert(QStringLiteral("path"), query.value(0));
+            ret.insert(QStringLiteral("name"), query.value(1));
+            ret.insert(QStringLiteral("navigationLabel"), query.value(2));
+            ret.insert(QStringLiteral("author"), query.value(3));
+            ret.insert(QStringLiteral("content"), query.value(4));
+            ret.insert(QStringLiteral("modified"), QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
+            ret.insert(QStringLiteral("created"), QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
+            ret.insert(QStringLiteral("tags"), query.value(7));
+            ret.insert(QStringLiteral("blog"), query.value(8));
+            ret.insert(QStringLiteral("allowComments"), query.value(9));
+        }
     } else {
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
@@ -151,7 +156,6 @@ QString sortString(Engine::SortFlags sort)
 
 QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
 {
-    qDebug() << Q_FUNC_INFO;
     QList<Page *> ret;
     QSqlQuery query;
     if (filters == Engine::Pages) {
@@ -222,8 +226,9 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
         return false;
     }
 
+    qint64 currentDateTime = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() / 1000;
     query.bindValue(QStringLiteral(":key"), QStringLiteral("modified"));
-    query.bindValue(QStringLiteral(":value"), m_settingsDate);
+    query.bindValue(QStringLiteral(":value"), currentDateTime);
     if (!query.exec()) {
         qWarning() << "Failed to save settings" << query.lastError().driverText();
         db.rollback();
@@ -232,6 +237,7 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
 
     if (db.commit()) {
         m_settingsDate = -1;
+        m_settingsDateTime = QDateTime();
         c->setProperty("_sql_engine_date", QVariant());
         loadSettings(c);
 
@@ -321,6 +327,7 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
         qint64 settingsDate = loadedDate.toLongLong();
         if (settingsDate != m_settingsDate) {
             m_settingsDate = settingsDate;
+            m_settingsDateTime = QDateTime::fromMSecsSinceEpoch(settingsDate * 1000);
             m_settings.clear();
 
             QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT key, value FROM settings"),
@@ -336,6 +343,11 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
     }
 
     return m_settings;
+}
+
+QDateTime SqlEngine::lastModified()
+{
+    return m_settingsDateTime;
 }
 
 bool SqlEngine::savePageBackend(Page *page)

@@ -2,7 +2,7 @@
 #define SQLENGINE_H
 
 #include <QObject>
-#include <QUrl>
+#include <QDateTime>
 
 #include "engine.h"
 
@@ -51,6 +51,8 @@ public:
 
     QHash<QString, QString> loadSettings(Cutelyst::Context *c) override;
 
+    virtual QDateTime lastModified() override;
+
 private:
     virtual bool savePageBackend(Page *page) override;
 
@@ -58,6 +60,7 @@ private:
     void createDb();
 
     QHash<QString, QString> m_settings;
+    QDateTime m_settingsDateTime;
     qint64 m_settingsDate = -1;
     QList<CMS::Menu *> m_menus;
     QHash<QString, CMS::Menu *> m_menuLocations;

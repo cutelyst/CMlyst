@@ -39,6 +39,9 @@ public:
     C_ATTR(logout, :Local :AutoArgs)
     void logout(Context *c);
 
+    C_ATTR(login, :Local :AutoArgs)
+    void login(Context *c);
+
 private Q_SLOTS:
     bool Auto(Context *c);
 

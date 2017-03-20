@@ -42,7 +42,10 @@ public:
     C_ATTR(users, :Local :AutoArgs)
     void users(Context *c);
 
-    C_ATTR(users_edit, :Path('users') :AutoArgs)
+    C_ATTR(user, :Path('users') :AutoArgs)
+    void user(Context *c, const QString &id);
+
+    C_ATTR(users_edit, :Path("users/edit") :AutoArgs)
     void users_edit(Context *c, const QString &id);
 
     C_ATTR(users_new, :Path('users/new') :AutoArgs)

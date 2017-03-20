@@ -21,6 +21,7 @@
 
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/StatusMessage>
 
 #include <QStringBuilder>
 #include <QDebug>
@@ -33,14 +34,16 @@ bool Admin::Auto(Context *c)
 {
     engine->loadSettings(c);
 
-    if (*c->controller() == "AdminLogin" ||
-            c->actionName() == QLatin1String("logout")) {
+    StatusMessage::load(c);
+
+    if (c->action() == CActionFor(QStringLiteral("login")) ||
+            c->action() == CActionFor(QStringLiteral("logout"))) {
         return true;
     }
 
     if (!Authentication::userExists(c)) {
-        qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login/index";
-        c->res()->redirect(c->uriForAction((QStringLiteral("/.admin/login/index"))));
+        qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login";
+        c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
         return false;
     }
 
@@ -68,4 +71,35 @@ void Admin::logout(Cutelyst::Context *c)
 {
     Authentication::logout(c);
     c->res()->redirect(c->uriFor(QStringLiteral("/.admin/login")));
+}
+
+void Admin::login(Context *c)
+{
+    Request *req = c->request();
+    const ParamsMultiMap params = req->bodyParams();
+    const QString username = params.value(QStringLiteral("email"));
+    if (req->isPost()) {
+        const QString password = params.value(QStringLiteral("password"));
+        if (!username.isEmpty() && !password.isEmpty()) {
+
+            // Authenticate
+            if (Authentication::authenticate(c, params)) {
+                qDebug() << Q_FUNC_INFO << username << "is now Logged in";
+                c->res()->redirect(c->uriFor(QStringLiteral("/.admin/posts")));
+                return;
+            } else {
+                c->setStash(QStringLiteral("error_msg"), trUtf8("Wrong password or username"));
+                qDebug() << Q_FUNC_INFO << username << "user or password invalid";
+            }
+        } else {
+            qWarning() << "Empty username and password";
+        }
+        c->res()->setStatus(Response::Forbidden);
+    } else {
+        qWarning() << "Non POST method";
+    }
+
+    c->setStash(QStringLiteral("username"), username);
+    c->setStash(QStringLiteral("no_wrapper"), true);
+    c->setStash(QStringLiteral("template"), QStringLiteral("login.html"));
 }

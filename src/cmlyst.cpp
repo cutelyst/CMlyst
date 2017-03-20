@@ -26,6 +26,7 @@
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/Authentication/htpasswd.h>
+#include <Cutelyst/Plugins/StatusMessage>
 
 #include <QStandardPaths>
 #include <QDir>
@@ -33,7 +34,6 @@
 
 #include "root.h"
 #include "admin.h"
-#include "adminlogin.h"
 #include "adminappearance.h"
 #include "adminposts.h"
 #include "adminpages.h"
@@ -91,7 +91,6 @@ bool CMlyst::init()
     } else {
         new Root(this);
         new Admin(this);
-        new AdminLogin(this);
         new AdminAppearance(this);
         new AdminPosts(this);
         new AdminPages(this);
@@ -113,6 +112,8 @@ bool CMlyst::init()
 
     auto auth = new Authentication(this);
     auth->addRealm(realm);
+
+    new StatusMessage(this);
 
     qDebug() << "Root location" << pathTo({ QStringLiteral("root") });
     qDebug() << "Root Admin location" << pathTo({ QStringLiteral("root"), QStringLiteral("src"), QStringLiteral("admin") });

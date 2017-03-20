@@ -21,7 +21,6 @@ set(cmlyst_SRCS
     root.cpp
     admin.cpp
     adminsetup.cpp
-    adminlogin.cpp
     adminappearance.cpp
     adminposts.cpp
     adminpages.cpp
@@ -43,6 +42,7 @@ target_link_libraries(cmlyst
     Cutelyst::View::Grantlee
     Cutelyst::Utils::Sql
     Cutelyst::Authentication
+    Cutelyst::StatusMessage
     Qt5::Core
     Qt5::Network
     Qt5::Sql

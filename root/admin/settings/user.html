@@ -32,5 +32,23 @@
       <label class="control-label" for="bio">Bio</label>
       <textarea class="form-control" name="bio" rows="5" autocorrect="off" autocapitalize="off" spellcheck="false">{{user.bio}}</textarea>
     </div>
+
+    <hr>
+
+    <div class="form-group">
+      <label class="control-label" for="pw_old">Old Password</label>
+      <input type="password" class="form-control" name="pw_old" id="pw_old">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="pw_new">New Password</label>
+      <input type="password" class="form-control" name="pw_new" id="pw_new">
+    </div>
+    <div class="form-group">
+      <label class="control-label" for="pw_new_conf">Verify Password</label>
+      <input type="password" class="form-control" name="pw_new_conf" id="pw_new_conf">
+    </div>
+    <div class="form-group">
+      <input type="submit" class="btn btn-danger" name="submit" value="Change Password">
+    </div>
   </div>
 </form>

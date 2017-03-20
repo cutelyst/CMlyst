@@ -60,6 +60,9 @@ body {
         {% if error_msg %}
           <div class="alert alert-danger">{{ error_msg }}</div>
         {% endif %}
+        {% if status_msg %}
+          <div class="alert alert-success">{{ status_msg }}</div>
+        {% endif %}
         <input type="text" class="form-control" name="email" placeholder="Login" value="{{ email }}" required {% if not email %}autofocus{% endif %}>
         <input type="password" class="form-control" name="password" placeholder="Password" required {% if email %}autofocus{% endif %}>
         <label class="checkbox">

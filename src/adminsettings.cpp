@@ -23,8 +23,15 @@
 
 #include <Cutelyst/Application>
 #include <Cutelyst/Plugins/Utils/Sql>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/Authentication/credentialpassword.h>
+#include <Cutelyst/Plugins/StatusMessage>
+
+#include <QJsonDocument>
 
 #include <QSqlQuery>
+#include <QSqlError>
+
 #include <QDir>
 #include <QDebug>
 
@@ -105,8 +112,10 @@ void AdminSettings::users(Context *c)
     c->setStash(QStringLiteral("template"), QStringLiteral("settings/users.html"));
 }
 
-void AdminSettings::users_edit(Context *c, const QString &id)
+void AdminSettings::user(Context *c, const QString &id)
 {
+    c->setStash(QStringLiteral("template"), QStringLiteral("settings/user.html"));
+
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, name, email, json "
                                                                   "FROM users "
                                                                   "WHERE id = :id "
@@ -114,10 +123,60 @@ void AdminSettings::users_edit(Context *c, const QString &id)
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":id"), id);
     if (query.exec()) {
-        c->setStash(QStringLiteral("user"), Sql::queryToHashObject(query));
+        QVariantHash data = Sql::queryToHashObject(query);
+        QJsonDocument doc = QJsonDocument::fromJson(data.value(QStringLiteral("json")).toString().toUtf8());
+        c->setStash(QStringLiteral("user"), data);
     }
 
-    c->setStash(QStringLiteral("template"), QStringLiteral("settings/user.html"));
+    if (c->request()->isPost()) {
+        const ParamsMultiMap params = c->request()->bodyParameters();
+        if (params.contains(QStringLiteral("submit"))) {
+            const QString oldPass = params.value(QStringLiteral("pw_old"));
+            const QString newPass = params.value(QStringLiteral("pw_new"));
+            const QString newPass2 = params.value(QStringLiteral("pw_new_conf"));
+            if (newPass == newPass2) {
+                if (newPass.size() < 8) {
+                    c->setStash(QStringLiteral("error_msg"), QStringLiteral("Your password needs to be at least 8 characters long"));
+                } else {
+                    const AuthenticationUser user = Authentication::user(c);
+
+                    const QString oldHash = user.value(QStringLiteral("password")).toString();
+                    if (!CredentialPassword::validatePassword(oldPass.toUtf8(), oldHash.toLatin1())) {
+                        c->setStash(QStringLiteral("error_msg"), QStringLiteral("Old password does not match"));
+                        return;
+                    }
+
+                    const QString hashedPassword = QString::fromLatin1(CredentialPassword::createPassword(
+                                                                           newPass.toUtf8(),
+                                                                           QCryptographicHash::Sha256,
+                                                                           100, 24, 24));
+
+                    query = CPreparedSqlQueryThreadForDB(
+                                QStringLiteral("UPDATE users SET password = :password "
+                                               "WHERE id = :id AND password = :oldpw "),
+                                QStringLiteral("cmlyst"));
+                    query.bindValue(QStringLiteral(":id"), user.id());
+                    query.bindValue(QStringLiteral(":password"), hashedPassword);
+                    query.bindValue(QStringLiteral(":oldpw"), oldHash);
+
+                    if (query.exec() && query.numRowsAffected() == 1) {
+                        Authentication::logout(c);
+                        c->response()->redirect(c->uriFor(QStringLiteral("/.admin/login"),
+                                                          StatusMessage::statusQuery(c, QStringLiteral("Password updated"))));
+                    } else {
+                        c->setStash(QStringLiteral("error_msg"), query.lastError().text());
+                    }
+                }
+            } else {
+                c->setStash(QStringLiteral("error_msg"), QStringLiteral("Your new passwords do not match"));
+            }
+        }
+    }
+}
+
+void AdminSettings::users_edit(Context *c, const QString &id)
+{
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), QStringList{ id }));
 }
 
 void AdminSettings::users_new(Context *c)

@@ -45,6 +45,9 @@ public:
     C_ATTR(user, :Path('users') :AutoArgs)
     void user(Context *c, const QString &id);
 
+    void updateUserData(Context *c, const QString &id, const ParamsMultiMap params);
+    void changePassword(Context *c, const QString &id, const ParamsMultiMap params);
+
     C_ATTR(users_edit, :Path("users/edit") :AutoArgs)
     void users_edit(Context *c, const QString &id);
 

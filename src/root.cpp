@@ -216,3 +216,44 @@ void Root::feed(Context *c)
     }
     writer.endRSS();
 }
+
+void Root::author(Context *c, const QString &slug)
+{
+    Response *res = c->res();
+    Request *req = c->req();
+
+    QDateTime currentDateTime = engine->lastModified();
+    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+    if (clientDate.isValid() && currentDateTime == clientDate) {
+        res->setStatus(Response::NotModified);
+        return;
+    }
+    res->headers().setLastModified(currentDateTime);
+
+    auto authorData = engine->user(slug);
+    if (authorData.isEmpty()) {
+        notFound(c);
+        return;
+    }
+
+    auto settings = engine->settings();
+    const QString cms_head = settings.value(QStringLiteral("cms_head"));
+    if (!cms_head.isEmpty()) {
+        const Grantlee::SafeString safe(cms_head, true);
+        c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
+    }
+
+    const QString cms_foot = settings.value(QStringLiteral("cms_head"));
+    if (!cms_foot.isEmpty()) {
+        const Grantlee::SafeString safe(cms_foot, true);
+        c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
+    }
+
+    c->stash({
+                 {QStringLiteral("template"), QStringLiteral("author.html")},
+                 {QStringLiteral("meta_title"), engine->settingsValue(QStringLiteral("title"))},
+                 {QStringLiteral("meta_description"), engine->settingsValue(QStringLiteral("tagline"))},
+                 {QStringLiteral("cms"), QVariant::fromValue(engine)},
+                 {QStringLiteral("author"), QVariant::fromValue(authorData)}
+             });
+}

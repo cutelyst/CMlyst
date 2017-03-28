@@ -53,14 +53,21 @@ public:
 
     virtual QDateTime lastModified() override;
 
+    virtual QVariantList users() override;
+    virtual QHash<QString, QString> user(const QString &slug) override;
+
 private:
     virtual bool savePageBackend(Page *page) override;
 
     void loadMenus();
+    void loadUsers();
     void configureView(Cutelyst::Context *c);
     void createDb();
 
     QString m_theme;
+    QVariantList m_users;
+    QHash<QString, QHash<QString, QString> > m_usersSlug;
+    QHash<int, QHash<QString, QString> > m_usersId;
     QHash<QString, QString> m_settings;
     QDateTime m_settingsDateTime;
     qint64 m_settingsDate = -1;

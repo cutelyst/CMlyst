@@ -14,9 +14,9 @@
     {% for user in users %}
       <tr>
         <td>
-          <a href="/.admin/settings/users/{{ user.id }}">{{ user.name }}</a>
+          <a href="/.admin/settings/users/{{ user.slug }}">{{ user.name }}</a>
         </td>
-        <td>{{ user.email }}</td>
+        <td><a href="/.admin/settings/users/{{ user.slug }}">{{ user.email }}</a></td>
         <td></td>
       </tr>
     {% endfor %}

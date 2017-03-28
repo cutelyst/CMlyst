@@ -27,6 +27,8 @@
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/StatusMessage>
 
+#include <QRegularExpression>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 
@@ -101,20 +103,15 @@ void AdminSettings::code_injection(Context *c)
 
 void AdminSettings::users(Context *c)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, name, email "
-                                                                  "FROM users "
-                                                                  "ORDER BY name"),
-                                                   QStringLiteral("cmlyst"));
-    if (query.exec()) {
-        c->setStash(QStringLiteral("users"), Sql::queryToHashList(query));
-    }
-
+    c->setStash(QStringLiteral("users"), engine->users());
     c->setStash(QStringLiteral("template"), QStringLiteral("settings/users.html"));
 }
 
 void AdminSettings::user(Context *c, const QString &id)
 {
     c->setStash(QStringLiteral("template"), QStringLiteral("settings/user.html"));
+
+    c->setStash(QStringLiteral("author_url"), c->uriFor(QStringLiteral("/.author")));
 
     if (c->request()->isPost()) {
         const ParamsMultiMap params = c->request()->bodyParameters();
@@ -124,49 +121,47 @@ void AdminSettings::user(Context *c, const QString &id)
             updateUserData(c, id, params);
         }
     } else {
-        QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, name, email, json "
-                                                                      "FROM users "
-                                                                      "WHERE id = :id "
-                                                                      "ORDER BY name"),
-                                                       QStringLiteral("cmlyst"));
-        query.bindValue(QStringLiteral(":id"), id);
-        if (query.exec()) {
-            QVariantHash data = Sql::queryToHashObject(query);
-            QJsonDocument doc = QJsonDocument::fromJson(data.value(QStringLiteral("json")).toString().toUtf8());
-            QJsonObject obj = doc.object();
-            auto it = obj.constBegin();
-            while (it != obj.constEnd()) {
-                data.insert(it.key(), it.value().toString());
-                ++it;
-            }
-
-            c->setStash(QStringLiteral("user"), data);
-        }
+        c->setStash(QStringLiteral("user"), QVariant::fromValue(engine->user(id)));
     }
 }
 
 void AdminSettings::updateUserData(Context *c, const QString &id, const ParamsMultiMap params)
 {
     QJsonObject obj;
-    obj.insert(QStringLiteral("location"), params.value(QStringLiteral("location")));
-    obj.insert(QStringLiteral("fb_profile"), params.value(QStringLiteral("fb_profile")));
-    obj.insert(QStringLiteral("tw_profile"), params.value(QStringLiteral("tw_profile")));
-    obj.insert(QStringLiteral("website"), params.value(QStringLiteral("website")));
-    obj.insert(QStringLiteral("bio"), params.value(QStringLiteral("bio")));
+    obj.insert(QStringLiteral("location"),
+               params.value(QStringLiteral("location")).left(100).toHtmlEscaped());
+    obj.insert(QStringLiteral("facebook"),
+               params.value(QStringLiteral("facebook")).left(100).toHtmlEscaped());
+    obj.insert(QStringLiteral("twitter"),
+               params.value(QStringLiteral("twitter")).left(100).toHtmlEscaped());
+    obj.insert(QStringLiteral("website"),
+               params.value(QStringLiteral("website")).left(100).toHtmlEscaped());
+    QString name = params.value(QStringLiteral("name"));
+    obj.insert(QStringLiteral("name"),
+               name.left(150).toHtmlEscaped());
+    obj.insert(QStringLiteral("bio"),
+               params.value(QStringLiteral("bio")).left(200).toHtmlEscaped());
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("UPDATE users SET "
-                                                                  "name = :name, "
+                                                                  "slug = :slug, "
                                                                   "email = :email, "
                                                                   "json = :json "
-                                                                  "WHERE id = :id "),
+                                                                  "WHERE slug = :slug_id "),
                                                    QStringLiteral("cmlyst"));
-    query.bindValue(QStringLiteral(":id"), id);
-    query.bindValue(QStringLiteral(":name"), params.value(QStringLiteral("name")));
-    query.bindValue(QStringLiteral(":email"), params.value(QStringLiteral("email")));
+    query.bindValue(QStringLiteral(":slug_id"), id);
+    QString slug = params.value(QStringLiteral("slug"));
+    if (slug.isEmpty()) {
+        slug  = name.section(QLatin1Char(' '), 0, 0);
+    }
+    slug.remove(QRegularExpression(QStringLiteral("[^\\w]")));
+    slug = slug.left(50).toLower().toHtmlEscaped();
+    query.bindValue(QStringLiteral(":slug"), slug);
+    query.bindValue(QStringLiteral(":email"), params.value(QStringLiteral("email")).left(200).toHtmlEscaped());
     query.bindValue(QStringLiteral(":json"), QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact)));
     if (query.exec()) {
-        QVariantHash data = Sql::queryToHashObject(query);
-        c->setStash(QStringLiteral("user"), data);
+        engine->setSettingsValue(c, QStringLiteral("modified"), QString());
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), { slug }));
+        return;
     }
     c->setStash(QStringLiteral("user"), QVariant::fromValue(params));
 }

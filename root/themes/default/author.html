@@ -1,0 +1,9 @@
+<div class="blog-header text-center">
+  <h1 class="blog-title">{{ author.name }}</h1>
+  <p class="lead blog-description">{{ author.bio }}</p>
+
+  {% if author.location %}<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> {{author.location}} {% endif %}
+  {% if author.website %}<span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="{{author.website}}">{{author.website}}</a>{% endif %}
+  {% if posts.size %}<span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 1 Post{% endif %}
+  <hr>
+</div>

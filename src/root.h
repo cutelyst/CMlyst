@@ -52,6 +52,9 @@ public:
     C_ATTR(feed, :Path(.feed))
     void feed(Cutelyst::Context *c);
 
+    C_ATTR(author, :Path(.author) :AutoArgs)
+    void author(Cutelyst::Context *c, const QString &slug);
+
 private:
     C_ATTR(End, :ActionClass(RenderView))
     bool End(Context *c);

@@ -220,12 +220,14 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
                                                                   "(:key, :value)"),
                                                    QStringLiteral("cmlyst"));
 
-    query.bindValue(QStringLiteral(":key"), key);
-    query.bindValue(QStringLiteral(":value"), value);
-    if (!query.exec()) {
-        qWarning() << "Failed to save settings" << query.lastError().driverText();
-        db.rollback();
-        return false;
+    if (key != QLatin1String("modified")) {
+        query.bindValue(QStringLiteral(":key"), key);
+        query.bindValue(QStringLiteral(":value"), value);
+        if (!query.exec()) {
+            qWarning() << "Failed to save settings" << query.lastError().driverText();
+            db.rollback();
+            return false;
+        }
     }
 
     qint64 currentDateTime = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() / 1000;
@@ -341,6 +343,7 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
             }
 
             loadMenus();
+            loadUsers();
 
             configureView(c);
         }
@@ -352,6 +355,16 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
 QDateTime SqlEngine::lastModified()
 {
     return m_settingsDateTime;
+}
+
+QVariantList SqlEngine::users()
+{
+    return m_users;
+}
+
+QHash<QString, QString> SqlEngine::user(const QString &slug)
+{
+    return m_usersSlug.value(slug);
 }
 
 bool SqlEngine::savePageBackend(Page *page)
@@ -440,6 +453,53 @@ void SqlEngine::loadMenus()
     m_menuLocations = menuLocations;
 }
 
+void SqlEngine::loadUsers()
+{
+    m_users.clear();
+    m_usersSlug.clear();
+    m_usersId.clear();
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, slug, email, json "
+                                                                  "FROM users "),
+                                                   QStringLiteral("cmlyst"));
+    if (Q_LIKELY(query.exec())) {
+        if (query.next()) {
+            QHash<QString, QString> user;
+
+            const QString id = query.value(0).toString();
+            user.insert(QStringLiteral("id"), id);
+            const QString slug = query.value(1).toString();
+            user.insert(QStringLiteral("slug"), slug);
+            user.insert(QStringLiteral("email"), query.value(2).toString());
+
+            QJsonDocument doc = QJsonDocument::fromJson(query.value(3).toString().toUtf8());
+            QJsonObject obj = doc.object();
+
+            const QStringList fields = {
+                QStringLiteral("name"),
+                QStringLiteral("bio"),
+                QStringLiteral("location"),
+                QStringLiteral("website"),
+                QStringLiteral("twitter"),
+                QStringLiteral("facebook"),
+                QStringLiteral("image"),
+                QStringLiteral("cover"),
+                QStringLiteral("url"),
+            };
+
+            for (const QString &field : fields) {
+                user.insert(field, obj.value(field).toString());
+            }
+
+            m_users.push_back(QVariant::fromValue(user));
+            m_usersSlug.insert(slug, user);
+            m_usersId.insert(id.toInt(), user);
+
+            qDebug() << "USER " << user;
+        }
+    }
+    qDebug() << "USERS " << m_users.size();
+}
+
 void SqlEngine::configureView(Cutelyst::Context *c)
 {
     const QString theme = m_settings.value(QStringLiteral("theme"), QStringLiteral("default"));
@@ -494,9 +554,9 @@ void SqlEngine::createDb()
 
     if (!query.exec(QStringLiteral("CREATE TABLE users "
                                    "( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT "
-                                   ", name TEXT NOT NULL "
-                                   ", password TEXT NOT NULL "
+                                   ", slug TEXT NOT NULL UNIQUE "
                                    ", email TEXT NOT NULL UNIQUE "
+                                   ", password TEXT NOT NULL "
                                    ", json TEXT "
                                    ")"))) {
         qCritical() << "Error creating database" << query.lastError().text();

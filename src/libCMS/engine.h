@@ -109,6 +109,9 @@ public:
 
     virtual QHash<QString, QString> loadSettings(Cutelyst::Context *c) = 0;
 
+    virtual QVariantList users() = 0;
+    virtual QHash<QString, QString> user(const QString &slug) = 0;
+
 protected:
     virtual bool savePageBackend(Page *page) = 0;
 

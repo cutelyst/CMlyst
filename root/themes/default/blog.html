@@ -11,9 +11,9 @@
 
           <div class="blog-post">
             <h2 class="blog-post-title">{{ page.name }}</h2>
-            <p class="blog-post-meta">{{ page.created|date:"MMMM d, yyyy" }} by <a href="#">{{ page.author }}</a></p>
+            <p class="blog-post-meta">{{ page.published_at|date:"MMMM d, yyyy" }} by <a href="/.author/{{page.author.slug}}">{{ page.author.name }}</a></p>
 
-            <p>{{ page.content|safe }}</p>
+            <p>{{page.content}}</p>
           </div><!-- /.blog-post -->
 
         </div><!-- /.blog-main -->

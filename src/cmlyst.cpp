@@ -55,6 +55,8 @@
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
 {
+    qRegisterMetaType<Author>();
+    qRegisterMetaTypeStreamOperators<Author>("Author");
 }
 
 CMlyst::~CMlyst()
@@ -68,7 +70,7 @@ bool CMlyst::init()
 
     auto view = new GrantleeView(this);
     view->setTemplateExtension(QStringLiteral(".html"));
-    view->setWrapper(QStringLiteral("wrapper.html"));
+    view->setWrapper(QStringLiteral("base.html"));
     view->setCache(production);
 
     const QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();

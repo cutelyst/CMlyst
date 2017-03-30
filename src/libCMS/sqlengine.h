@@ -3,8 +3,11 @@
 
 #include <QObject>
 #include <QDateTime>
+#include <QTimeZone>
 
 #include "engine.h"
+
+class QSqlQuery;
 
 namespace Cutelyst {
 class Context;
@@ -22,8 +25,6 @@ public:
     virtual bool init(const QHash<QString, QString> &settings) override;
 
     virtual Page *getPage(const QString &path, QObject *parent) override;
-
-    virtual QVariantHash getPage(const QString &path) override;
 
     /**
      * Returns the available pages,
@@ -55,6 +56,7 @@ public:
 
     virtual QVariantList users() override;
     virtual QHash<QString, QString> user(const QString &slug) override;
+    virtual QHash<QString, QString> user(int id) override;
 
 private:
     virtual bool savePageBackend(Page *page) override;
@@ -63,6 +65,7 @@ private:
     void loadUsers();
     void configureView(Cutelyst::Context *c);
     void createDb();
+    Page *createPageObj(const QSqlQuery &query, QObject *parent);
 
     QString m_theme;
     QVariantList m_users;
@@ -70,6 +73,7 @@ private:
     QHash<int, QHash<QString, QString> > m_usersId;
     QHash<QString, QString> m_settings;
     QDateTime m_settingsDateTime;
+    QTimeZone m_timezone;
     qint64 m_settingsDate = -1;
     QList<CMS::Menu *> m_menus;
     QHash<QString, CMS::Menu *> m_menuLocations;

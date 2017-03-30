@@ -72,41 +72,52 @@ void Page::setPath(const QString &path)
     d->path = path;
 }
 
-QString Page::author() const
+Author Page::author() const
 {
     Q_D(const Page);
     return d->author;
 }
 
-void Page::setAuthor(const QString &author)
+void Page::setAuthor(const Author &author)
 {
     Q_D(Page);
     d->author = author;
 }
 
-QString Page::content() const
+Grantlee::SafeString Page::content() const
 {
     Q_D(const Page);
     return d->content;
 }
 
-void Page::setContent(const QString &body)
+void Page::setContent(const Grantlee::SafeString &body)
 {
     Q_D(Page);
     d->content = body;
 }
 
-void Page::updateContent(const QString &body)
+void Page::updateContent(const Grantlee::SafeString &body)
 {
     Q_D(Page);
     d->content = body;
+}
+
+QDateTime Page::published() const
+{
+    Q_D(const Page);
+    return d->modified;
+}
+
+void Page::setPublished(const QDateTime &dateTime)
+{
+    Q_D(Page);
+    d->published = dateTime;
 }
 
 QDateTime Page::modified() const
 {
     Q_D(const Page);
-    // TODO fix Grantlee
-    return d->modified.toLocalTime();
+    return d->modified;
 }
 
 void Page::setModified(const QDateTime &dateTime)
@@ -140,16 +151,16 @@ void Page::setTags(const QStringList &tags)
     d->tags = tags;
 }
 
-bool Page::blog() const
+bool Page::page() const
 {
     Q_D(const Page);
-    return d->blog;
+    return d->page;
 }
 
-void Page::setBlog(bool enable)
+void Page::setPage(bool enable)
 {
     Q_D(Page);
-    d->blog = enable;
+    d->page = enable;
 }
 
 bool Page::allowComments() const

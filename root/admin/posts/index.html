@@ -7,7 +7,7 @@
       <tr>
         <th>Title</th>
         <th>Author</th>
-        <th>Date</th>
+        <th>Updated at</th>
       </tr>
     </thead>
     <tbody>
@@ -17,8 +17,8 @@
           <a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/edit/{{ post.path }}">{{ post.name }}</a>
           {% if post_type == "page" %}/{{ post.path }}{% endif %}
         </td>
-        <td>{{ post.author }}</td>
-        <td>{{ post.modified|date:"yyyy/MM/dd" }}</td>
+        <td>{{ post.author.name }}</td>
+        <td>{{ post.updated_at|date:"yyyy/MM/dd HH:mm" }}</td>
       </tr>
     {% endfor %}
     </tbody>

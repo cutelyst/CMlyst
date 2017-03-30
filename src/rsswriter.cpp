@@ -110,9 +110,8 @@ void RSSWriter::writeChannelDescription(const QString &description)
 
 void RSSWriter::writeChannelLastBuildDate(const QDateTime &lastBuildDate)
 {
-    QLocale locale(QLocale::C);
-    const QString &dt = locale.toString(lastBuildDate.toTimeSpec(Qt::UTC),
-                                        QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    const QString dt = QLocale::c().toString(lastBuildDate.toTimeSpec(Qt::UTC),
+                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     m_stream.writeTextElement(QStringLiteral("lastBuildDate"), dt);
 }
 
@@ -183,9 +182,8 @@ void RSSWriter::writeItemCategory(const QString &category)
 
 void RSSWriter::writeItemPubDate(const QDateTime &pubDate)
 {
-    QLocale locale(QLocale::C);
-    const QString &dt = locale.toString(pubDate.toTimeSpec(Qt::UTC),
-                                        QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
+    const QString dt = QLocale::c().toString(pubDate.toTimeSpec(Qt::UTC),
+                                             QStringLiteral("ddd, dd MMM yyyy hh:mm:ss 'GMT"));
     m_stream.writeTextElement(QStringLiteral("pubDate"), dt);
 }
 

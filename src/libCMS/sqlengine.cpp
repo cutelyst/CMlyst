@@ -55,15 +55,29 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
     return true;
 }
 
-inline Page *createPageObj(const QSqlQuery &query, QObject *parent)
+Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
 {
     auto page = new Page(parent);
     page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
-    page->setAuthor(query.value(QStringLiteral("author")).toString());
-    page->setBlog(query.value(QStringLiteral("blog")).toBool());
-    page->setContent(query.value(QStringLiteral("content")).toString());
-    page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000));
-    page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000));
+
+    int author_id = query.value(QStringLiteral("author")).toInt();
+    Author author = m_usersId.value(author_id);
+    page->setAuthor(author);
+    page->setPage(!query.value(QStringLiteral("blog")).toBool());
+    page->setContent(Grantlee::SafeString(query.value(QStringLiteral("content")).toString(), true));
+
+    const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000,
+                                                              Qt::UTC).toTimeZone(m_timezone);
+    page->setModified(modified);
+
+    const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000,
+                                                             Qt::UTC).toTimeZone(m_timezone);
+    page->setCreated(created);
+
+    const QDateTime published = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000,
+                                                               Qt::UTC).toTimeZone(m_timezone);
+    page->setPublished(published);
+
     page->setName(query.value(QStringLiteral("name")).toString());
     page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());
@@ -89,12 +103,26 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
             page->setPath(query.value(0).toString());
             page->setName(query.value(1).toString());
             page->setNavigationLabel(query.value(2).toString());
-            page->setAuthor(query.value(3).toString());
-            page->setContent(query.value(4).toString());
-            page->setModified(QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
-            page->setCreated(QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
+
+            int author_id = query.value(3).toInt();
+            Author author = m_usersId.value(author_id);
+            qDebug() << "** AUTHOR" << author;
+            page->setAuthor(author);
+
+            page->setContent(Grantlee::SafeString(query.value(4).toString(), true));
+            const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000,
+                                                                      Qt::UTC).toTimeZone(m_timezone);
+            page->setModified(modified);
+
+            const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000,
+                                                                     Qt::UTC).toTimeZone(m_timezone);
+            page->setCreated(created);
+
+            const QDateTime published = QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000,
+                                                                       Qt::UTC).toTimeZone(m_timezone);
+            page->setPublished(published);
             // tags 7
-            page->setBlog(query.value(8).toBool());
+            page->setPage(!query.value(8).toBool());
             page->setAllowComments(query.value(9).toBool());
             return page;
         }
@@ -102,39 +130,6 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
     return 0;
-}
-
-QVariantHash SqlEngine::getPage(const QString &path)
-{
-    QVariantHash ret;
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
-                                                                  " modified, created, tags, blog, allow_comments "
-                                                                  "FROM pages "
-                                                                  "WHERE path = :path"),
-                                                   QStringLiteral("cmlyst"));
-    if (!path.isNull()) {
-        query.bindValue(QStringLiteral(":path"), path);
-    } else {
-        query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
-    }
-
-    if (query.exec()) {
-        if (query.next()) {
-            ret.insert(QStringLiteral("path"), query.value(0));
-            ret.insert(QStringLiteral("name"), query.value(1));
-            ret.insert(QStringLiteral("navigationLabel"), query.value(2));
-            ret.insert(QStringLiteral("author"), query.value(3));
-            ret.insert(QStringLiteral("content"), query.value(4));
-            ret.insert(QStringLiteral("modified"), QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000));
-            ret.insert(QStringLiteral("created"), QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000));
-            ret.insert(QStringLiteral("tags"), query.value(7));
-            ret.insert(QStringLiteral("blog"), query.value(8));
-            ret.insert(QStringLiteral("allowComments"), query.value(9));
-        }
-    } else {
-        qWarning() << "Failed to get page" << path << query.lastError().databaseText();
-    }
-    return ret;
 }
 
 QString sortString(Engine::SortFlags sort)
@@ -342,6 +337,11 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
                 }
             }
 
+            const QString tz = m_settings.value(QStringLiteral("timezone"));
+            if (!tz.isEmpty()) {
+                m_timezone = QTimeZone(tz.toUtf8());
+            }
+
             loadMenus();
             loadUsers();
 
@@ -367,6 +367,11 @@ QHash<QString, QString> SqlEngine::user(const QString &slug)
     return m_usersSlug.value(slug);
 }
 
+QHash<QString, QString> SqlEngine::user(int id)
+{
+    return m_usersId.value(id);
+}
+
 bool SqlEngine::savePageBackend(Page *page)
 {
     qDebug() << Q_FUNC_INFO << page->path();
@@ -380,13 +385,13 @@ bool SqlEngine::savePageBackend(Page *page)
     query.bindValue(QStringLiteral(":path"), page->path());
     query.bindValue(QStringLiteral(":name"), page->name());
     query.bindValue(QStringLiteral(":navigation_label"), page->navigationLabel());
-    query.bindValue(QStringLiteral(":author"), page->author());
+    query.bindValue(QStringLiteral(":author"), page->author().value(QStringLiteral("id")).toInt());
     query.bindValue(QStringLiteral(":content"), page->content());
     query.bindValue(QStringLiteral(":html"), page->content());
     query.bindValue(QStringLiteral(":modified"), page->modified().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":created"), page->created().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":tags"), page->tags());
-    query.bindValue(QStringLiteral(":blog"), page->blog());
+    query.bindValue(QStringLiteral(":blog"), !page->page());
     query.bindValue(QStringLiteral(":published"), true);
     query.bindValue(QStringLiteral(":allow_comments"), page->allowComments());
     if (!query.exec()) {

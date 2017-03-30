@@ -68,8 +68,6 @@ public:
 
     virtual Page *getPage(const QString &path, QObject *parent) = 0;
 
-    virtual QVariantHash getPage(const QString &path);
-
     Page *getPageToEdit(const QString &path, QObject *parent);
 
     bool savePage(Cutelyst::Context *c, Page *page);
@@ -111,6 +109,7 @@ public:
 
     virtual QVariantList users() = 0;
     virtual QHash<QString, QString> user(const QString &slug) = 0;
+    virtual QHash<QString, QString> user(int id) = 0;
 
 protected:
     virtual bool savePageBackend(Page *page) = 0;

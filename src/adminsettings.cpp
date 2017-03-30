@@ -28,6 +28,7 @@
 #include <Cutelyst/Plugins/StatusMessage>
 
 #include <QRegularExpression>
+#include <QTimeZone>
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -59,6 +60,13 @@ void AdminSettings::general(Context *c)
         engine->setSettingsValue(c, QStringLiteral("show_on_front"), params.value(QStringLiteral("show_on_front")));
         engine->setSettingsValue(c, QStringLiteral("page_on_front"), params.value(QStringLiteral("page_on_front")));
         engine->setSettingsValue(c, QStringLiteral("page_for_posts"), params.value(QStringLiteral("page_for_posts")));
+        engine->setSettingsValue(c, QStringLiteral("timezone"), params.value(QStringLiteral("timezone")));
+    }
+
+    QStringList timezones;
+    const auto rawTzs = QTimeZone::availableTimeZoneIds();
+    for (const QByteArray &rawTz : rawTzs) {
+        timezones.push_back(QString::fromUtf8(rawTz));
     }
 
     QDir themesDir = c->app()->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
@@ -72,15 +80,17 @@ void AdminSettings::general(Context *c)
                                                      CMS::Engine::OnlyPublished));
     auto settings = engine->settings();
     c->stash({
-                   {QStringLiteral("template"), QStringLiteral("settings/general.html")},
-                   {QStringLiteral("title"), settings.value(QStringLiteral("title"))},
-                   {QStringLiteral("tagline"), settings.value(QStringLiteral("tagline"))},
-                   {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
-                   {QStringLiteral("themes"), themes},
-                   {QStringLiteral("pages"), QVariant::fromValue(pages)},
-                   {QStringLiteral("show_on_front"), settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
-                   {QStringLiteral("page_on_front"), settings.value(QStringLiteral("page_on_front"))},
-                   {QStringLiteral("page_for_posts"), settings.value(QStringLiteral("page_for_posts"))},
+                 {QStringLiteral("template"), QStringLiteral("settings/general.html")},
+                 {QStringLiteral("title"), settings.value(QStringLiteral("title"))},
+                 {QStringLiteral("tagline"), settings.value(QStringLiteral("tagline"))},
+                 {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
+                 {QStringLiteral("currentTimezone"), settings.value(QStringLiteral("timezone"))},
+                 {QStringLiteral("themes"), themes},
+                 {QStringLiteral("pages"), QVariant::fromValue(pages)},
+                 {QStringLiteral("timezones"), timezones},
+                 {QStringLiteral("show_on_front"), settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
+                 {QStringLiteral("page_on_front"), settings.value(QStringLiteral("page_on_front"))},
+                 {QStringLiteral("page_for_posts"), settings.value(QStringLiteral("page_for_posts"))},
              });
 }
 

@@ -100,10 +100,10 @@ void Root::page(Cutelyst::Context *c)
         c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
     }
 
-    if (page->blog())  {
-        c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
-    } else {
+    if (page->page())  {
         c->setStash(QStringLiteral("template"), QStringLiteral("page.html"));
+    } else {
+        c->setStash(QStringLiteral("template"), QStringLiteral("blog.html"));
     }
     c->setStash(QStringLiteral("meta_title"), page->name());
     c->setStash(QStringLiteral("cms"), QVariant::fromValue(engine));

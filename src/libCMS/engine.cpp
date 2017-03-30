@@ -135,11 +135,6 @@ QString Engine::normalizeTitle(const QString &title)
     return ret;
 }
 
-QVariantHash Engine::getPage(const QString &path)
-{
-    return QVariantHash();
-}
-
 Page *Engine::getPageToEdit(const QString &path, QObject *parent)
 {
     Page *page = getPage(path, parent);

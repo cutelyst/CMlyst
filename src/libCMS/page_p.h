@@ -33,12 +33,13 @@ public:
     QString name;
     QString navigationLabel;
     QString path;
-    QString author;
-    QString content;
+    Author author;
+    Grantlee::SafeString content;
     QStringList tags;
+    QDateTime published;
     QDateTime modified;
     QDateTime created;
-    bool blog = false;
+    bool page = false;
     bool allowComments = false;
 };
 

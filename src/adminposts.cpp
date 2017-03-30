@@ -64,7 +64,10 @@ void AdminPosts::create(Context *c)
         CMS::Page *page = engine->getPageToEdit(savePath, c);
         page->setContent(content);
         page->setName(title);
-        page->setBlog(true);
+        page->setPage(false);
+
+        Author author = engine->user(Authentication::user(c).id().toInt());
+        page->setAuthor(author);
 //        qDebug() << page->path();
 
         bool ret = engine->savePage(c, page);
@@ -122,7 +125,10 @@ void AdminPosts::edit(Context *c, const QStringList &args)
 
         page->setContent(content);
         page->setName(title);
-//        qDebug() << page->path();
+
+        Author author = engine->user(Authentication::user(c).id().toInt());
+        page->setAuthor(author);
+        qDebug() << "*******" << Authentication::user(c).id() << author;
 
         bool ret = engine->savePage(c, page);
         if (ret) {

@@ -23,6 +23,9 @@
 #include <QObject>
 #include <QDateTime>
 #include <QStringList>
+#include <grantlee/safestring.h>
+
+typedef QHash<QString, QString> Author;
 
 namespace CMS {
 
@@ -34,12 +37,13 @@ class Page : public QObject
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
     Q_PROPERTY(QString path READ path WRITE setPath)
-    Q_PROPERTY(QString author READ author WRITE setAuthor)
-    Q_PROPERTY(QString content READ content WRITE setContent)
-    Q_PROPERTY(QDateTime modified READ modified WRITE setModified)
-    Q_PROPERTY(QDateTime created READ created WRITE setCreated)
+    Q_PROPERTY(Author author READ author WRITE setAuthor)
+    Q_PROPERTY(Grantlee::SafeString content READ content WRITE setContent)
+    Q_PROPERTY(QDateTime published_at READ published WRITE setPublished)
+    Q_PROPERTY(QDateTime updated_at READ modified WRITE setModified)
+    Q_PROPERTY(QDateTime created_at READ created WRITE setCreated)
     Q_PROPERTY(QStringList tags READ tags WRITE setTags)
-    Q_PROPERTY(bool blog READ blog WRITE setBlog)
+    Q_PROPERTY(bool page READ page WRITE setPage)
     Q_PROPERTY(bool allowComments READ allowComments WRITE setAllowComments)
 public:
     Page(QObject *parent);
@@ -54,12 +58,15 @@ public:
     QString path() const;
     void setPath(const QString &path);
 
-    QString author() const;
-    void setAuthor(const QString &author);
+    Author author() const;
+    void setAuthor(const Author &author);
 
-    QString content() const;
-    void setContent(const QString &body);
-    void updateContent(const QString &body);
+    Grantlee::SafeString content() const;
+    void setContent(const Grantlee::SafeString &body);
+    void updateContent(const Grantlee::SafeString &body);
+
+    QDateTime published() const;
+    void setPublished(const QDateTime &dateTime);
 
     QDateTime modified() const;
     void setModified(const QDateTime &dateTime);
@@ -70,8 +77,8 @@ public:
     QStringList tags() const;
     void setTags(const QStringList &tags);
 
-    bool blog() const;
-    void setBlog(bool enable);
+    bool page() const;
+    void setPage(bool enable);
 
     bool allowComments() const;
     void setAllowComments(bool allow);

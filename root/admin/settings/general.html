@@ -15,11 +15,19 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="control-label col-sm-2" for="timezone">Timezone</label>
+    <div class="col-sm-9">
+      <select class="form-control" name="timezone" id="timezone">
+      {% for timezone in timezones %}<option value="{{ timezone }}"{% if currentTimezone == timezone %} selected{% endif %}>{{ timezone }}</option>
+      {% endfor %}
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="control-label col-sm-2" for="theme">Theme</label>
     <div class="col-sm-9">
       <select class="form-control" name="theme" id="theme">
-      {% for theme in themes %}
-        <option value="{{ theme }}"{% if currentTheme == theme %} selected{% endif %}>{{ theme }}</option>
+      {% for theme in themes %}<option value="{{ theme }}"{% if currentTheme == theme %} selected{% endif %}>{{ theme }}</option>
       {% endfor %}
       </select>
     </div>

@@ -1,0 +1,33 @@
+
+<h2 class="sub-header">Database</h2>
+
+
+<h4>Export data</h4>
+<form class="form-inline" action="json_data">
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="posts" checked> Posts and pages
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="users" checked> Users
+    </label>
+  </div>
+  <div class="checkbox">
+    <label>
+      <input type="checkbox" name="settings" checked> Settings
+    </label>
+  </div>
+  <button type="submit" class="btn btn-primary">Export</button>
+</form>
+
+<h4>Import data</h4>
+<form class="form" method="POST" action="json_data">
+<div class="form-group">
+    <label for="json_file">JSON data</label>
+    <input type="file" id="json_file" name="json_file" required>
+    <p class="help-block">Import data from another installation overwriting confliction data.</p>
+  </div>
+  <button type="submit" class="btn btn-primary">Import</button>
+</form>

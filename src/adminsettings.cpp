@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -32,6 +32,7 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
 #include <QSqlQuery>
 #include <QSqlError>
@@ -227,4 +228,193 @@ void AdminSettings::users_edit(Context *c, const QString &id)
 void AdminSettings::users_new(Context *c)
 {
 
+}
+
+void AdminSettings::database(Context *c)
+{
+    c->setStash(QStringLiteral("users"), engine->users());
+    c->setStash(QStringLiteral("template"), QStringLiteral("settings/database.html"));
+}
+
+void AdminSettings::json_data(Context *c)
+{
+    if (c->request()->isPost()) {
+        json_import(c);
+    } else {
+        json_export(c);
+    }
+}
+
+void AdminSettings::json_import(Context *c)
+{
+    const QJsonDocument doc = c->request()->bodyData().toJsonDocument();
+    if (doc.isNull()) {
+        return;
+    }
+    QJsonObject main = doc.object();
+    if (main.isEmpty()) {
+        return;
+    }
+
+    QJsonArray dbArray = main.value(QLatin1String("db")).toArray();
+    if (dbArray.isEmpty()) {
+        return;
+    }
+
+    QJsonObject dbObject = dbArray.first().toObject();
+
+    QJsonObject data = dbObject.value(QStringLiteral("data")).toObject();
+
+    auto postsIt = data.constFind(QLatin1String("posts"));
+    if (postsIt != data.constEnd()) {
+        for (const QJsonValue &jsonValue : postsIt.value().toArray()) {
+            QJsonObject post = jsonValue.toObject();
+            auto page = new CMS::Page(c);
+//            page->setAuthor();
+            page->setContent(post.value(QLatin1String("content")).toString());
+            page->setName(post.value(QLatin1String("title")).toString());
+            if (post.contains(QLatin1String("path"))) {
+                page->setPath(post.value(QLatin1String("path")).toString());
+            } else {
+                // Ghost compatibility
+                page->setPath(post.value(QLatin1String("slug")).toString());
+            }
+            page->setPage(post.value(QLatin1String("page")).toBool());
+            page->setCreated(QDateTime::fromString(post.value(QLatin1String("created_at")).toString(),
+                                                   QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+            page->setModified(QDateTime::fromString(post.value(QLatin1String("modified_at")).toString(),
+                                                    QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+            page->setPublished(QDateTime::fromString(post.value(QLatin1String("published_at")).toString(),
+                                                     QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+        }
+    }
+
+    auto usersIt = data.constFind(QLatin1String("users"));
+    if (usersIt != data.constEnd()) {
+        for (const QJsonValue &jsonValue : usersIt.value().toArray()) {
+            QJsonObject user = jsonValue.toObject();
+            QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT INTO users "
+                                                                          "(slug, email, password, json) "
+                                                                          "VALUES "
+                                                                          "(:slug, :email, :password, :json)"),
+                                                           QStringLiteral("cmlyst"));
+            query.bindValue(QStringLiteral(":slug"), user.value(QLatin1String("slug")).toString());
+            user.remove(QStringLiteral("slug"));
+            query.bindValue(QStringLiteral(":email"), user.value(QLatin1String("email")).toString());
+            user.remove(QStringLiteral("email"));
+            query.bindValue(QStringLiteral(":password"), user.value(QLatin1String("password")).toString());
+            user.remove(QStringLiteral("password"));
+            query.bindValue(QStringLiteral(":json"), QString::fromUtf8(QJsonDocument(user).toJson(QJsonDocument::Compact)));
+
+            if (!query.exec()) {
+                qWarning() << "Failed to import user" << query.lastError().databaseText();
+            }
+        }
+    }
+
+    auto settingsIt = data.constFind(QLatin1String("settings"));
+    if (settingsIt != data.constEnd()) {
+        for (const QJsonValue &jsonValue : settingsIt.value().toArray()) {
+            QJsonObject settings = jsonValue.toObject();
+            const QString key = settings.value(QLatin1String("key")).toString();
+            if (!key.isEmpty()) {
+                const QString value = settings.value(QLatin1String("value")).toString();
+                engine->setSettingsValue(c, key, value);
+            }
+        }
+    }
+}
+
+void AdminSettings::json_export(Context *c)
+{
+    QJsonObject data;
+
+    const ParamsMultiMap params = c->request()->queryParams();
+
+    QSqlQuery query;
+
+    if (params.contains(QStringLiteral("posts"))) {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("SELECT id, name, path, content, html, blog, author, created, modified "
+                                   "FROM pages "
+                                   ),
+                    QStringLiteral("cmlyst"));
+        if (query.exec()) {
+            QJsonArray posts;
+            while (query.next()) {
+                QJsonObject post;
+                post.insert(QStringLiteral("id"), query.value(QStringLiteral("id")).toLongLong());
+                post.insert(QStringLiteral("title"), query.value(QStringLiteral("name")).toString());
+                const QString path = query.value(QStringLiteral("path")).toString();
+                if (path.isEmpty()) {
+                    post.insert(QStringLiteral("slug"), QStringLiteral("index-slug"));
+                } else {
+                    post.insert(QStringLiteral("slug"), path);
+                }
+                post.insert(QStringLiteral("path"), path);
+                post.insert(QStringLiteral("content"), query.value(QStringLiteral("content")).toString());
+                post.insert(QStringLiteral("html"), query.value(QStringLiteral("html")).toString());
+                post.insert(QStringLiteral("page"), !query.value(QStringLiteral("blog")).toBool());
+                post.insert(QStringLiteral("author_id"), query.value(QStringLiteral("author")).toLongLong());
+                const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000, Qt::UTC);
+                post.insert(QStringLiteral("created_at"), modified.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+                post.insert(QStringLiteral("updated_at"), modified.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+                const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000, Qt::UTC);
+                post.insert(QStringLiteral("published_at"), created.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+
+                posts.append(post);
+            }
+            data.insert(QStringLiteral("posts"), posts);
+        }
+    }
+
+    if (params.contains(QStringLiteral("users"))) {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("SELECT id, slug, email, password, json "
+                                   "FROM users "
+                                   ),
+                    QStringLiteral("cmlyst"));
+        if (query.exec()) {
+            QJsonArray users;
+            while (query.next()) {
+                QJsonDocument doc = QJsonDocument::fromJson(query.value(QStringLiteral("json")).toString().toUtf8());
+                QJsonObject user = doc.object();
+                user.insert(QStringLiteral("id"), query.value(QStringLiteral("id")).toLongLong());
+                user.insert(QStringLiteral("slug"), query.value(QStringLiteral("slug")).toString());
+                user.insert(QStringLiteral("email"), query.value(QStringLiteral("email")).toString());
+                user.insert(QStringLiteral("password"), query.value(QStringLiteral("password")).toString());
+
+                users.append(user);
+            }
+            data.insert(QStringLiteral("users"), users);
+        }
+    }
+
+    if (params.contains(QStringLiteral("settings"))) {
+        QJsonArray settingsArray;
+        auto settings = engine->settings();
+        auto settingsIt = settings.constBegin();
+        while (settingsIt != settings.constEnd()) {
+            QJsonObject pair;
+            pair.insert(QStringLiteral("key"), settingsIt.key());
+            pair.insert(QStringLiteral("value"), settingsIt.value());
+            settingsArray.append(pair);
+
+            ++settingsIt;
+        }
+        data.insert(QStringLiteral("settings"), settingsArray);
+    }
+
+    QJsonObject dbObject;
+    dbObject.insert(QStringLiteral("data"), data);
+
+    QJsonArray dbArray;
+    dbArray.append(dbObject);
+
+    QJsonObject main;
+    main.insert(QStringLiteral("db"), dbArray);
+
+    c->response()->setJsonBody(QJsonDocument(main));
+    c->response()->headers().setContentDispositionAttachment(QStringLiteral("data.cmlyst.%1.json")
+                                                             .arg(QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd"))));
 }

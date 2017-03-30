@@ -53,6 +53,15 @@ public:
 
     C_ATTR(users_new, :Path('users/new') :AutoArgs)
     void users_new(Context *c);
+
+    C_ATTR(database, :Local :AutoArgs)
+    void database(Context *c);
+
+    C_ATTR(json_data, :Local :AutoArgs)
+    void json_data(Context *c);
+
+    void json_import(Context *c);
+    void json_export(Context *c);
 };
 
 #endif // ADMINSETTINGS_H

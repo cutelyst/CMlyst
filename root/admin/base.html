@@ -60,6 +60,9 @@
             <li{% if c.controllerName == "AdminSettings" and c.actionName == "users" %} class="active"{% endif %}>
               <a href="/.admin/settings/users">Users<span class="glyphicon glyphicon-user pull-right" aria-hidden="true"></span></a>
             </li>
+            <li{% if c.controllerName == "AdminSettings" and c.actionName == "database" %} class="active"{% endif %}>
+              <a href="/.admin/settings/database">Database<span class="glyphicon glyphicon-hdd pull-right" aria-hidden="true"></span></a>
+            </li>
           </ul>
       </div><!--/.nav-collapse -->
     </div>

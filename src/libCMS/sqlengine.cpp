@@ -147,7 +147,7 @@ QString sortString(Engine::SortFlags sort)
             return QStringLiteral(" ORDER BY date DESC ");
         }
     }
-    
+
     return QString();
 }
 

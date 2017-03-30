@@ -167,8 +167,9 @@ void Root::feed(Context *c)
     headers.setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT name, path, author, created, content "
-                               "FROM pages "
+                QStringLiteral("SELECT p.name, p.path, u.name, p.created, p.content "
+                               "FROM pages p "
+                               "LEFT JOIN users u ON u.id = p.author "
                                "WHERE blog = 1 "
                                "ORDER BY created DESC "
                                "LIMIT :limit "

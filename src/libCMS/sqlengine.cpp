@@ -342,6 +342,10 @@ QHash<QString, QString> SqlEngine::loadSettings(Cutelyst::Context *c)
                 m_timezone = QTimeZone(tz.toUtf8());
             }
 
+            if (!m_timezone.isValid()) {
+                m_timezone = QTimeZone::systemTimeZone();
+            }
+
             loadMenus();
             loadUsers();
 

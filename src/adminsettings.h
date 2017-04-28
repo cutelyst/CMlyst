@@ -62,6 +62,9 @@ public:
 
     void json_import(Context *c);
     void json_export(Context *c);
+
+    C_ATTR(db_clean, :Local :AutoArgs)
+    void db_clean(Context *c);
 };
 
 #endif // ADMINSETTINGS_H

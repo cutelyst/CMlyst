@@ -40,7 +40,7 @@ class Page : public QObject
     Q_PROPERTY(Author author READ author WRITE setAuthor)
     Q_PROPERTY(Grantlee::SafeString content READ content WRITE setContent)
     Q_PROPERTY(QDateTime published_at READ published WRITE setPublished)
-    Q_PROPERTY(QDateTime updated_at READ modified WRITE setModified)
+    Q_PROPERTY(QDateTime updated_at READ updated WRITE setUpdated)
     Q_PROPERTY(QDateTime created_at READ created WRITE setCreated)
     Q_PROPERTY(QStringList tags READ tags WRITE setTags)
     Q_PROPERTY(bool page READ page WRITE setPage)
@@ -68,8 +68,8 @@ public:
     QDateTime published() const;
     void setPublished(const QDateTime &dateTime);
 
-    QDateTime modified() const;
-    void setModified(const QDateTime &dateTime);
+    QDateTime updated() const;
+    void setUpdated(const QDateTime &dateTime);
 
     QDateTime created() const;
     void setCreated(const QDateTime &dateTime);

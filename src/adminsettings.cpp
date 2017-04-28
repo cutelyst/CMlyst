@@ -22,6 +22,7 @@
 #include "libCMS/page.h"
 
 #include <Cutelyst/Application>
+#include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/Sql>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
@@ -247,17 +248,32 @@ void AdminSettings::json_data(Context *c)
 
 void AdminSettings::json_import(Context *c)
 {
-    const QJsonDocument doc = c->request()->bodyData().toJsonDocument();
-    if (doc.isNull()) {
+    Upload *json = c->request()->upload(QStringLiteral("json_file"));
+    if (!json) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::errorQuery(c, QStringLiteral("Failed to import, missing upload file."))));
+        return;
+    }
+
+    QJsonParseError error;
+    const QJsonDocument doc = QJsonDocument::fromJson(json->readAll(), &error);
+    if (error.error) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::errorQuery(c, QStringLiteral("Failed to import, parsing failed: '%1'.")
+                                                                    .arg(error.errorString()))));
         return;
     }
     QJsonObject main = doc.object();
     if (main.isEmpty()) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::errorQuery(c, QStringLiteral("Failed to import, empty object."))));
         return;
     }
 
     QJsonArray dbArray = main.value(QLatin1String("db")).toArray();
     if (dbArray.isEmpty()) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::errorQuery(c, QStringLiteral("Failed to import, empty db array."))));
         return;
     }
 
@@ -265,27 +281,15 @@ void AdminSettings::json_import(Context *c)
 
     QJsonObject data = dbObject.value(QStringLiteral("data")).toObject();
 
-    auto postsIt = data.constFind(QLatin1String("posts"));
-    if (postsIt != data.constEnd()) {
-        for (const QJsonValue &jsonValue : postsIt.value().toArray()) {
-            QJsonObject post = jsonValue.toObject();
-            auto page = new CMS::Page(c);
-//            page->setAuthor();
-            page->setContent(post.value(QLatin1String("content")).toString());
-            page->setName(post.value(QLatin1String("title")).toString());
-            if (post.contains(QLatin1String("path"))) {
-                page->setPath(post.value(QLatin1String("path")).toString());
-            } else {
-                // Ghost compatibility
-                page->setPath(post.value(QLatin1String("slug")).toString());
+    auto settingsIt = data.constFind(QLatin1String("settings"));
+    if (settingsIt != data.constEnd()) {
+        for (const QJsonValue &jsonValue : settingsIt.value().toArray()) {
+            QJsonObject settings = jsonValue.toObject();
+            const QString key = settings.value(QLatin1String("key")).toString();
+            if (!key.isEmpty()) {
+                const QString value = settings.value(QLatin1String("value")).toString();
+                engine->setSettingsValue(c, key, value);
             }
-            page->setPage(post.value(QLatin1String("page")).toBool());
-            page->setCreated(QDateTime::fromString(post.value(QLatin1String("created_at")).toString(),
-                                                   QStringLiteral("yyyy-MM-dd HH:mm:ss")));
-            page->setModified(QDateTime::fromString(post.value(QLatin1String("modified_at")).toString(),
-                                                    QStringLiteral("yyyy-MM-dd HH:mm:ss")));
-            page->setPublished(QDateTime::fromString(post.value(QLatin1String("published_at")).toString(),
-                                                     QStringLiteral("yyyy-MM-dd HH:mm:ss")));
         }
     }
 
@@ -312,17 +316,46 @@ void AdminSettings::json_import(Context *c)
         }
     }
 
-    auto settingsIt = data.constFind(QLatin1String("settings"));
-    if (settingsIt != data.constEnd()) {
-        for (const QJsonValue &jsonValue : settingsIt.value().toArray()) {
-            QJsonObject settings = jsonValue.toObject();
-            const QString key = settings.value(QLatin1String("key")).toString();
-            if (!key.isEmpty()) {
-                const QString value = settings.value(QLatin1String("value")).toString();
-                engine->setSettingsValue(c, key, value);
+    auto postsIt = data.constFind(QLatin1String("posts"));
+    if (postsIt != data.constEnd()) {
+        for (const QJsonValue &jsonValue : postsIt.value().toArray()) {
+            QJsonObject post = jsonValue.toObject();
+            auto page = new CMS::Page(c);
+            Author author;
+            author.insert(QStringLiteral("id"), QString::number(post.value(QLatin1String("author_id")).toInt()));
+            page->setAuthor(author);
+            page->setContent(post.value(QLatin1String("content")).toString());
+            page->setName(post.value(QLatin1String("title")).toString());
+            if (post.contains(QLatin1String("path"))) {
+                page->setPath(post.value(QLatin1String("path")).toString());
+            } else {
+                // Ghost compatibility
+                page->setPath(post.value(QLatin1String("slug")).toString());
             }
+            page->setPage(post.value(QLatin1String("page")).toBool());
+
+            auto created = QDateTime::fromString(post.value(QLatin1String("created_at")).toString(),
+                                                 QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+            created.setTimeSpec(Qt::UTC);
+            page->setCreated(created);
+
+            auto updated = QDateTime::fromString(post.value(QLatin1String("updated_at")).toString(),
+                                                                QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+            updated.setTimeSpec(Qt::UTC);
+            page->setUpdated(updated);
+
+            auto published = QDateTime::fromString(post.value(QLatin1String("published_at")).toString(),
+                                                   QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+            published.setTimeSpec(Qt::UTC);
+            page->setPublished(published);
+
+            engine->savePage(c, page);
+            delete page;
         }
     }
+
+    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                      StatusMessage::statusQuery(c, QStringLiteral("Data successfully imported."))));
 }
 
 void AdminSettings::json_export(Context *c)
@@ -417,4 +450,23 @@ void AdminSettings::json_export(Context *c)
     c->response()->setJsonBody(QJsonDocument(main));
     c->response()->headers().setContentDispositionAttachment(QStringLiteral("data.cmlyst.%1.json")
                                                              .arg(QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd"))));
+}
+
+void AdminSettings::db_clean(Context *c)
+{
+    if (!c->request()->isPost()) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database"))));
+    }
+
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("DELETE FROM pages"),
+                QStringLiteral("cmlyst"));
+    if (query.exec()) {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::statusQuery(c, QStringLiteral("Database wiped."))));
+    } else {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),
+                                          StatusMessage::errorQuery(c, QStringLiteral("Failed to wipe database '%1'.")
+                                                                    .arg(query.lastError().databaseText()))));
+    }
 }

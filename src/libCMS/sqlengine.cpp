@@ -68,7 +68,7 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
 
     const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000,
                                                               Qt::UTC).toTimeZone(m_timezone);
-    page->setModified(modified);
+    page->setUpdated(modified);
 
     const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000,
                                                              Qt::UTC).toTimeZone(m_timezone);
@@ -112,7 +112,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
             page->setContent(Grantlee::SafeString(query.value(4).toString(), true));
             const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000,
                                                                       Qt::UTC).toTimeZone(m_timezone);
-            page->setModified(modified);
+            page->setUpdated(modified);
 
             const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000,
                                                                      Qt::UTC).toTimeZone(m_timezone);
@@ -388,7 +388,7 @@ bool SqlEngine::savePageBackend(Page *page)
     query.bindValue(QStringLiteral(":author"), page->author().value(QStringLiteral("id")).toInt());
     query.bindValue(QStringLiteral(":content"), page->content());
     query.bindValue(QStringLiteral(":html"), page->content());
-    query.bindValue(QStringLiteral(":modified"), page->modified().toMSecsSinceEpoch() / 1000);
+    query.bindValue(QStringLiteral(":modified"), page->updated().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":created"), page->created().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":tags"), page->tags());
     query.bindValue(QStringLiteral(":blog"), !page->page());

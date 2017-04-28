@@ -22,12 +22,22 @@
   <button type="submit" class="btn btn-primary">Export</button>
 </form>
 
+<br>
+
 <h4>Import data</h4>
-<form class="form" method="POST" action="json_data">
+<form class="form" method="POST" action="json_data" enctype="multipart/form-data">
 <div class="form-group">
     <label for="json_file">JSON data</label>
     <input type="file" id="json_file" name="json_file" required>
     <p class="help-block">Import data from another installation overwriting confliction data.</p>
   </div>
   <button type="submit" class="btn btn-primary">Import</button>
+</form>
+
+<br>
+
+<h4>Delete all content</h4>
+<form class="form" method="POST" action="db_clean">
+<div class="form-group">
+  <button type="submit" class="btn btn-danger">Delete</button>
 </form>

@@ -105,7 +105,7 @@ void Page::updateContent(const Grantlee::SafeString &body)
 QDateTime Page::published() const
 {
     Q_D(const Page);
-    return d->modified;
+    return d->published;
 }
 
 void Page::setPublished(const QDateTime &dateTime)
@@ -114,16 +114,16 @@ void Page::setPublished(const QDateTime &dateTime)
     d->published = dateTime;
 }
 
-QDateTime Page::modified() const
+QDateTime Page::updated() const
 {
     Q_D(const Page);
-    return d->modified;
+    return d->updated;
 }
 
-void Page::setModified(const QDateTime &dateTime)
+void Page::setUpdated(const QDateTime &dateTime)
 {
     Q_D(Page);
-    d->modified = dateTime;
+    d->updated = dateTime;
 }
 
 QDateTime Page::created() const

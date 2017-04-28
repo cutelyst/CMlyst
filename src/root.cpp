@@ -75,9 +75,9 @@ void Root::page(Cutelyst::Context *c)
 
     // See if the page has changed, if the settings have changed
 //     and have a newer date use that instead
-    QDateTime currentDateTime = qMax(page->modified(), engine->lastModified());
+    QDateTime currentDateTime = qMax(page->updated(), engine->lastModified());
 //    QDateTime currentDateTime = qMax(page.value(QStringLiteral("modified")).toDateTime(), engine->lastModified());
-    const QDateTime &clientDate = req->headers().ifModifiedSinceDateTime();
+    const QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
     if (clientDate.isValid() && currentDateTime == clientDate) {
         res->setStatus(Response::NotModified);
         return;

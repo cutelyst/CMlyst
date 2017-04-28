@@ -143,7 +143,7 @@ Page *Engine::getPageToEdit(const QString &path, QObject *parent)
         page->setPath(path);
         QDateTime dt = QDateTime::currentDateTimeUtc();
         page->setCreated(dt);
-        page->setModified(dt);
+        page->setUpdated(dt);
     }
 
     return page;

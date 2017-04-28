@@ -37,7 +37,7 @@ public:
     Grantlee::SafeString content;
     QStringList tags;
     QDateTime published;
-    QDateTime modified;
+    QDateTime updated;
     QDateTime created;
     bool page = false;
     bool allowComments = false;

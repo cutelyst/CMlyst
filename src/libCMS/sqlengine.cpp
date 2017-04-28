@@ -106,7 +106,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
 
             int author_id = query.value(3).toInt();
             Author author = m_usersId.value(author_id);
-            qDebug() << "** AUTHOR" << author;
+//            qDebug() << "** AUTHOR" << author;
             page->setAuthor(author);
 
             page->setContent(Grantlee::SafeString(query.value(4).toString(), true));

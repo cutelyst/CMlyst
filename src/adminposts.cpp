@@ -62,7 +62,7 @@ void AdminPosts::create(Context *c)
 //        qDebug() << "save path"  << savePath;
 
         CMS::Page *page = engine->getPageToEdit(savePath, c);
-        page->setContent(content);
+        page->setContent(content, true);
         page->setName(title);
         page->setPage(false);
 
@@ -123,7 +123,7 @@ void AdminPosts::edit(Context *c, const QStringList &args)
             qDebug() << "not yet supported";
         }
 
-        page->setContent(content);
+        page->setContent(content, true);
         page->setName(title);
 
         Author author = engine->user(Authentication::user(c).id().toInt());
@@ -146,4 +146,15 @@ void AdminPosts::edit(Context *c, const QStringList &args)
     c->setStash(QStringLiteral("edit_content"), content);
     c->setStash(QStringLiteral("editting"), true);
     c->setStash(QStringLiteral("template"), QStringLiteral("posts/create.html"));
+}
+
+void AdminPosts::remove(Context *c, const QString &id)
+{
+    if (!c->request()->isPost()) {
+        c->response()->setStatus(Response::BadRequest);
+        return;
+    }
+
+    engine->removePage(id.toInt());
+    c->response()->setBody(QStringLiteral("ok"));
 }

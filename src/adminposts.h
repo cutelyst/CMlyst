@@ -41,6 +41,9 @@ public:
 
     C_ATTR(edit, :Local :AutoArgs)
     void edit(Context *c, const QStringList &args);
+
+    C_ATTR(remove, :Path('delete') :AutoArgs)
+    void remove(Context *c, const QString &id);
 };
 
 #endif // ADMINPOSTS_H

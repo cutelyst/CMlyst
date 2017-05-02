@@ -62,7 +62,7 @@ void AdminPages::create(Context *c)
 //        qDebug() << content;
 
         CMS::Page *page = engine->getPageToEdit(CMS::Engine::normalizePath(path), c);
-        page->setContent(content);
+        page->setContent(content, true);
         page->setName(title);
         Author author = engine->user(Authentication::user(c).id().toInt());
         page->setAuthor(author);

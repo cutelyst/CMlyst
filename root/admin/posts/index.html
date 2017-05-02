@@ -8,19 +8,41 @@
         <th>Title</th>
         <th>Author</th>
         <th>Updated at</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
     {% for post in posts %}
-      <tr>
+      <tr id="post-{{post.id}}">
         <td>
           <a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/edit/{{ post.path }}">{{ post.name }}</a>
           {% if post_type == "page" %}/{{ post.path }}{% endif %}
         </td>
         <td>{{ post.author.name }}</td>
         <td>{{ post.updated_at|date:"yyyy/MM/dd HH:mm" }}</td>
+        <td><a href="#" class="confirm-delete" data-id="{{post.id}}">Delete</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Delete</h4>
+      </div>
+      <div class="modal-body">
+        <p>You are about to delete this post.</p>
+        <p>Do you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" id="btnYes" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
 </div>

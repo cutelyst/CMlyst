@@ -33,7 +33,19 @@ Page::Page(QObject *parent) : QObject(parent)
 Page::~Page()
 {
     delete d_ptr;
-//    qDebug() << Q_FUNC_INFO;
+    //    qDebug() << Q_FUNC_INFO;
+}
+
+int Page::id() const
+{
+    Q_D(const Page);
+    return d->id;
+}
+
+void Page::setId(int id)
+{
+    Q_D(Page);
+    d->id = id;
 }
 
 QString Page::name() const
@@ -90,10 +102,10 @@ Grantlee::SafeString Page::content() const
     return d->content;
 }
 
-void Page::setContent(const Grantlee::SafeString &body)
+void Page::setContent(const QString &body, bool safe)
 {
     Q_D(Page);
-    d->content = body;
+    d->content = Grantlee::SafeString(body, safe);
 }
 
 void Page::updateContent(const Grantlee::SafeString &body)

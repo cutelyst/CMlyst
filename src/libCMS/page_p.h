@@ -39,6 +39,7 @@ public:
     QDateTime published;
     QDateTime updated;
     QDateTime created;
+    int id = 0;
     bool page = false;
     bool allowComments = false;
 };

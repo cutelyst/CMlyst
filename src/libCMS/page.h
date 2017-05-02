@@ -34,11 +34,12 @@ class Page : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(Page)
+    Q_PROPERTY(int id READ id WRITE setId)
     Q_PROPERTY(QString name READ name WRITE setName)
     Q_PROPERTY(QString navigationLabel READ navigationLabel WRITE setNavigationLabel)
     Q_PROPERTY(QString path READ path WRITE setPath)
     Q_PROPERTY(Author author READ author WRITE setAuthor)
-    Q_PROPERTY(Grantlee::SafeString content READ content WRITE setContent)
+    Q_PROPERTY(Grantlee::SafeString content READ content)
     Q_PROPERTY(QDateTime published_at READ published WRITE setPublished)
     Q_PROPERTY(QDateTime updated_at READ updated WRITE setUpdated)
     Q_PROPERTY(QDateTime created_at READ created WRITE setCreated)
@@ -48,6 +49,9 @@ class Page : public QObject
 public:
     Page(QObject *parent);
     virtual ~Page();
+
+    int id() const;
+    void setId(int id);
 
     QString name() const;
     void setName(const QString &name);
@@ -62,7 +66,7 @@ public:
     void setAuthor(const Author &author);
 
     Grantlee::SafeString content() const;
-    void setContent(const Grantlee::SafeString &body);
+    void setContent(const QString &body, bool safe);
     void updateContent(const Grantlee::SafeString &body);
 
     QDateTime published() const;

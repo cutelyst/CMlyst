@@ -64,7 +64,7 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
     Author author = m_usersId.value(author_id);
     page->setAuthor(author);
     page->setPage(!query.value(QStringLiteral("blog")).toBool());
-    page->setContent(Grantlee::SafeString(query.value(QStringLiteral("content")).toString(), true));
+    page->setContent(query.value(QStringLiteral("content")).toString(), true);
 
     const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000,
                                                               Qt::UTC).toTimeZone(m_timezone);
@@ -81,6 +81,7 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
     page->setName(query.value(QStringLiteral("name")).toString());
     page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());
+    page->setId(query.value(QStringLiteral("id")).toInt());
     return page;
 }
 
@@ -109,7 +110,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
 //            qDebug() << "** AUTHOR" << author;
             page->setAuthor(author);
 
-            page->setContent(Grantlee::SafeString(query.value(4).toString(), true));
+            page->setContent(query.value(4).toString(), true);
             const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000,
                                                                       Qt::UTC).toTimeZone(m_timezone);
             page->setUpdated(modified);
@@ -130,6 +131,20 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
     return 0;
+}
+
+bool SqlEngine::removePage(int id)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("DELETE FROM pages "
+                                                                  "WHERE id = :id"),
+                                                   QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":id"), id);
+    if (query.exec() && query.numRowsAffected() == 1) {
+        return true;
+    } else {
+        qWarning() << "Failed to remove page" << id << query.lastError().databaseText() << "numRowsAffected" << query.numRowsAffected();
+        return false;
+    }
 }
 
 QString sortString(Engine::SortFlags sort)
@@ -156,7 +171,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
     QList<Page *> ret;
     QSqlQuery query;
     if (filters == Engine::Pages) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 0 "
@@ -165,7 +180,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else if (filters == Engine::Posts) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "WHERE blog = 1 "
@@ -174,7 +189,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
                                                             " modified, created, tags, blog, allow_comments "
                                                             "FROM pages "
                                                             "ORDER BY created DESC "
@@ -390,8 +405,8 @@ bool SqlEngine::savePageBackend(Page *page)
     query.bindValue(QStringLiteral(":name"), page->name());
     query.bindValue(QStringLiteral(":navigation_label"), page->navigationLabel());
     query.bindValue(QStringLiteral(":author"), page->author().value(QStringLiteral("id")).toInt());
-    query.bindValue(QStringLiteral(":content"), page->content());
-    query.bindValue(QStringLiteral(":html"), page->content());
+    query.bindValue(QStringLiteral(":content"), page->content().get());
+    query.bindValue(QStringLiteral(":html"), page->content().get());
     query.bindValue(QStringLiteral(":modified"), page->updated().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":created"), page->created().toMSecsSinceEpoch() / 1000);
     query.bindValue(QStringLiteral(":tags"), page->tags());

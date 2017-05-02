@@ -26,6 +26,8 @@ public:
 
     virtual Page *getPage(const QString &path, QObject *parent) override;
 
+    virtual bool removePage(int id) override;
+
     /**
      * Returns the available pages,
      * when depth is -1 all pages are listed

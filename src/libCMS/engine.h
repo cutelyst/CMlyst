@@ -72,6 +72,8 @@ public:
 
     bool savePage(Cutelyst::Context *c, Page *page);
 
+    virtual bool removePage(int id) = 0;
+
     /**
      * Returns the available pages,
      * when depth is -1 all pages are listed

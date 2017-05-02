@@ -50,8 +50,8 @@ void AdminSettings::general(Context *c)
 {
     if (!engine->settingsIsWritable()) {
         c->stash({
-                       {QStringLiteral("error_msg"), QStringLiteral("Settings file is read only!")}
-                   });
+                     {QStringLiteral("error_msg"), QStringLiteral("Settings file is read only!")}
+                 });
     }
 
     if (c->req()->isPost()) {
@@ -106,10 +106,10 @@ void AdminSettings::code_injection(Context *c)
 
     auto settings = engine->settings();
     c->stash({
-                   {QStringLiteral("template"), QStringLiteral("settings/code_injection.html")},
-                   {QStringLiteral("cms_head"), settings.value(QStringLiteral("cms_head"))},
-                   {QStringLiteral("cms_foot"), settings.value(QStringLiteral("cms_foot"))},
-                   {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
+                 {QStringLiteral("template"), QStringLiteral("settings/code_injection.html")},
+                 {QStringLiteral("cms_head"), settings.value(QStringLiteral("cms_head"))},
+                 {QStringLiteral("cms_foot"), settings.value(QStringLiteral("cms_foot"))},
+                 {QStringLiteral("currentTheme"), settings.value(QStringLiteral("theme"))},
              });
 }
 
@@ -281,13 +281,13 @@ void AdminSettings::json_import(Context *c)
 
     QJsonObject data = dbObject.value(QStringLiteral("data")).toObject();
 
-    auto settingsIt = data.constFind(QLatin1String("settings"));
+    auto settingsIt = data.constFind(QStringLiteral("settings"));
     if (settingsIt != data.constEnd()) {
         for (const QJsonValue &jsonValue : settingsIt.value().toArray()) {
             QJsonObject settings = jsonValue.toObject();
-            const QString key = settings.value(QLatin1String("key")).toString();
+            const QString key = settings.value(QStringLiteral("key")).toString();
             if (!key.isEmpty()) {
-                const QString value = settings.value(QLatin1String("value")).toString();
+                const QString value = settings.value(QStringLiteral("value")).toString();
                 engine->setSettingsValue(c, key, value);
             }
         }
@@ -302,11 +302,11 @@ void AdminSettings::json_import(Context *c)
                                                                           "VALUES "
                                                                           "(:slug, :email, :password, :json)"),
                                                            QStringLiteral("cmlyst"));
-            query.bindValue(QStringLiteral(":slug"), user.value(QLatin1String("slug")).toString());
+            query.bindValue(QStringLiteral(":slug"), user.value(QStringLiteral("slug")).toString());
             user.remove(QStringLiteral("slug"));
-            query.bindValue(QStringLiteral(":email"), user.value(QLatin1String("email")).toString());
+            query.bindValue(QStringLiteral(":email"), user.value(QStringLiteral("email")).toString());
             user.remove(QStringLiteral("email"));
-            query.bindValue(QStringLiteral(":password"), user.value(QLatin1String("password")).toString());
+            query.bindValue(QStringLiteral(":password"), user.value(QStringLiteral("password")).toString());
             user.remove(QStringLiteral("password"));
             query.bindValue(QStringLiteral(":json"), QString::fromUtf8(QJsonDocument(user).toJson(QJsonDocument::Compact)));
 
@@ -324,23 +324,25 @@ void AdminSettings::json_import(Context *c)
             Author author;
             author.insert(QStringLiteral("id"), QString::number(post.value(QLatin1String("author_id")).toInt()));
             page->setAuthor(author);
-            page->setContent(post.value(QLatin1String("content")).toString());
-            page->setName(post.value(QLatin1String("title")).toString());
-            if (post.contains(QLatin1String("path"))) {
-                page->setPath(post.value(QLatin1String("path")).toString());
+            page->setContent(post.value(QStringLiteral("content")).toString(), true);
+            qDebug() << "POST content" << post.value(QStringLiteral("content")).toString();
+            qDebug() << "PAGE content" << page->content().get();
+            page->setName(post.value(QStringLiteral("title")).toString());
+            if (post.contains(QStringLiteral("path"))) {
+                page->setPath(post.value(QStringLiteral("path")).toString());
             } else {
                 // Ghost compatibility
-                page->setPath(post.value(QLatin1String("slug")).toString());
+                page->setPath(post.value(QStringLiteral("slug")).toString());
             }
-            page->setPage(post.value(QLatin1String("page")).toBool());
+            page->setPage(post.value(QStringLiteral("page")).toBool());
 
-            auto created = QDateTime::fromString(post.value(QLatin1String("created_at")).toString(),
+            auto created = QDateTime::fromString(post.value(QStringLiteral("created_at")).toString(),
                                                  QStringLiteral("yyyy-MM-dd HH:mm:ss"));
             created.setTimeSpec(Qt::UTC);
             page->setCreated(created);
 
-            auto updated = QDateTime::fromString(post.value(QLatin1String("updated_at")).toString(),
-                                                                QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+            auto updated = QDateTime::fromString(post.value(QStringLiteral("updated_at")).toString(),
+                                                 QStringLiteral("yyyy-MM-dd HH:mm:ss"));
             updated.setTimeSpec(Qt::UTC);
             page->setUpdated(updated);
 

@@ -21,6 +21,7 @@
 #include "engine.h"
 
 #include <QDebug>
+#include <QUuid>
 
 using namespace CMS;
 
@@ -48,6 +49,22 @@ void Page::setId(int id)
     d->id = id;
 }
 
+QString Page::uuid() const
+{
+    Q_D(const Page);
+    return d->uuid;
+}
+
+void Page::setUuid(const QString &uuid)
+{
+    Q_D(Page);
+    if (!uuid.isEmpty()) {
+        d->uuid = uuid;
+    } else {
+        d->uuid = QUuid::createUuid().toString().remove(QLatin1Char('{')).remove(QLatin1Char('}'));
+    }
+}
+
 QString Page::name() const
 {
     Q_D(const Page);
@@ -58,18 +75,6 @@ void Page::setName(const QString &name)
 {
     Q_D(Page);
     d->name = name;
-}
-
-QString Page::navigationLabel() const
-{
-    Q_D(const Page);
-    return d->navigationLabel;
-}
-
-void Page::setNavigationLabel(const QString &label)
-{
-    Q_D(Page);
-    d->navigationLabel = label;
 }
 
 QString Page::path() const
@@ -149,18 +154,6 @@ void Page::setCreated(const QDateTime &dateTime)
 {
     Q_D(Page);
     d->created = dateTime;
-}
-
-QStringList Page::tags() const
-{
-    Q_D(const Page);
-    return d->tags;
-}
-
-void Page::setTags(const QStringList &tags)
-{
-    Q_D(Page);
-    d->tags = tags;
 }
 
 bool Page::page() const

@@ -30,12 +30,11 @@ namespace CMS {
 class PagePrivate
 {
 public:
+    QString uuid;
     QString name;
-    QString navigationLabel;
     QString path;
     Author author;
     Grantlee::SafeString content;
-    QStringList tags;
     QDateTime published;
     QDateTime updated;
     QDateTime created;

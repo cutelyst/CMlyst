@@ -131,7 +131,7 @@ void AdminPages::edit(Context *c, const QStringList &args)
             c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
         } else {
             qDebug() << "Failed to save page" << page;
-            c->setStash(QStringLiteral("error_msg"), tr("Failed to save page"));
+            c->setStash(QStringLiteral("error_msg"), QStringLiteral("Failed to save page"));
         }
 
 //        qDebug() << "saved" << ret;

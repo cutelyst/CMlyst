@@ -48,7 +48,7 @@ bool SqlEngine::init(const QHash<QString, QString> &settings)
             qDebug() << "Database tables created";
         }
     } else {
-        qCritical() << "Error opening database" << dbPath << db.lastError().driverText();
+        qCritical() << "Error opening database" << dbPath << db.lastError().databaseText();
         return false;
     }
 
@@ -60,36 +60,36 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
     auto page = new Page(parent);
     page->setAllowComments(query.value(QStringLiteral("allow_comments")).toBool());
 
-    int author_id = query.value(QStringLiteral("author")).toInt();
+    int author_id = query.value(QStringLiteral("author_id")).toInt();
     Author author = m_usersId.value(author_id);
     page->setAuthor(author);
-    page->setPage(!query.value(QStringLiteral("blog")).toBool());
+    page->setPage(query.value(QStringLiteral("page")).toBool());
     page->setContent(query.value(QStringLiteral("content")).toString(), true);
 
-    const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000,
-                                                              Qt::UTC).toTimeZone(m_timezone);
-    page->setUpdated(modified);
+    QDateTime updated = QDateTime::fromString(query.value(QStringLiteral("updated_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+    updated.setTimeSpec(Qt::UTC);
+    page->setUpdated(updated.toTimeZone(m_timezone));
 
-    const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000,
-                                                             Qt::UTC).toTimeZone(m_timezone);
-    page->setCreated(created);
+    QDateTime created = QDateTime::fromString(query.value(QStringLiteral("created_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+    created.setTimeSpec(Qt::UTC);
+    page->setCreated(created.toTimeZone(m_timezone));
 
-    const QDateTime published = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000,
-                                                               Qt::UTC).toTimeZone(m_timezone);
-    page->setPublished(published);
+    QDateTime published = QDateTime::fromString(query.value(QStringLiteral("published_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+    published.setTimeSpec(Qt::UTC);
+    page->setPublished(published.toTimeZone(m_timezone));
 
-    page->setName(query.value(QStringLiteral("name")).toString());
-    page->setNavigationLabel(query.value(QStringLiteral("navigation_label")).toString());
+    page->setName(query.value(QStringLiteral("title")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());
+    page->setUuid(query.value(QStringLiteral("uuid")).toString());
     page->setId(query.value(QStringLiteral("id")).toInt());
     return page;
 }
 
 Page *SqlEngine::getPage(const QString &path, QObject *parent)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT path, name, navigation_label, author, content,"
-                                                                  " modified, created, tags, blog, allow_comments "
-                                                                  "FROM pages "
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                                                                  " created_at, updated_at, published_at, page, allow_comments "
+                                                                  "FROM posts "
                                                                   "WHERE path = :path"),
                                                    QStringLiteral("cmlyst"));
     if (!path.isNull()) {
@@ -100,32 +100,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
 
     if (Q_LIKELY(query.exec())) {
         if (query.next()) {
-            auto page = new Page(parent);
-            page->setPath(query.value(0).toString());
-            page->setName(query.value(1).toString());
-            page->setNavigationLabel(query.value(2).toString());
-
-            int author_id = query.value(3).toInt();
-            Author author = m_usersId.value(author_id);
-//            qDebug() << "** AUTHOR" << author;
-            page->setAuthor(author);
-
-            page->setContent(query.value(4).toString(), true);
-            const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(5).toLongLong() * 1000,
-                                                                      Qt::UTC).toTimeZone(m_timezone);
-            page->setUpdated(modified);
-
-            const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000,
-                                                                     Qt::UTC).toTimeZone(m_timezone);
-            page->setCreated(created);
-
-            const QDateTime published = QDateTime::fromMSecsSinceEpoch(query.value(6).toLongLong() * 1000,
-                                                                       Qt::UTC).toTimeZone(m_timezone);
-            page->setPublished(published);
-            // tags 7
-            page->setPage(!query.value(8).toBool());
-            page->setAllowComments(query.value(9).toBool());
-            return page;
+            return createPageObj(query, parent);
         }
     } else {
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
@@ -135,7 +110,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
 
 bool SqlEngine::removePage(int id)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("DELETE FROM pages "
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("DELETE FROM posts "
                                                                   "WHERE id = :id"),
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":id"), id);
@@ -171,28 +146,28 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
     QList<Page *> ret;
     QSqlQuery query;
     if (filters == Engine::Pages) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
-                                                            " modified, created, tags, blog, allow_comments "
-                                                            "FROM pages "
-                                                            "WHERE blog = 0 "
-                                                            "ORDER BY created DESC "
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            "FROM posts "
+                                                            "WHERE page = 1 "
+                                                            "ORDER BY created_at DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else if (filters == Engine::Posts) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
-                                                            " modified, created, tags, blog, allow_comments "
-                                                            "FROM pages "
-                                                            "WHERE blog = 1 "
-                                                            "ORDER BY created DESC "
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            "FROM posts "
+                                                            "WHERE page = 0 "
+                                                            "ORDER BY created_at DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, path, name, navigation_label, author, content,"
-                                                            " modified, created, tags, blog, allow_comments "
-                                                            "FROM pages "
-                                                            "ORDER BY created DESC "
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            "FROM posts "
+                                                            "ORDER BY created_at DESC "
                                                             "LIMIT :limit "
                                                             ),
                                              QStringLiteral("cmlyst"));
@@ -234,7 +209,7 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
         query.bindValue(QStringLiteral(":key"), key);
         query.bindValue(QStringLiteral(":value"), value);
         if (!query.exec()) {
-            qWarning() << "Failed to save settings" << query.lastError().driverText();
+            qWarning() << "Failed to save settings" << query.lastError().databaseText();
             db.rollback();
             return false;
         }
@@ -244,7 +219,7 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
     query.bindValue(QStringLiteral(":key"), QStringLiteral("modified"));
     query.bindValue(QStringLiteral(":value"), currentDateTime);
     if (!query.exec()) {
-        qWarning() << "Failed to save settings" << query.lastError().driverText();
+        qWarning() << "Failed to save settings" << query.lastError().databaseText();
         db.rollback();
         return false;
     }
@@ -393,28 +368,28 @@ QHash<QString, QString> SqlEngine::user(int id)
 
 bool SqlEngine::savePageBackend(Page *page)
 {
-    qDebug() << Q_FUNC_INFO << page->path();
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO pages "
-                                                                  "(path, name, navigation_label, author, content, html,"
-                                                                  " modified, created, tags, blog, published, allow_comments) "
+    qDebug() << Q_FUNC_INFO << page->path() << page->id() << page->uuid();
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO posts "
+                                                                  "(path, uuid, title, author_id, content, html,"
+                                                                  " created_at, updated_at, published_at, page, published, allow_comments) "
                                                                   "VALUES "
-                                                                  "(:path, :name, :navigation_label, :author, :content, :html,"
-                                                                  " :modified, :created, :tags, :blog, :published, :allow_comments)"),
+                                                                  "(:path, :uuid, :title, :author_id, :content, :html,"
+                                                                  " :created_at, :updated_at, :published_at, :page, :published, :allow_comments)"),
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":path"), page->path());
-    query.bindValue(QStringLiteral(":name"), page->name());
-    query.bindValue(QStringLiteral(":navigation_label"), page->navigationLabel());
-    query.bindValue(QStringLiteral(":author"), page->author().value(QStringLiteral("id")).toInt());
+    query.bindValue(QStringLiteral(":uuid"), page->uuid());
+    query.bindValue(QStringLiteral(":title"), page->name());
+    query.bindValue(QStringLiteral(":author_id"), page->author().value(QStringLiteral("id")).toInt());
     query.bindValue(QStringLiteral(":content"), page->content().get());
     query.bindValue(QStringLiteral(":html"), page->content().get());
-    query.bindValue(QStringLiteral(":modified"), page->updated().toMSecsSinceEpoch() / 1000);
-    query.bindValue(QStringLiteral(":created"), page->created().toMSecsSinceEpoch() / 1000);
-    query.bindValue(QStringLiteral(":tags"), page->tags());
-    query.bindValue(QStringLiteral(":blog"), !page->page());
+    query.bindValue(QStringLiteral(":created_at"), page->created().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+    query.bindValue(QStringLiteral(":updated_at"), page->updated().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+    query.bindValue(QStringLiteral(":published_at"), page->published().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+    query.bindValue(QStringLiteral(":page"), page->page());
     query.bindValue(QStringLiteral(":published"), true);
     query.bindValue(QStringLiteral(":allow_comments"), page->allowComments());
     if (!query.exec()) {
-        qWarning() << "Failed to save page" << query.lastError().driverText();
+        qWarning() << "Failed to save page" << query.lastError().databaseText();
         return false;
     }
     return true;
@@ -547,22 +522,29 @@ void SqlEngine::createDb()
     qDebug() << "createDb";
 
     bool ret = query.exec(QStringLiteral("PRAGMA journal_mode = WAL"));
-    qDebug() << "PRAGMA journal_mode = WAL" << ret << query.lastError().driverText();
+    qDebug() << "PRAGMA journal_mode = WAL" << ret << query.lastError().databaseText();
 
-    if (!query.exec(QStringLiteral("CREATE TABLE pages "
+    if (!query.exec(QStringLiteral("CREATE TABLE posts "
                                    "( id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT"
+                                   ", uuid TEXT NOT NULL UNIQUE "
                                    ", path TEXT NOT NULL UNIQUE "
-                                   ", name TEXT "
-                                   ", navigation_label TEXT "
-                                   ", author INTEGER "
+                                   ", title TEXT "
                                    ", content TEXT "
                                    ", html TEXT "
-                                   ", modified INTEGER "
-                                   ", created INTEGER "
-                                   ", tags TEXT "
-                                   ", blog BOOL NOT NULL "
+                                   ", language TEXT "
+                                   ", status TEXT "
+                                   ", meta_title TEXT "
+                                   ", meta_description TEXT "
+                                   ", page BOOL NOT NULL "
                                    ", published BOOL NOT NULL "
                                    ", allow_comments BOOL NOT NULL "
+                                   ", author_id INTEGER "
+                                   ", created_at datetime NOT NULL "
+                                   ", created_by INTEGER "
+                                   ", updated_at datetime "
+                                   ", updated_by INTEGER "
+                                   ", published_at datetime "
+                                   ", published_by INTEGER "
                                    ")"))) {
         qCritical() << "Error creating database" << query.lastError().text();
         exit(1);

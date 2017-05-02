@@ -141,6 +141,7 @@ Page *Engine::getPageToEdit(const QString &path, QObject *parent)
     if (!page) {
         page = new Page(parent);
         page->setPath(path);
+        page->setUuid(QString());
         QDateTime dt = QDateTime::currentDateTimeUtc();
         page->setCreated(dt);
         page->setUpdated(dt);

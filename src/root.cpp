@@ -167,11 +167,11 @@ void Root::feed(Context *c)
     headers.setContentType(QStringLiteral("text/xml; charset=UTF-8"));
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT p.name, p.path, u.name, p.created, p.content "
-                               "FROM pages p "
-                               "LEFT JOIN users u ON u.id = p.author "
-                               "WHERE blog = 1 "
-                               "ORDER BY created DESC "
+                QStringLiteral("SELECT p.title, p.path, u.slug, p.published_at, p.content "
+                               "FROM posts p "
+                               "LEFT JOIN users u ON u.id = p.author_id "
+                               "WHERE page = 0 "
+                               "ORDER BY published_at DESC "
                                "LIMIT :limit "
                                ),
                 QStringLiteral("cmlyst"));
@@ -204,7 +204,10 @@ void Root::feed(Context *c)
             writer.writeItemLink(link);
             writer.writeItemCommentsLink(link + QLatin1String("#comments"));
             writer.writeItemCreator(query.value(2).toString());
-            writer.writeItemPubDate(QDateTime::fromMSecsSinceEpoch(query.value(3).toLongLong() * 1000));
+
+            QDateTime published = QDateTime::fromString(query.value(3).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
+            published.setTimeSpec(Qt::UTC);
+            writer.writeItemPubDate(published);
 
             const QString content = query.value(4).toString();
             writer.writeItemDescription(content.left(300));

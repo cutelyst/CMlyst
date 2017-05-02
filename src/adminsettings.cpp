@@ -325,9 +325,8 @@ void AdminSettings::json_import(Context *c)
             author.insert(QStringLiteral("id"), QString::number(post.value(QLatin1String("author_id")).toInt()));
             page->setAuthor(author);
             page->setContent(post.value(QStringLiteral("content")).toString(), true);
-            qDebug() << "POST content" << post.value(QStringLiteral("content")).toString();
-            qDebug() << "PAGE content" << page->content().get();
             page->setName(post.value(QStringLiteral("title")).toString());
+            page->setUuid(post.value(QStringLiteral("uuid")).toString());
             if (post.contains(QStringLiteral("path"))) {
                 page->setPath(post.value(QStringLiteral("path")).toString());
             } else {
@@ -461,7 +460,7 @@ void AdminSettings::db_clean(Context *c)
     }
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("DELETE FROM pages"),
+                QStringLiteral("DELETE FROM posts"),
                 QStringLiteral("cmlyst"));
     if (query.exec()) {
         c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database")),

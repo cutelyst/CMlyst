@@ -26,6 +26,8 @@ public:
 
     virtual Page *getPage(const QString &path, QObject *parent) override;
 
+    virtual Page *getPageById(const QString &id, QObject *parent) override;
+
     virtual bool removePage(int id) override;
 
     /**
@@ -61,7 +63,7 @@ public:
     virtual QHash<QString, QString> user(int id) override;
 
 private:
-    virtual bool savePageBackend(Page *page) override;
+    virtual int savePageBackend(Page *page) override;
 
     void loadMenus();
     void loadUsers();

@@ -31,15 +31,16 @@ class PagePrivate
 {
 public:
     QString uuid;
-    QString name;
+    QString title;
     QString path;
     Author author;
     Grantlee::SafeString content;
-    QDateTime published;
-    QDateTime updated;
-    QDateTime created;
+    QDateTime publishedAt;
+    QDateTime updatedAt;
+    QDateTime createdAt;
     int id = 0;
     bool page = false;
+    bool published = false;
     bool allowComments = false;
 };
 

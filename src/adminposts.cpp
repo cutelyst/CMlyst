@@ -28,133 +28,22 @@
 
 #include <QDebug>
 
-AdminPosts::AdminPosts(Application *app) : Controller(app)
+AdminPosts::AdminPosts(Application *app) : AdminPages(app)
 {
 }
 
 void AdminPosts::index(Context *c)
 {
-    c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
-
-    QList<CMS::Page *> pages = engine->listPages(c, CMS::Engine::Posts);
-
-    c->setStash(QStringLiteral("posts"), QVariant::fromValue(pages));
-
-    c->setStash(QStringLiteral("template"), QStringLiteral("posts/index.html"));
+    AdminPages::index(c, QStringLiteral("post"), CMS::Engine::Posts);
 }
 
 void AdminPosts::create(Context *c)
 {
-    c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
-    qDebug() << Q_FUNC_INFO;
-    ParamsMultiMap params = c->request()->bodyParams();
-    QString title = params.value(QStringLiteral("title"));
-    QString path = params.value(QStringLiteral("path"));
-    QString content = params.value(QStringLiteral("edit-content"));
-    if (c->req()->isPost()) {
-        QString savePath;
-        if (path.isEmpty()) {
-            savePath = CMS::Engine::normalizeTitle(title);
-        } else {
-            savePath = CMS::Engine::normalizeTitle(path);
-        }
-        savePath.prepend(QDate::currentDate().toString(QStringLiteral("yyyy/MM/dd/")));
-//        qDebug() << "save path"  << savePath;
-
-        CMS::Page *page = engine->getPageToEdit(savePath, c);
-        page->setContent(content, true);
-        page->setName(title);
-        page->setPage(false);
-
-        Author author = engine->user(Authentication::user(c).id().toInt());
-        page->setAuthor(author);
-//        qDebug() << page->path();
-
-        bool ret = engine->savePage(c, page);
-        if (ret) {
-            c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
-        } else {
-            qDebug() << "Failed to save page" << savePath;
-            c->setStash(QStringLiteral("error_msg"), tr("Failed to save page"));
-        }
-
-//        qDebug() << "saved" << ret;
-    }
-
-    // TODO this is hackish...
-    c->setStash(QStringLiteral("date"), QDate::currentDate().toString(QStringLiteral("yyyy/MM/dd")));
-
-    c->setStash(QStringLiteral("title"), title);
-    c->setStash(QStringLiteral("path"), path);
-    c->setStash(QStringLiteral("edit_content"), content);
-    c->setStash(QStringLiteral("template"), QStringLiteral("posts/create.html"));
+    AdminPages::create(c, true);
 }
 
-void AdminPosts::edit(Context *c, const QStringList &args)
+void AdminPosts::edit(Context *c, const QString &id)
 {
-    qDebug() << Q_FUNC_INFO;
+    AdminPages::edit(c, id);
     c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
-
-    QString path = args.join(QLatin1Char('/'));
-    QString title;
-    QString content;
-
-//    qDebug() << Q_FUNC_INFO << path <<  c->request()->args();
-    CMS::Page *page = engine->getPageToEdit(path, c);
-//    qDebug() << Q_FUNC_INFO << page;
-
-    if (page) {
-        path = page->path();
-        title = page->name();
-        content = page->content();
-    }
-
-    if (c->req()->isPost()) {
-        ParamsMultiMap params = c->request()->bodyParams();
-        title = params.value(QStringLiteral("title"));
-        content = params.value(QStringLiteral("edit-content"));
-
-//        qDebug() << title;
-//        qDebug() << path;
-//        qDebug() << content;
-
-
-        if (page->path() != params.value(QStringLiteral("path"))) {
-            qDebug() << "not yet supported";
-        }
-
-        page->setContent(content, true);
-        page->setName(title);
-
-        Author author = engine->user(Authentication::user(c).id().toInt());
-        page->setAuthor(author);
-        qDebug() << "*******" << Authentication::user(c).id() << author;
-
-        bool ret = engine->savePage(c, page);
-        if (ret) {
-            c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("index"))));
-        } else {
-            qDebug() << "Failed to save page" << page;
-            c->setStash(QStringLiteral("error_msg"), tr("Failed to save page"));
-        }
-
-//        qDebug() << "saved" << ret;
-    }
-
-    c->setStash(QStringLiteral("title"), title);
-    c->setStash(QStringLiteral("path"), path);
-    c->setStash(QStringLiteral("edit_content"), content);
-    c->setStash(QStringLiteral("editting"), true);
-    c->setStash(QStringLiteral("template"), QStringLiteral("posts/create.html"));
-}
-
-void AdminPosts::remove(Context *c, const QString &id)
-{
-    if (!c->request()->isPost()) {
-        c->response()->setStatus(Response::BadRequest);
-        return;
-    }
-
-    engine->removePage(id.toInt());
-    c->response()->setBody(QStringLiteral("ok"));
 }

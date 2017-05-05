@@ -22,8 +22,8 @@ set(cmlyst_SRCS
     admin.cpp
     adminsetup.cpp
     adminappearance.cpp
-    adminposts.cpp
     adminpages.cpp
+    adminposts.cpp
     adminmedia.cpp
     adminsettings.cpp
     cmlyst.cpp

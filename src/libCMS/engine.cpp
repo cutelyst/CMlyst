@@ -38,14 +38,14 @@ Engine::~Engine()
 
 }
 
-bool Engine::savePage(Cutelyst::Context *c, Page *page)
+int Engine::savePage(Cutelyst::Context *c, Page *page)
 {
-    bool ret = savePageBackend(page);
+    int ret = savePageBackend(page);
     if (ret) {
         QList<Menu *> autoMenus = menus();
         Q_FOREACH (Menu *menu, autoMenus) {
             if (menu->autoAddPages()) {
-                menu->appendEntry(page->name(), page->path());
+                menu->appendEntry(page->title(), page->path());
                 saveMenu(c, menu, true);
             }
         }
@@ -106,7 +106,7 @@ QString Engine::normalizePath(const QString &path)
 {
     // "/foo/bar/Iam a big...path" turns into
     // "/foo/bar/iam-a-big-path"
-    QStringList parts = path.split(QLatin1Char('/'));
+    QStringList parts = path.split(QLatin1Char('/'), QString::SkipEmptyParts);
     for (int i = 0; i < parts.size(); ++i) {
         parts.replace(i, normalizeTitle(parts.at(i)));
     }
@@ -133,19 +133,4 @@ QString Engine::normalizeTitle(const QString &title)
     ret.replace(QChar::Space, QLatin1Char('-'));
 
     return ret;
-}
-
-Page *Engine::getPageToEdit(const QString &path, QObject *parent)
-{
-    Page *page = getPage(path, parent);
-    if (!page) {
-        page = new Page(parent);
-        page->setPath(path);
-        page->setUuid(QString());
-        QDateTime dt = QDateTime::currentDateTimeUtc();
-        page->setCreated(dt);
-        page->setUpdated(dt);
-    }
-
-    return page;
 }

@@ -65,16 +65,16 @@ void Page::setUuid(const QString &uuid)
     }
 }
 
-QString Page::name() const
+QString Page::title() const
 {
     Q_D(const Page);
-    return d->name;
+    return d->title;
 }
 
-void Page::setName(const QString &name)
+void Page::setTitle(const QString &title)
 {
     Q_D(Page);
-    d->name = name;
+    d->title = title;
 }
 
 QString Page::path() const
@@ -119,41 +119,53 @@ void Page::updateContent(const Grantlee::SafeString &body)
     d->content = body;
 }
 
-QDateTime Page::published() const
+bool Page::published() const
 {
     Q_D(const Page);
     return d->published;
 }
 
-void Page::setPublished(const QDateTime &dateTime)
+void Page::setPublished(bool enable)
 {
     Q_D(Page);
-    d->published = dateTime;
+    d->published = enable;
+}
+
+QDateTime Page::publishedAt() const
+{
+    Q_D(const Page);
+    return d->publishedAt;
+}
+
+void Page::setPublishedAt(const QDateTime &dateTime)
+{
+    Q_D(Page);
+    d->publishedAt = dateTime;
 }
 
 QDateTime Page::updated() const
 {
     Q_D(const Page);
-    return d->updated;
+    return d->updatedAt;
 }
 
 void Page::setUpdated(const QDateTime &dateTime)
 {
     Q_D(Page);
-    d->updated = dateTime;
+    d->updatedAt = dateTime;
 }
 
 QDateTime Page::created() const
 {
     Q_D(const Page);
     // TODO fix Grantlee
-    return d->created.toLocalTime();
+    return d->createdAt.toLocalTime();
 }
 
 void Page::setCreated(const QDateTime &dateTime)
 {
     Q_D(Page);
-    d->created = dateTime;
+    d->createdAt = dateTime;
 }
 
 bool Page::page() const

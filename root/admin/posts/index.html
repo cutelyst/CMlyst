@@ -15,8 +15,8 @@
     {% for post in posts %}
       <tr id="post-{{post.id}}">
         <td>
-          <a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/edit/{{ post.path }}">{{ post.name }}</a>
-          {% if post_type == "page" %}/{{ post.path }}{% endif %}
+          <a href="/.admin/{% if post_type == "page" %}pages{% else %}posts{% endif %}/edit/{{ post.id }}">{{ post.name }}</a>
+          {% if post_type == "page" %}/{{ post.path }}{% endif %}{% if not post.published %} <span class="label label-danger">Draft</span>{% endif %}
         </td>
         <td>{{ post.author.name }}</td>
         <td>{{ post.updated_at|date:"yyyy/MM/dd HH:mm" }}</td>

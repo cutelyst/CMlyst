@@ -16,7 +16,9 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 
-#include <QDebug>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(CMS_SQLENGINE, "cms.sqlengine")
 
 using namespace CMS;
 
@@ -76,19 +78,21 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
 
     QDateTime published = QDateTime::fromString(query.value(QStringLiteral("published_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
     published.setTimeSpec(Qt::UTC);
-    page->setPublished(published.toTimeZone(m_timezone));
+    page->setPublishedAt(published.toTimeZone(m_timezone));
 
-    page->setName(query.value(QStringLiteral("title")).toString());
+    page->setTitle(query.value(QStringLiteral("title")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());
     page->setUuid(query.value(QStringLiteral("uuid")).toString());
     page->setId(query.value(QStringLiteral("id")).toInt());
+    page->setPublished(query.value(QStringLiteral("published")).toBool());
+
     return page;
 }
 
 Page *SqlEngine::getPage(const QString &path, QObject *parent)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                                  " created_at, updated_at, published_at, page, allow_comments "
+                                                                  " created_at, updated_at, published_at, page, allow_comments, published "
                                                                   "FROM posts "
                                                                   "WHERE path = :path"),
                                                    QStringLiteral("cmlyst"));
@@ -105,7 +109,26 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
     } else {
         qWarning() << "Failed to get page" << path << query.lastError().databaseText();
     }
-    return 0;
+    return nullptr;
+}
+
+Page *SqlEngine::getPageById(const QString &id, QObject *parent)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                                                                  " created_at, updated_at, published_at, page, allow_comments, published "
+                                                                  "FROM posts "
+                                                                  "WHERE id = :id"),
+                                                   QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":id"), id);
+
+    if (Q_LIKELY(query.exec())) {
+        if (query.next()) {
+            return createPageObj(query, parent);
+        }
+    } else {
+        qWarning() << "Failed to get page by id" << id << query.lastError().databaseText();
+    }
+    return nullptr;
 }
 
 bool SqlEngine::removePage(int id)
@@ -147,7 +170,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
     QSqlQuery query;
     if (filters == Engine::Pages) {
         query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            " created_at, updated_at, published_at, page, allow_comments, published "
                                                             "FROM posts "
                                                             "WHERE page = 1 "
                                                             "ORDER BY created_at DESC "
@@ -156,7 +179,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                              QStringLiteral("cmlyst"));
     } else if (filters == Engine::Posts) {
         query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            " created_at, updated_at, published_at, page, allow_comments, published "
                                                             "FROM posts "
                                                             "WHERE page = 0 "
                                                             "ORDER BY created_at DESC "
@@ -165,7 +188,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                              QStringLiteral("cmlyst"));
     } else {
         query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments "
+                                                            " created_at, updated_at, published_at, page, allow_comments, published "
                                                             "FROM posts "
                                                             "ORDER BY created_at DESC "
                                                             "LIMIT :limit "
@@ -366,33 +389,34 @@ QHash<QString, QString> SqlEngine::user(int id)
     return m_usersId.value(id);
 }
 
-bool SqlEngine::savePageBackend(Page *page)
+int SqlEngine::savePageBackend(Page *page)
 {
     qDebug() << Q_FUNC_INFO << page->path() << page->id() << page->uuid();
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO posts "
                                                                   "(path, uuid, title, author_id, content, html,"
-                                                                  " created_at, updated_at, published_at, page, published, allow_comments) "
+                                                                  " created_at, updated_at, published_at, page, published, allow_comments, published) "
                                                                   "VALUES "
                                                                   "(:path, :uuid, :title, :author_id, :content, :html,"
-                                                                  " :created_at, :updated_at, :published_at, :page, :published, :allow_comments)"),
+                                                                  " :created_at, :updated_at, :published_at, :page, :published, :allow_comments, :published)"),
                                                    QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":path"), page->path());
     query.bindValue(QStringLiteral(":uuid"), page->uuid());
-    query.bindValue(QStringLiteral(":title"), page->name());
+    query.bindValue(QStringLiteral(":title"), page->title());
     query.bindValue(QStringLiteral(":author_id"), page->author().value(QStringLiteral("id")).toInt());
     query.bindValue(QStringLiteral(":content"), page->content().get());
     query.bindValue(QStringLiteral(":html"), page->content().get());
     query.bindValue(QStringLiteral(":created_at"), page->created().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
     query.bindValue(QStringLiteral(":updated_at"), page->updated().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
-    query.bindValue(QStringLiteral(":published_at"), page->published().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
+    query.bindValue(QStringLiteral(":published_at"), page->publishedAt().toUTC().toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
     query.bindValue(QStringLiteral(":page"), page->page());
-    query.bindValue(QStringLiteral(":published"), true);
+    query.bindValue(QStringLiteral(":published"), page->published());
     query.bindValue(QStringLiteral(":allow_comments"), page->allowComments());
+    query.bindValue(QStringLiteral(":published"), page->published());
     if (!query.exec()) {
         qWarning() << "Failed to save page" << query.lastError().databaseText();
-        return false;
+        return 0;
     }
-    return true;
+    return query.lastInsertId().toInt();
 }
 
 void SqlEngine::loadMenus()

@@ -36,13 +36,14 @@ class Page : public QObject
     Q_DECLARE_PRIVATE(Page)
     Q_PROPERTY(int id READ id WRITE setId)
     Q_PROPERTY(QString uuid READ uuid WRITE setUuid)
-    Q_PROPERTY(QString name READ name WRITE setName)
+    Q_PROPERTY(QString name READ title WRITE setTitle)
     Q_PROPERTY(QString path READ path WRITE setPath)
     Q_PROPERTY(Author author READ author WRITE setAuthor)
     Q_PROPERTY(Grantlee::SafeString content READ content)
-    Q_PROPERTY(QDateTime published_at READ published WRITE setPublished)
+    Q_PROPERTY(QDateTime published_at READ publishedAt WRITE setPublishedAt)
     Q_PROPERTY(QDateTime updated_at READ updated WRITE setUpdated)
     Q_PROPERTY(QDateTime created_at READ created WRITE setCreated)
+    Q_PROPERTY(bool published READ published WRITE setPublished)
     Q_PROPERTY(bool page READ page WRITE setPage)
     Q_PROPERTY(bool allowComments READ allowComments WRITE setAllowComments)
 public:
@@ -55,8 +56,8 @@ public:
     QString uuid() const;
     void setUuid(const QString &uuid);
 
-    QString name() const;
-    void setName(const QString &name);
+    QString title() const;
+    void setTitle(const QString &title);
 
     QString path() const;
     void setPath(const QString &path);
@@ -68,8 +69,11 @@ public:
     void setContent(const QString &body, bool safe);
     void updateContent(const Grantlee::SafeString &body);
 
-    QDateTime published() const;
-    void setPublished(const QDateTime &dateTime);
+    bool published() const;
+    void setPublished(bool enable);
+
+    QDateTime publishedAt() const;
+    void setPublishedAt(const QDateTime &dateTime);
 
     QDateTime updated() const;
     void setUpdated(const QDateTime &dateTime);

@@ -36,13 +36,20 @@ public:
     ~AdminPages();
 
     C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+    virtual void index(Context *c);
 
     C_ATTR(create, :Path("new") :Local :AutoArgs)
-    void create(Context *c);
+    virtual void create(Context *c);
 
     C_ATTR(edit, :Local :AutoArgs)
-    void edit(Context *c, const QStringList &args);
+    virtual void edit(Context *c, const QString &id);
+
+    C_ATTR(remove, :Path('delete') :AutoArgs)
+    void remove(Context *c, const QString &id);
+
+protected:
+    void index(Context *c, const QString &postType, CMS::Engine::Filter filters);
+    void create(Context *c, bool post);
 };
 
 #endif // ADMINPAGES_H

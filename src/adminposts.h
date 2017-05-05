@@ -23,27 +23,22 @@
 #include <Cutelyst/Controller>
 
 #include "cmengine.h"
+#include "adminpages.h"
 
 using namespace Cutelyst;
 
-class AdminPosts : public Controller, public CMEngine
+class AdminPosts : public AdminPages
 {
     Q_OBJECT
     C_NAMESPACE(".admin/posts")
 public:
     explicit AdminPosts(Application *app = 0);
 
-    C_ATTR(index, :Path :AutoArgs)
-    void index(Context *c);
+    virtual void index(Context *c) override;
 
-    C_ATTR(create, :Path("new") :Local :AutoArgs)
-    void create(Context *c);
+    virtual void create(Context *c) override;
 
-    C_ATTR(edit, :Local :AutoArgs)
-    void edit(Context *c, const QStringList &args);
-
-    C_ATTR(remove, :Path('delete') :AutoArgs)
-    void remove(Context *c, const QString &id);
+    virtual void edit(Context *c, const QString &id) override;
 };
 
 #endif // ADMINPOSTS_H

@@ -4,11 +4,10 @@
   </h2>
 
   <div class="form-group">
-    <label class="control-label" for="title">Title</label>
-    <input type="text" class="form-control" name="title" id="title" placeholder="Enter title here" value="{{ title }}" required>
+    <input type="text" class="form-control" name="title" id="title" autofocus placeholder="Enter title here" value="{{ title }}" required>
   </div>
   <div class="form-group">
-    <label class="control-label" for="path">Path</label> {{ c.req.base }}{{ date }}
+    <label class="control-label" for="path">Path</label> {{ c.req.base }}{% now "yyyy/MM/dd" %}
     <input type="text" class="form-control" name="path" id="path" value="{{ path }}">
   </div>
   <div class="form-group">

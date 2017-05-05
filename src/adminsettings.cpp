@@ -325,7 +325,7 @@ void AdminSettings::json_import(Context *c)
             author.insert(QStringLiteral("id"), QString::number(post.value(QLatin1String("author_id")).toInt()));
             page->setAuthor(author);
             page->setContent(post.value(QStringLiteral("content")).toString(), true);
-            page->setName(post.value(QStringLiteral("title")).toString());
+            page->setTitle(post.value(QStringLiteral("title")).toString());
             page->setUuid(post.value(QStringLiteral("uuid")).toString());
             if (post.contains(QStringLiteral("path"))) {
                 page->setPath(post.value(QStringLiteral("path")).toString());
@@ -348,7 +348,7 @@ void AdminSettings::json_import(Context *c)
             auto published = QDateTime::fromString(post.value(QLatin1String("published_at")).toString(),
                                                    QStringLiteral("yyyy-MM-dd HH:mm:ss"));
             published.setTimeSpec(Qt::UTC);
-            page->setPublished(published);
+            page->setPublishedAt(published);
 
             engine->savePage(c, page);
             delete page;

@@ -1,6 +1,8 @@
 <form method="post" class="form" role="form" autocomplete="off">
   <h2 class="sub-header">{% if post_type == "page" %}{% if editting %}Edit Page{% else %}Add New Page{% endif %}{% else %}{% if editting %}Edit Post{% else %}Add New Post{% endif %}{% endif %}
   <button type="submit" name="submit" class="btn btn-info pull-right">Save</button>
+  {% if published %}<button type="submit" name="submit" value="unpublish" class="btn btn-danger pull-right">Unpublish</button>
+  {% else %}<button type="submit" name="submit" value="publish" class="btn btn-success pull-right">Publish</button>{% endif %}
   </h2>
 
   <div class="form-group">

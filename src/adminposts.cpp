@@ -44,6 +44,6 @@ void AdminPosts::create(Context *c)
 
 void AdminPosts::edit(Context *c, const QString &id)
 {
-    AdminPages::edit(c, id);
     c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
+    AdminPages::edit(c, id);
 }

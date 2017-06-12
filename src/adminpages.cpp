@@ -48,7 +48,13 @@ void AdminPages::create(Context *c)
 
 void AdminPages::edit(Context *c, const QString &id)
 {
-    c->setStash(QStringLiteral("post_type"), QStringLiteral("page"));
+    QString postType = c->stash(QStringLiteral("post_type")).toString();
+    bool isPage = true;
+    if (postType == QLatin1String("post")) {
+        isPage = false;
+    } else {
+        c->setStash(QStringLiteral("post_type"), QStringLiteral("page"));
+    }
 
     CMS::Page *page = engine->getPageById(id, c);
     if (!page) {
@@ -65,11 +71,20 @@ void AdminPages::edit(Context *c, const QString &id)
         title = params.value(QStringLiteral("title"));
         content = params.value(QStringLiteral("edit-content"));
         path = params.value(QStringLiteral("path"));
+        QString action = params.value(QStringLiteral("submit"));
 
         page->updateContent(content);
         page->setTitle(title);
-        page->setPage(true);
+        page->setPage(isPage);
         page->setPath(path);
+        if (action == QLatin1String("unpublish")) {
+            page->setPublished(false);
+            page->setPublishedAt(QDateTime());
+        } else if (action == QLatin1String("publish")) {
+            page->setPublished(true);
+            page->setPublishedAt(QDateTime::currentDateTimeUtc());
+        }
+        page->setUpdated(QDateTime::currentDateTimeUtc());
 
         Author author = engine->user(Authentication::user(c).id().toInt());
         page->setAuthor(author);
@@ -89,6 +104,7 @@ void AdminPages::edit(Context *c, const QString &id)
     c->setStash(QStringLiteral("path"), path);
     c->setStash(QStringLiteral("edit_content"), content);
     c->setStash(QStringLiteral("editting"), true);
+    c->setStash(QStringLiteral("published"), page->published());
     c->setStash(QStringLiteral("template"), QStringLiteral("posts/create.html"));
 }
 

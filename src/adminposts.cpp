@@ -39,6 +39,7 @@ void AdminPosts::index(Context *c)
 
 void AdminPosts::create(Context *c)
 {
+    c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
     AdminPages::create(c, true);
 }
 

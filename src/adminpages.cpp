@@ -66,8 +66,12 @@ void AdminPages::index(Context *c, const QString &postType, CMS::Engine::Filter 
 {
     c->setStash(QStringLiteral("post_type"), postType);
 
-    QList<CMS::Page *> pages = engine->listPages(c, filters);
-
+    QList<CMS::Page *> pages;
+    if (filters == CMS::Engine::Pages) {
+        pages = engine->listPages(c, -1, -1);
+    } else {
+        pages = engine->listPosts(c, -1, -1);
+    }
     c->setStash(QStringLiteral("posts"), QVariant::fromValue(pages));
 
     c->setStash(QStringLiteral("template"), QStringLiteral("posts/index.html"));

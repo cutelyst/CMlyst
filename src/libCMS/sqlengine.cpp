@@ -146,41 +146,68 @@ bool SqlEngine::removePage(int id)
     }
 }
 
-QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, int offset, int limit)
+QList<Page *> SqlEngine::listPages(QObject *parent, int offset, int limit)
 {
     QList<Page *> ret;
-    QSqlQuery query;
-    if (filters == Engine::Pages) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments, published "
-                                                            "FROM posts "
-                                                            "WHERE page = 1 "
-                                                            "ORDER BY created_at DESC "
-                                                            "LIMIT :limit OFFSET :offset"
-                                                            ),
-                                             QStringLiteral("cmlyst"));
-    } else if (filters == Engine::Posts) {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments, published "
-                                                            "FROM posts "
-                                                            "WHERE page = 0 "
-                                                            "ORDER BY created_at DESC "
-                                                            "LIMIT :limit OFFSET :offset"
-                                                            ),
-                                             QStringLiteral("cmlyst"));
-    } else {
-        query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
-                                                            " created_at, updated_at, published_at, page, allow_comments, published "
-                                                            "FROM posts "
-                                                            "ORDER BY created_at DESC "
-                                                            "LIMIT :limit OFFSET :offset"
-                                                            ),
-                                             QStringLiteral("cmlyst"));
-    }
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                               " created_at, updated_at, published_at, page, allow_comments, published "
+                               "FROM posts "
+                               "WHERE page = 1 "
+                               "ORDER BY created_at DESC "
+                               "LIMIT :limit OFFSET :offset"
+                               ),
+                QStringLiteral("cmlyst"));
 
     query.bindValue(QStringLiteral(":limit"), limit);
     query.bindValue(QStringLiteral(":offset"), offset);
-    if (query.exec()) {
+    if (Q_LIKELY(query.exec())) {
+        while (query.next()) {
+            ret.append(createPageObj(query, parent));
+        }
+    }
+    return ret;
+}
+
+QList<Page *> SqlEngine::listPagesPublished(QObject *parent, int offset, int limit)
+{
+    QList<Page *> ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                               " created_at, updated_at, published_at, page, allow_comments, published "
+                               "FROM posts "
+                               "WHERE page = 1 AND published = 1 "
+                               "ORDER BY created_at DESC "
+                               "LIMIT :limit OFFSET :offset"
+                               ),
+                QStringLiteral("cmlyst"));
+
+    query.bindValue(QStringLiteral(":limit"), limit);
+    query.bindValue(QStringLiteral(":offset"), offset);
+    if (Q_LIKELY(query.exec())) {
+        while (query.next()) {
+            ret.append(createPageObj(query, parent));
+        }
+    }
+    return ret;
+}
+
+QList<Page *> SqlEngine::listPosts(QObject *parent, int offset, int limit)
+{
+    QList<Page *> ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                               " created_at, updated_at, published_at, page, allow_comments, published "
+                               "FROM posts "
+                               "WHERE page = 0 "
+                               "ORDER BY created_at DESC "
+                               "LIMIT :limit OFFSET :offset"
+                               ),
+                QStringLiteral("cmlyst"));
+
+    query.bindValue(QStringLiteral(":limit"), limit);
+    query.bindValue(QStringLiteral(":offset"), offset);
+    if (Q_LIKELY(query.exec())) {
         while (query.next()) {
             ret.append(createPageObj(query, parent));
         }

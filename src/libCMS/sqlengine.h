@@ -35,9 +35,16 @@ public:
      * when depth is -1 all pages are listed
      */
     virtual QList<Page *> listPages(QObject *parent,
-                                    Filters filters = NoFilter,
-                                    int offset = -1,
-                                    int limit = -1) override;
+                                    int offset,
+                                    int limit) override;
+
+    virtual QList<Page *> listPagesPublished(QObject *parent,
+                                             int offset,
+                                             int limit) override;
+
+    virtual QList<Page *> listPosts(QObject *parent,
+                                    int offset,
+                                    int limit) override;
 
     virtual QList<Page *> listAuthorPosts(QObject *parent,
                                           int authorId,

@@ -146,11 +146,7 @@ void Root::lastPosts(Context *c)
         return;
     }
 
-    QList<CMS::Page *> posts;
-    posts = engine->listPages(c,
-                              CMS::Engine::Posts,
-                              offset,
-                              postsPerPage);
+    const QList<CMS::Page *> posts = engine->listPosts(c, offset, postsPerPage);
 
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);

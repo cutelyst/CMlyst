@@ -77,10 +77,7 @@ void AdminSettings::general(Context *c)
                                              QDir::Name | QDir:: IgnoreCase);
 
 
-    QList<CMS::Page *> pages = engine->listPages(c,
-                                                 CMS::Engine::Filters(
-                                                     CMS::Engine::Pages |
-                                                     CMS::Engine::OnlyPublished));
+    const QList<CMS::Page *> pages = engine->listPagesPublished(c, -1, -1);
     auto settings = engine->settings();
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("settings/general.html")},

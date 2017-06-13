@@ -39,12 +39,10 @@ void AdminPosts::index(Context *c)
 
 void AdminPosts::create(Context *c)
 {
-    c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
-    AdminPages::create(c, true);
+    AdminPages::create(c,  QStringLiteral("post"), false);
 }
 
 void AdminPosts::edit(Context *c, const QString &id)
 {
-    c->setStash(QStringLiteral("post_type"), QStringLiteral("post"));
-    AdminPages::edit(c, id);
+    AdminPages::edit(c, id, QStringLiteral("post"), false);
 }

@@ -49,7 +49,8 @@ public:
 
 protected:
     void index(Context *c, const QString &postType, CMS::Engine::Filter filters);
-    void create(Context *c, bool post);
+    void create(Context *c, const QString &postType, bool isPage);
+    void edit(Context *c, const QString &id, const QString &postType, bool isPage);
 };
 
 #endif // ADMINPAGES_H

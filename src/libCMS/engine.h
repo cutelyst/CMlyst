@@ -83,10 +83,14 @@ public:
                                     int offset,
                                     int limit) = 0;
 
-    virtual QList<Page *> listAuthorPosts(QObject *parent,
-                                          int authorId,
-                                          int offset,
-                                          int limit) = 0;
+    virtual QList<Page *> listPostsPublished(QObject *parent,
+                                             int offset,
+                                             int limit) = 0;
+
+    virtual QList<Page *> listAuthorPostsPublished(QObject *parent,
+                                                   int authorId,
+                                                   int offset,
+                                                   int limit) = 0;
 
     virtual QList<Menu *> menus() = 0;
 

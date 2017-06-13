@@ -46,10 +46,14 @@ public:
                                     int offset,
                                     int limit) override;
 
-    virtual QList<Page *> listAuthorPosts(QObject *parent,
-                                          int authorId,
-                                          int offset,
-                                          int limit) override;
+    virtual QList<Page *> listPostsPublished(QObject *parent,
+                                             int offset,
+                                             int limit) override;
+
+    virtual QList<Page *> listAuthorPostsPublished(QObject *parent,
+                                                   int authorId,
+                                                   int offset,
+                                                   int limit) override;
 
     virtual QHash<QString, QString> settings() const override;
 

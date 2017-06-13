@@ -215,14 +215,37 @@ QList<Page *> SqlEngine::listPosts(QObject *parent, int offset, int limit)
     return ret;
 }
 
-QList<Page *> SqlEngine::listAuthorPosts(QObject *parent, int authorId, int offset, int limit)
+QList<Page *> SqlEngine::listPostsPublished(QObject *parent, int offset, int limit)
 {
     QList<Page *> ret;
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
                                " created_at, updated_at, published_at, page, allow_comments, published "
                                "FROM posts "
-                               "WHERE page = 0 AND author_id = :author_id "
+                               "WHERE page = 0 AND published = 1 "
+                               "ORDER BY published_at DESC "
+                               "LIMIT :limit OFFSET :offset"
+                               ),
+                QStringLiteral("cmlyst"));
+
+    query.bindValue(QStringLiteral(":limit"), limit);
+    query.bindValue(QStringLiteral(":offset"), offset);
+    if (Q_LIKELY(query.exec())) {
+        while (query.next()) {
+            ret.append(createPageObj(query, parent));
+        }
+    }
+    return ret;
+}
+
+QList<Page *> SqlEngine::listAuthorPostsPublished(QObject *parent, int authorId, int offset, int limit)
+{
+    QList<Page *> ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                               " created_at, updated_at, published_at, page, allow_comments, published "
+                               "FROM posts "
+                               "WHERE page = 0 AND published = 1 AND author_id = :author_id "
                                "ORDER BY created_at DESC "
                                "LIMIT :limit OFFSET :offset"
                                ),

@@ -146,7 +146,7 @@ void Root::lastPosts(Context *c)
         return;
     }
 
-    const QList<CMS::Page *> posts = engine->listPosts(c, offset, postsPerPage);
+    const QList<CMS::Page *> posts = engine->listPostsPublished(c, offset, postsPerPage);
 
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
@@ -274,10 +274,10 @@ void Root::author(Context *c, const QString &slug)
     }
 
     QList<CMS::Page *> posts;
-    posts = engine->listAuthorPosts(c,
-                                    authorId,
-                                    offset,
-                                    postsPerPage);
+    posts = engine->listAuthorPostsPublished(c,
+                                             authorId,
+                                             offset,
+                                             postsPerPage);
 
     const QString cms_head = settings.value(QStringLiteral("cms_head"));
     if (!cms_head.isEmpty()) {

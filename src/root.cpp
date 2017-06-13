@@ -132,7 +132,7 @@ void Root::lastPosts(Context *c)
     int offset;
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT count(*) FROM posts WHERE page = 1 AND published = 1"),
+                QStringLiteral("SELECT count(*) FROM posts WHERE page = 0 AND published = 1"),
                 QStringLiteral("cmlyst"));
     if (Q_LIKELY(query.exec() && query.next())) {
         int rows = query.value(0).toInt();
@@ -257,7 +257,7 @@ void Root::author(Context *c, const QString &slug)
     int offset;
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("SELECT count(*) FROM posts WHERE page = 1 AND published = 1 AND author_id = :author_id"),
+                QStringLiteral("SELECT count(*) FROM posts WHERE page = 0 AND published = 1 AND author_id = :author_id"),
                 QStringLiteral("cmlyst"));
     query.bindValue(QStringLiteral(":author_id"), authorId);
     if (Q_LIKELY(query.exec() && query.next())) {

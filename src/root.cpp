@@ -114,6 +114,7 @@ void Root::lastPosts(Context *c)
     Response *res = c->res();
     Request *req = c->req();
     QList<CMS::Page *> posts;
+    const auto settings = engine->settings();
     posts = engine->listPages(c,
                               CMS::Engine::Posts,
                               CMS::Engine::SortFlags(
@@ -121,7 +122,7 @@ void Root::lastPosts(Context *c)
                                   CMS::Engine::Date |
                                   CMS::Engine::Reversed),
                               -1,
-                              10);
+                              settings.value(QStringLiteral("posts_per_page"), QStringLiteral("10")).toInt());
 
     if (!posts.isEmpty()) {
         // See if the page has changed, if the settings have changed
@@ -141,8 +142,8 @@ void Root::lastPosts(Context *c)
     engine->setProperty("pagePath", cmsPagePath);
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("posts.html")},
-                 {QStringLiteral("meta_title"), engine->settingsValue(QStringLiteral("title"))},
-                 {QStringLiteral("meta_description"), engine->settingsValue(QStringLiteral("tagline"))},
+                 {QStringLiteral("meta_title"), settings.value(QStringLiteral("title"))},
+                 {QStringLiteral("meta_description"), settings.value(QStringLiteral("tagline"))},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
                  {QStringLiteral("posts"), QVariant::fromValue(posts)}
              });
@@ -255,8 +256,8 @@ void Root::author(Context *c, const QString &slug)
 
     c->stash({
                  {QStringLiteral("template"), QStringLiteral("author.html")},
-                 {QStringLiteral("meta_title"), engine->settingsValue(QStringLiteral("title"))},
-                 {QStringLiteral("meta_description"), engine->settingsValue(QStringLiteral("tagline"))},
+                 {QStringLiteral("meta_title"), settings.value(QStringLiteral("title"))},
+                 {QStringLiteral("meta_description"), settings.value(QStringLiteral("tagline"))},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
                  {QStringLiteral("author"), QVariant::fromValue(authorData)}
              });

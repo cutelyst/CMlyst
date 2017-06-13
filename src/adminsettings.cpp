@@ -63,6 +63,7 @@ void AdminSettings::general(Context *c)
         engine->setSettingsValue(c, QStringLiteral("page_on_front"), params.value(QStringLiteral("page_on_front")));
         engine->setSettingsValue(c, QStringLiteral("page_for_posts"), params.value(QStringLiteral("page_for_posts")));
         engine->setSettingsValue(c, QStringLiteral("timezone"), params.value(QStringLiteral("timezone")));
+        engine->setSettingsValue(c, QStringLiteral("posts_per_page"), params.value(QStringLiteral("posts_per_page")));
     }
 
     QStringList timezones;
@@ -93,6 +94,7 @@ void AdminSettings::general(Context *c)
                  {QStringLiteral("show_on_front"), settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts"))},
                  {QStringLiteral("page_on_front"), settings.value(QStringLiteral("page_on_front"))},
                  {QStringLiteral("page_for_posts"), settings.value(QStringLiteral("page_for_posts"))},
+                 {QStringLiteral("posts_per_page"), settings.value(QStringLiteral("posts_per_page"), QStringLiteral("10"))},
              });
 }
 

@@ -162,14 +162,9 @@ void AdminPages::edit(Context *c, const QString &id, const QString &postType, bo
         page->setAuthor(author);
 
         bool ret = engine->savePage(c, page);
-        if (ret) {
-            c->res()->redirect(c->uriFor(actionFor(QStringLiteral("index"))));
-        } else {
-            qDebug() << "Failed to save page" << page;
+        if (!ret) {
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("Failed to save page"));
         }
-
-//        qDebug() << "saved" << ret;
     }
 
     c->setStash(QStringLiteral("title"), title);

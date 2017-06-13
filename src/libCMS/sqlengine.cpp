@@ -125,6 +125,7 @@ Page *SqlEngine::getPageById(const QString &id, QObject *parent)
         if (query.next()) {
             return createPageObj(query, parent);
         }
+        qWarning() << "Page not found for id" << id;
     } else {
         qWarning() << "Failed to get page by id" << id << query.lastError().databaseText();
     }
@@ -391,14 +392,25 @@ QHash<QString, QString> SqlEngine::user(int id)
 
 int SqlEngine::savePageBackend(Page *page)
 {
-    qDebug() << Q_FUNC_INFO << page->path() << page->id() << page->uuid();
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT OR REPLACE INTO posts "
-                                                                  "(path, uuid, title, author_id, content, html,"
-                                                                  " created_at, updated_at, published_at, page, published, allow_comments, published) "
-                                                                  "VALUES "
-                                                                  "(:path, :uuid, :title, :author_id, :content, :html,"
-                                                                  " :created_at, :updated_at, :published_at, :page, :published, :allow_comments, :published)"),
-                                                   QStringLiteral("cmlyst"));
+    QSqlQuery query;
+    if (!page->id()) {
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("INSERT INTO posts "
+                                                            "(path, uuid, title, author_id, content, html,"
+                                                            " created_at, updated_at, published_at, page, published, allow_comments, published) "
+                                                            "VALUES "
+                                                            "(:path, :uuid, :title, :author_id, :content, :html,"
+                                                            " :created_at, :updated_at, :published_at, :page, :published, :allow_comments, :published)"),
+                                             QStringLiteral("cmlyst"));
+    } else {
+        query = CPreparedSqlQueryThreadForDB(QStringLiteral("UPDATE posts SET "
+                                                            "path = :path, title = :title, author_id = :author_id, content = :content, html = :html, "
+                                                            "created_at = :created_at, updated_at = :updated_at, published_at = :published_at,"
+                                                            "page = :page, published = :published, allow_comments = :allow_comments, published = :published "
+                                                            "WHERE id = :id"),
+                                             QStringLiteral("cmlyst"));
+        query.bindValue(QStringLiteral(":id"), page->id());
+    }
+
     query.bindValue(QStringLiteral(":path"), page->path());
     query.bindValue(QStringLiteral(":uuid"), page->uuid());
     query.bindValue(QStringLiteral(":title"), page->title());
@@ -415,6 +427,10 @@ int SqlEngine::savePageBackend(Page *page)
     if (!query.exec()) {
         qWarning() << "Failed to save page" << query.lastError().databaseText();
         return 0;
+    }
+
+    if (page->id()) {
+        return page->id();
     }
     return query.lastInsertId().toInt();
 }

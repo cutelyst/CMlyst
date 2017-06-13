@@ -43,6 +43,7 @@ target_link_libraries(cmlyst
     Cutelyst::Utils::Sql
     Cutelyst::Authentication
     Cutelyst::StatusMessage
+    Cutelyst::Utils::Pagination
     Qt5::Core
     Qt5::Network
     Qt5::Sql

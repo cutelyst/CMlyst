@@ -36,9 +36,13 @@ public:
      */
     virtual QList<Page *> listPages(QObject *parent,
                                     Filters filters = NoFilter,
-                                    SortFlags sort = SortFlags(Date | Reversed),
-                                    int depth = -1,
+                                    int offset = -1,
                                     int limit = -1) override;
+
+    virtual QList<Page *> listAuthorPosts(QObject *parent,
+                                          int authorId,
+                                          int offset,
+                                          int limit) override;
 
     virtual QHash<QString, QString> settings() const override;
 

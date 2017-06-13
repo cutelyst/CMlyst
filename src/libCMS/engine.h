@@ -49,13 +49,6 @@ public:
     };
     Q_DECLARE_FLAGS(Filters, Filter)
 
-    enum SortFlag {
-        Date     = 0x1,
-        Name     = 0x2,
-        Reversed = 0x4
-    };
-    Q_DECLARE_FLAGS(SortFlags, SortFlag)
-
     explicit Engine(QObject *parent = 0);
     virtual ~Engine();
 
@@ -80,9 +73,13 @@ public:
      */
     virtual QList<Page *> listPages(QObject *parent,
                                     Filters filters = NoFilter,
-                                    SortFlags sort = SortFlags(Date | Reversed),
-                                    int depth = -1,
+                                    int offset = -1,
                                     int limit = -1) = 0;
+
+    virtual QList<Page *> listAuthorPosts(QObject *parent,
+                                          int authorId,
+                                          int offset,
+                                          int limit) = 0;
 
     virtual QList<Menu *> menus() = 0;
 
@@ -124,6 +121,5 @@ typedef QHash<QString, QString> StringHash;
 }
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(CMS::Engine::Filters)
-Q_DECLARE_OPERATORS_FOR_FLAGS(CMS::Engine::SortFlags)
 
 #endif // ENGINE_H

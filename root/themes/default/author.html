@@ -4,6 +4,8 @@
 
   {% if author.location %}<span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span> {{author.location}} {% endif %}
   {% if author.website %}<span class="glyphicon glyphicon-link" aria-hidden="true"></span> <a href="{{author.website}}">{{author.website}}</a>{% endif %}
-  {% if posts.size %}<span class="glyphicon glyphicon-signal" aria-hidden="true"></span> 1 Post{% endif %}
+  {% if posts_count %}<span class="glyphicon glyphicon-signal" aria-hidden="true"></span> {{ posts_count }} Posts{% endif %}
   <hr>
 </div>
+
+{% include "posts.html" %}

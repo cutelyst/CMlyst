@@ -146,26 +146,7 @@ bool SqlEngine::removePage(int id)
     }
 }
 
-QString sortString(Engine::SortFlags sort)
-{
-    if (sort & Engine::Reversed) {
-        if (sort & Engine::Name) {
-            return QStringLiteral(" ORDER BY name ASC ");
-        } else if (sort & Engine::Date) {
-            return QStringLiteral(" ORDER BY date ASC ");
-        }
-    } else {
-        if (sort & Engine::Name) {
-            return QStringLiteral(" ORDER BY name DESC ");
-        } else if (sort & Engine::Date) {
-            return QStringLiteral(" ORDER BY date DESC ");
-        }
-    }
-
-    return QString();
-}
-
-QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Engine::SortFlags sort, int depth, int limit)
+QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, int offset, int limit)
 {
     QList<Page *> ret;
     QSqlQuery query;
@@ -175,7 +156,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             "FROM posts "
                                                             "WHERE page = 1 "
                                                             "ORDER BY created_at DESC "
-                                                            "LIMIT :limit "
+                                                            "LIMIT :limit OFFSET :offset"
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else if (filters == Engine::Posts) {
@@ -184,7 +165,7 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             "FROM posts "
                                                             "WHERE page = 0 "
                                                             "ORDER BY created_at DESC "
-                                                            "LIMIT :limit "
+                                                            "LIMIT :limit OFFSET :offset"
                                                             ),
                                              QStringLiteral("cmlyst"));
     } else {
@@ -192,12 +173,37 @@ QList<Page *> SqlEngine::listPages(QObject *parent, Engine::Filters filters, Eng
                                                             " created_at, updated_at, published_at, page, allow_comments, published "
                                                             "FROM posts "
                                                             "ORDER BY created_at DESC "
-                                                            "LIMIT :limit "
+                                                            "LIMIT :limit OFFSET :offset"
                                                             ),
                                              QStringLiteral("cmlyst"));
     }
 
     query.bindValue(QStringLiteral(":limit"), limit);
+    query.bindValue(QStringLiteral(":offset"), offset);
+    if (query.exec()) {
+        while (query.next()) {
+            ret.append(createPageObj(query, parent));
+        }
+    }
+    return ret;
+}
+
+QList<Page *> SqlEngine::listAuthorPosts(QObject *parent, int authorId, int offset, int limit)
+{
+    QList<Page *> ret;
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
+                               " created_at, updated_at, published_at, page, allow_comments, published "
+                               "FROM posts "
+                               "WHERE page = 0 AND author_id = :author_id "
+                               "ORDER BY created_at DESC "
+                               "LIMIT :limit OFFSET :offset"
+                               ),
+                QStringLiteral("cmlyst"));
+
+    query.bindValue(QStringLiteral(":author_id"), authorId);
+    query.bindValue(QStringLiteral(":limit"), limit);
+    query.bindValue(QStringLiteral(":offset"), offset);
     if (query.exec()) {
         while (query.next()) {
             ret.append(createPageObj(query, parent));

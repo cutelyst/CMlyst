@@ -24,6 +24,7 @@
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
 #include <Cutelyst/Plugins/Utils/Sql>
+#include <Cutelyst/Plugins/Utils/Pagination>
 
 #include <grantlee/safestring.h>
 
@@ -113,30 +114,43 @@ void Root::lastPosts(Context *c)
 {
     Response *res = c->res();
     Request *req = c->req();
-    QList<CMS::Page *> posts;
+
+    // See if the page has changed, if the settings have changed
+    // and have a newer date use that instead
+    const QDateTime currentDateTime = engine->lastModified();
+    const QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
+    if (clientDate.isValid()) {
+        if (currentDateTime == clientDate && currentDateTime.isValid()) {
+            res->setStatus(Response::NotModified);
+            return;
+        }
+    }
+    res->headers().setLastModified(currentDateTime);
+
     const auto settings = engine->settings();
+    const int postsPerPage = settings.value(QStringLiteral("posts_per_page"), QStringLiteral("10")).toInt();
+    int offset;
+
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT count(*) FROM posts WHERE page = 1"),
+                QStringLiteral("cmlyst"));
+    if (Q_LIKELY(query.exec() && query.next())) {
+        int rows = query.value(0).toInt();
+        Pagination pagination(rows,
+                              postsPerPage,
+                              c->req()->queryParam(QStringLiteral("page"), QStringLiteral("1")).toInt());
+        offset = pagination.offset();
+        c->setStash(QStringLiteral("pagination"), pagination);
+    } else {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("notFound"))));
+        return;
+    }
+
+    QList<CMS::Page *> posts;
     posts = engine->listPages(c,
                               CMS::Engine::Posts,
-                              CMS::Engine::SortFlags(
-                                  CMS::Engine::Name |
-                                  CMS::Engine::Date |
-                                  CMS::Engine::Reversed),
-                              -1,
-                              settings.value(QStringLiteral("posts_per_page"), QStringLiteral("10")).toInt());
-
-    if (!posts.isEmpty()) {
-        // See if the page has changed, if the settings have changed
-        // and have a newer date use that instead
-        const QDateTime currentDateTime = engine->lastModified();
-        const QDateTime clientDate = req->headers().ifModifiedSinceDateTime();
-        if (clientDate.isValid()) {
-            if (currentDateTime == clientDate && currentDateTime.isValid()) {
-                res->setStatus(Response::NotModified);
-                return;
-            }
-        }
-        res->headers().setLastModified(currentDateTime);
-    }
+                              offset,
+                              postsPerPage);
 
     QString cmsPagePath = QLatin1Char('/') + c->req()->path();
     engine->setProperty("pagePath", cmsPagePath);
@@ -240,8 +254,35 @@ void Root::author(Context *c, const QString &slug)
         notFound(c);
         return;
     }
+    int authorId = authorData.value(QStringLiteral("id")).toInt();
 
-    auto settings = engine->settings();
+    const auto settings = engine->settings();
+    const int postsPerPage = settings.value(QStringLiteral("posts_per_page"), QStringLiteral("10")).toInt();
+    int offset;
+
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("SELECT count(*) FROM posts WHERE page = 1 AND author_id = :author_id"),
+                QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":author_id"), authorId);
+    if (Q_LIKELY(query.exec() && query.next())) {
+        int rows = query.value(0).toInt();
+        Pagination pagination(rows,
+                              postsPerPage,
+                              c->req()->queryParam(QStringLiteral("page"), QStringLiteral("1")).toInt());
+        offset = pagination.offset();
+        c->setStash(QStringLiteral("pagination"), pagination);
+        c->setStash(QStringLiteral("posts_count"), rows);
+    } else {
+        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("notFound"))));
+        return;
+    }
+
+    QList<CMS::Page *> posts;
+    posts = engine->listAuthorPosts(c,
+                                    authorId,
+                                    offset,
+                                    postsPerPage);
+
     const QString cms_head = settings.value(QStringLiteral("cms_head"));
     if (!cms_head.isEmpty()) {
         const Grantlee::SafeString safe(cms_head, true);
@@ -259,6 +300,7 @@ void Root::author(Context *c, const QString &slug)
                  {QStringLiteral("meta_title"), settings.value(QStringLiteral("title"))},
                  {QStringLiteral("meta_description"), settings.value(QStringLiteral("tagline"))},
                  {QStringLiteral("cms"), QVariant::fromValue(engine)},
-                 {QStringLiteral("author"), QVariant::fromValue(authorData)}
+                 {QStringLiteral("author"), QVariant::fromValue(authorData)},
+                 {QStringLiteral("posts"), QVariant::fromValue(posts)}
              });
 }

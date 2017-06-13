@@ -21,3 +21,11 @@
 
       </div><!-- /.row -->
       {% endfor %}
+
+<ul class="pagination">
+  <li {% if not pagination.enable_first %}class="disabled"{% endif %}><a href="?page=1">&laquo;</a></li>
+  {% for page in pagination.pages %}
+    <li {% if page == pagination.current %}class="active"{% endif %}><a href="?page={{ page }}">{{ page }}</a></li>
+  {% endfor %}
+  <li {% if not pagination.enable_last %}class="disabled"{% endif %}><a href="?page={{ pagination.last_page }}">&raquo;</a></li>
+</ul>

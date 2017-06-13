@@ -170,7 +170,7 @@ void Root::feed(Context *c)
                 QStringLiteral("SELECT p.title, p.path, u.slug, p.published_at, p.content "
                                "FROM posts p "
                                "LEFT JOIN users u ON u.id = p.author_id "
-                               "WHERE page = 0 "
+                               "WHERE page = 0 AND published = 1 "
                                "ORDER BY published_at DESC "
                                "LIMIT :limit "
                                ),

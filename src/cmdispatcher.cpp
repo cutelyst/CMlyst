@@ -55,7 +55,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
     }
 
     CMS::Page *page = engine->getPage(path, c);
-    if (page) {
+    if (page && page->published()) {
         c->setStash(QStringLiteral("page"), QVariant::fromValue(page));
         req->setArguments(args);
         req->setMatch(path);

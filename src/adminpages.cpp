@@ -151,10 +151,11 @@ void AdminPages::edit(Context *c, const QString &id, const QString &postType, bo
         page->setPath(path);
         if (action == QLatin1String("unpublish")) {
             page->setPublished(false);
-            page->setPublishedAt(QDateTime());
         } else if (action == QLatin1String("publish")) {
             page->setPublished(true);
-            page->setPublishedAt(QDateTime::currentDateTimeUtc());
+            if (!page->publishedAt().isValid()) {
+                page->setPublishedAt(QDateTime::currentDateTimeUtc());
+            }
         }
         page->setUpdated(QDateTime::currentDateTimeUtc());
 

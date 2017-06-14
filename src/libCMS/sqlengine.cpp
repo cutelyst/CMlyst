@@ -70,15 +70,21 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
 
     QDateTime updated = QDateTime::fromString(query.value(QStringLiteral("updated_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
     updated.setTimeSpec(Qt::UTC);
-    page->setUpdated(updated.toTimeZone(m_timezone));
+    updated = updated.toTimeZone(m_timezone);
+    updated.setTimeSpec(Qt::LocalTime);
+    page->setUpdated(updated);
 
     QDateTime created = QDateTime::fromString(query.value(QStringLiteral("created_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
     created.setTimeSpec(Qt::UTC);
-    page->setCreated(created.toTimeZone(m_timezone));
+    created = created.toTimeZone(m_timezone);
+    created.setTimeSpec(Qt::LocalTime);
+    page->setCreated(created);
 
     QDateTime published = QDateTime::fromString(query.value(QStringLiteral("published_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
     published.setTimeSpec(Qt::UTC);
-    page->setPublishedAt(published.toTimeZone(m_timezone));
+    published = published.toTimeZone(m_timezone);
+    published.setTimeSpec(Qt::LocalTime);
+    page->setPublishedAt(published);
 
     page->setTitle(query.value(QStringLiteral("title")).toString());
     page->setPath(query.value(QStringLiteral("path")).toString());

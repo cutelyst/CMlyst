@@ -20,7 +20,9 @@ Where:
 ## Running
 You can run it with cutelyst-wsgi or uWSGI, both have similar command line options, and you should look at their documentation to know their options, the simplest one:
 
-    cutelyst-wsgi --application path/to/libcmlyst.so --http-socket :3000 --ini cmlyst.conf
+    cutelyst-wsgi --application path/to/libcmlyst.so --http-socket :3000 --ini cmlyst.conf --chdir parent_of_root_dir --static-map /static=root/static
+    
+The chdir needs to point to the parent of the root directory that came from this project. The option --static-map is used to serve the static files.
   
 Now point your browser to http://localhost:3000
 

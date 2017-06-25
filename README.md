@@ -24,7 +24,7 @@ You can run it with cutelyst-wsgi or uWSGI, both have similar command line optio
     
 The chdir needs to point to the parent of the root directory that came from this project. The option --static-map is used to serve the static files.
   
-Now point your browser to http://localhost:3000
+Now point your browser to http://localhost:3000/setup
 
 ## Setup
 To create the first admin user set the SETUP enviroment variable, run the server and point your browser to http://localhost:3000/.admin.

@@ -3,6 +3,11 @@
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/Utils/Sql>
 
+#include <QRegularExpression>
+
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include <QSqlQuery>
 #include <QSqlRecord>
 #include <QSqlError>
@@ -50,13 +55,28 @@ bool SqlUserStore::addUser(const ParamsMultiMap &user)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("INSERT OR REPLACE INTO users "
-                               "(name, email, password) "
+                               "(slug, email, password, json) "
                                "VALUES "
-                               "(:name, :email, :password)"),
+                               "(:slug, :email, :password, :json)"),
                 QStringLiteral("cmlyst"));
-    query.bindValue(QStringLiteral(":name"), user.value(QStringLiteral("name")));
+
+    const QString name = user.value(QStringLiteral("name"));
+    QString slug = name;
+    if (slug.isEmpty()) {
+        slug  = name.section(QLatin1Char(' '), 0, 0);
+    }
+    slug.remove(QRegularExpression(QStringLiteral("[^\\w]")));
+    slug = slug.left(50).toLower().toHtmlEscaped();
+    query.bindValue(QStringLiteral(":slug"), slug);
+
     query.bindValue(QStringLiteral(":email"), user.value(QStringLiteral("email")));
     query.bindValue(QStringLiteral(":password"), user.value(QStringLiteral("password")));
+
+    QJsonObject obj;
+    obj.insert(QStringLiteral("name"),
+               name.left(150).toHtmlEscaped());
+    query.bindValue(QStringLiteral(":json"), QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact)));
+
     if (!query.exec()) {
         qDebug() << "Failed to add new user:" << query.lastError().databaseText() << user;
         return false;

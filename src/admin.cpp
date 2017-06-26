@@ -70,7 +70,7 @@ bool Admin::End(Context *c)
 void Admin::logout(Cutelyst::Context *c)
 {
     Authentication::logout(c);
-    c->res()->redirect(c->uriFor(QStringLiteral("/.admin/login")));
+    c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
 }
 
 void Admin::login(Context *c)

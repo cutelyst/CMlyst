@@ -43,18 +43,24 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
     // See if we are on front page path and the settings says
     // it should show the latest posts, or if the desired page path is set
     // to show the latest posts
-    bool showOnFront = settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts")) == QLatin1String("posts");
+    bool showPostsOnFront = settings.value(QStringLiteral("show_on_front"), QStringLiteral("posts")) == QLatin1String("posts");
 
     Request *req = c->request();
-    if ((path.isEmpty() && showOnFront) ||
-            (!showOnFront && settings.value(QStringLiteral("page_for_posts")) == path)) {
+    if ((path.isEmpty() && showPostsOnFront) ||
+            (!showPostsOnFront && settings.value(QStringLiteral("page_for_posts")) == path)) {
         req->setArguments(args);
         req->setMatch(path);
         setupMatchedAction(c, m_latestPostsAction);
         return ExactMatch;
     }
 
-    CMS::Page *page = engine->getPage(path, c);
+    CMS::Page *page;
+    if (path.isEmpty() && !showPostsOnFront) {
+        page = engine->getPage(settings.value(QStringLiteral("page_on_front")), c);
+    } else {
+        page = engine->getPage(path, c);
+    }
+
     if (page && page->published()) {
         c->setStash(QStringLiteral("page"), QVariant::fromValue(page));
         req->setArguments(args);
@@ -62,21 +68,6 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
         setupMatchedAction(c, m_pageAction);
         return ExactMatch;
     }
-
-//    QVariantHash page = engine->getPage(path);
-//    if (!page.isEmpty()) {
-//        c->setStash(QStringLiteral("page"), page);
-//        if (page.value(QStringLiteral("blog")).toBool()) {
-//            c->req()->setArguments(args);
-//            c->req()->setMatch(path);
-//            setupMatchedAction(c, m_postAction);
-//        } else {
-//            c->req()->setArguments(args);
-//            c->req()->setMatch(path);
-//            setupMatchedAction(c, m_pageAction);
-//        }
-//        return ExactMatch;
-//    }
 
     return NoMatch;
 }

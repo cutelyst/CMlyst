@@ -9,8 +9,10 @@
     <input type="text" class="form-control" name="title" id="title" autofocus placeholder="Enter title here" value="{{ title }}" required>
   </div>
   <div class="form-group">
-    <label class="control-label" for="path">Path</label> {{ c.req.base }}{% now "yyyy/MM/dd" %}
-    <input type="text" class="form-control" name="path" id="path" value="{{ path }}">
+    <div class="input-group">
+      <div class="input-group-addon">{{ c.req.base }}{% if post_type == "post" and not editting %}{% now "yyyy/MM/dd" %}{% endif %}</div>
+      <input type="text" class="form-control" name="path" id="path" value="{{ path }}" placeholder="path URL">
+    </div>
   </div>
   <div class="form-group">
     <div id="edit-content-editor-container" class="editor-container">

@@ -66,7 +66,7 @@ void AdminAppearance::menus_new(Context *c)
 
         QString id = QUuid::createUuid().toString().remove(QLatin1Char('{')).remove(QLatin1Char('}'));
         CMS::Menu *menu = new CMS::Menu(id, c);
-        if (saveMenu(menu, params, false)) {
+        if (saveMenu(c, menu, params, false)) {
             c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
             return;
         }
@@ -94,7 +94,7 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
 
     qWarning() << "params" << c->req()->method();
     if (c->req()->isPost()) {
-        if (saveMenu(menu, c->req()->bodyParams(), true)) {
+        if (saveMenu(c, menu, c->req()->bodyParams(), true)) {
             c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
             return;
         } else {
@@ -111,7 +111,7 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
              });
 }
 
-bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace)
+bool AdminAppearance::saveMenu(Context *c, CMS::Menu *menu, const ParamsMultiMap &params, bool replace)
 {
     qDebug() << "saving menu id" << menu->id();
     menu->setName(params.value(QStringLiteral("name")).toHtmlEscaped());
@@ -137,5 +137,5 @@ bool AdminAppearance::saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bo
         }
     }
 
-    return engine->saveMenu(nullptr, menu, replace);
+    return engine->saveMenu(c, menu, replace);
 }

@@ -49,7 +49,7 @@ public:
     void menus_edit(Context *c, const QString &id);
 
 private:
-    bool saveMenu(CMS::Menu *menu, const ParamsMultiMap &params, bool replace);
+    bool saveMenu(Context *c, CMS::Menu *menu, const ParamsMultiMap &params, bool replace);
 };
 
 #endif // ADMINAPPEARANCE_H

@@ -37,15 +37,6 @@ public:
     C_ATTR(notFound, :Path)
     void notFound(Context *c);
 
-    C_ATTR(edit, :Local :AutoArgs)
-    void edit(Context *c, const QString &id);
-
-    C_ATTR(remove_user, :Local :AutoArgs)
-    void remove_user(Context *c, const QString &id);
-
-    C_ATTR(status, :Path :AutoArgs)
-    void status(Context *c);
-
     C_ATTR(End, :Private :ActionClass(RenderView) :View(admin))
     bool End(Context *c);
 };

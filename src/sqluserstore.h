@@ -12,7 +12,7 @@ public:
 
     virtual Cutelyst::AuthenticationUser findUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &userinfo);
 
-    bool addUser(const Cutelyst::ParamsMultiMap &user);
+    bool addUser(const Cutelyst::ParamsMultiMap &user, bool replace);
 };
 
 #endif // SQLUSERSTORE_H

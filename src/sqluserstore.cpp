@@ -51,14 +51,24 @@ Cutelyst::AuthenticationUser SqlUserStore::findUser(Cutelyst::Context *c, const 
     return AuthenticationUser();
 }
 
-bool SqlUserStore::addUser(const ParamsMultiMap &user)
+bool SqlUserStore::addUser(const ParamsMultiMap &user, bool replace)
 {
-    QSqlQuery query = CPreparedSqlQueryThreadForDB(
-                QStringLiteral("INSERT OR REPLACE INTO users "
-                               "(slug, email, password, json) "
-                               "VALUES "
-                               "(:slug, :email, :password, :json)"),
-                QStringLiteral("cmlyst"));
+    QSqlQuery query;
+    if (replace) {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("INSERT OR REPLACE INTO users "
+                                   "(slug, email, password, json) "
+                                   "VALUES "
+                                   "(:slug, :email, :password, :json)"),
+                    QStringLiteral("cmlyst"));
+    } else {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("INSERT INTO users "
+                                   "(slug, email, password, json) "
+                                   "VALUES "
+                                   "(:slug, :email, :password, :json)"),
+                    QStringLiteral("cmlyst"));
+    }
 
     const QString name = user.value(QStringLiteral("name"));
     QString slug = name;

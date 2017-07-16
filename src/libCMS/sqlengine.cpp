@@ -12,6 +12,8 @@
 #include <QSqlQuery>
 #include <QSqlError>
 
+#include <QRegularExpression>
+
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonDocument>
@@ -437,6 +439,52 @@ QDateTime SqlEngine::lastModified()
     return m_settingsDateTime;
 }
 
+QString SqlEngine::addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace)
+{
+    QSqlQuery query;
+    if (replace) {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("INSERT OR REPLACE INTO users "
+                                   "(slug, email, password, json) "
+                                   "VALUES "
+                                   "(:slug, :email, :password, :json)"),
+                    QStringLiteral("cmlyst"));
+    } else {
+        query = CPreparedSqlQueryThreadForDB(
+                    QStringLiteral("INSERT INTO users "
+                                   "(slug, email, password, json) "
+                                   "VALUES "
+                                   "(:slug, :email, :password, :json)"),
+                    QStringLiteral("cmlyst"));
+    }
+
+    const QString name = user.value(QStringLiteral("name"));
+    QString slug = name;
+    if (slug.isEmpty()) {
+        slug  = name.section(QLatin1Char(' '), 0, 0);
+    }
+    slug.remove(QRegularExpression(QStringLiteral("[^\\w]")));
+    slug = slug.left(50).toLower().toHtmlEscaped();
+    query.bindValue(QStringLiteral(":slug"), slug);
+
+    query.bindValue(QStringLiteral(":email"), user.value(QStringLiteral("email")));
+    query.bindValue(QStringLiteral(":password"), user.value(QStringLiteral("password")));
+
+    QJsonObject obj;
+    obj.insert(QStringLiteral("name"),
+               name.left(150).toHtmlEscaped());
+    query.bindValue(QStringLiteral(":json"), QString::fromUtf8(QJsonDocument(obj).toJson(QJsonDocument::Compact)));
+
+    if (!query.exec()) {
+        qDebug() << "Failed to add new user:" << query.lastError().databaseText() << user;
+        return QString();
+    }
+
+    setSettingsValue(c, QStringLiteral("modified"), QString());
+
+    return slug;
+}
+
 QVariantList SqlEngine::users()
 {
     return m_users;
@@ -505,7 +553,7 @@ void SqlEngine::loadMenus()
     const QString menusSetting = settingsValue(QStringLiteral("menus"));
     QJsonDocument doc = QJsonDocument::fromJson(menusSetting.toUtf8());
     const QJsonObject menusObj = doc.object();
-    qDebug() << Q_FUNC_INFO << menusObj;
+
     auto it = menusObj.constBegin();
     while (it != menusObj.constEnd()) {
 //    for (const QJsonValue &value : menusObj) {
@@ -532,25 +580,21 @@ void SqlEngine::loadMenus()
         menu->setLocations(locations);
 
         bool added = false;
-        Q_FOREACH (const QString &location, locations) {
+        for (const QString &location : locations) {
             if (!menuLocations.contains(location)) {
                 menuLocations.insert(location, menu);
                 added = true;
             }
         }
-        qDebug() << "MENU";
-        qDebug() << menu->id() << menu->name() << menu->entries() << menu->locations() << menu->autoAddPages();
 
         menus.push_back(menu);
 
         ++it;
     }
-    qDebug() << "MENUS" << menus;
 
     qDeleteAll(m_menus);
 
     m_menus = menus;
-    qDebug() << "MENUS" << menuLocations;
     m_menuLocations = menuLocations;
 }
 
@@ -563,7 +607,7 @@ void SqlEngine::loadUsers()
                                                                   "FROM users "),
                                                    QStringLiteral("cmlyst"));
     if (Q_LIKELY(query.exec())) {
-        if (query.next()) {
+        while (query.next()) {
             QHash<QString, QString> user;
 
             const QString id = query.value(0).toString();
@@ -594,11 +638,8 @@ void SqlEngine::loadUsers()
             m_users.push_back(QVariant::fromValue(user));
             m_usersSlug.insert(slug, user);
             m_usersId.insert(id.toInt(), user);
-
-            qDebug() << "USER " << user;
         }
     }
-    qDebug() << "USERS " << m_users.size();
 }
 
 void SqlEngine::configureView(Cutelyst::Context *c)

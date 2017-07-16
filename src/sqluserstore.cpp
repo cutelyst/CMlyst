@@ -51,7 +51,7 @@ Cutelyst::AuthenticationUser SqlUserStore::findUser(Cutelyst::Context *c, const 
     return AuthenticationUser();
 }
 
-bool SqlUserStore::addUser(const ParamsMultiMap &user, bool replace)
+QString SqlUserStore::addUser(const ParamsMultiMap &user, bool replace)
 {
     QSqlQuery query;
     if (replace) {
@@ -89,7 +89,7 @@ bool SqlUserStore::addUser(const ParamsMultiMap &user, bool replace)
 
     if (!query.exec()) {
         qDebug() << "Failed to add new user:" << query.lastError().databaseText() << user;
-        return false;
+        return QString();
     }
-    return true;
+    return slug;
 }

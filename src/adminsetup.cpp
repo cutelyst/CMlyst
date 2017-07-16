@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2014 Daniel Nicoletti <dantti12@gmail.com>              *
+ *   Copyright (C) 2014-2017 Daniel Nicoletti <dantti12@gmail.com>         *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -22,12 +22,8 @@
 #include "root.h"
 #include "sqluserstore.h"
 
-#include <Cutelyst/Plugins/Authentication/authentication.h>
-#include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
-#include <Cutelyst/view.h>
 
-#include <QCryptographicHash>
 #include <QDebug>
 
 AdminSetup::AdminSetup(QObject *app) : Controller(app)
@@ -53,17 +49,13 @@ void AdminSetup::setup(Context *c)
                 password = QString::fromLatin1(CredentialPassword::createPassword(password.toUtf8(),
                                                                                   QCryptographicHash::Sha256,
                                                                                   1000, 24, 24));
-
-                auto auth = c->plugin<Authentication*>();
-                AuthenticationRealm *realm = auth->realm();
-                auto store = static_cast<SqlUserStore*>(realm->store());
-                bool ret = store->addUser({
-                                              {QStringLiteral("name"), username},
-                                              {QStringLiteral("email"), email},
-                                              {QStringLiteral("password"), password},
-                                          },
-                                          true);
-                if (ret) {
+                const QString slug = engine->addUser(c, {
+                                                        {QStringLiteral("name"), username},
+                                                        {QStringLiteral("email"), email},
+                                                        {QStringLiteral("password"), password},
+                                                    },
+                                                    true);
+                if (!slug.isEmpty()) {
                     c->setStash(QStringLiteral("status_msg"), QStringLiteral("User successfuly added, restart the application without SETUP environment set"));
                 } else {
                     c->setStash(QStringLiteral("error_msg"), QStringLiteral("Failed to add user, check application logs"));

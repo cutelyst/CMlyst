@@ -24,7 +24,6 @@
 #include <Cutelyst/Application>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/Sql>
-#include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 #include <Cutelyst/Plugins/StatusMessage>
 
@@ -172,9 +171,9 @@ void AdminSettings::updateUserData(Context *c, const QString &id, const ParamsMu
     if (query.exec()) {
         engine->setSettingsValue(c, QStringLiteral("modified"), QString());
         c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), { slug }));
-        return;
+    } else {
+        c->setStash(QStringLiteral("user"), QVariant::fromValue(params));
     }
-    c->setStash(QStringLiteral("user"), QVariant::fromValue(params));
 }
 
 void AdminSettings::changePassword(Context *c, const QString &id, const ParamsMultiMap params)
@@ -227,7 +226,41 @@ void AdminSettings::users_edit(Context *c, const QString &id)
 
 void AdminSettings::users_new(Context *c)
 {
+    c->setStash(QStringLiteral("template"), QStringLiteral("settings/user_new.html"));
+    if (c->req()->isPost()) {
+        const ParamsMultiMap params = c->req()->bodyParameters();
+        const QString username = params.value(QStringLiteral("username"));
+        const QString email = params.value(QStringLiteral("email"));
+        QString password = params.value(QStringLiteral("password"));
+        const QString password2 = params.value(QStringLiteral("password2"));
+        c->setStash(QStringLiteral("usernname"), username);
+        c->setStash(QStringLiteral("email"), email);
 
+        if (password == password2) {
+            if (password.size() >= 10) {
+                password = QString::fromLatin1(CredentialPassword::createPassword(password.toUtf8(),
+                                                                                  QCryptographicHash::Sha256,
+                                                                                  1000, 24, 24));
+
+                const QString slug = engine->addUser(c, {
+                                                         {QStringLiteral("name"), username},
+                                                         {QStringLiteral("email"), email},
+                                                         {QStringLiteral("password"), password},
+                                                     },
+                                                     false);
+
+                if (!slug.isEmpty()) {
+                    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), QStringList{ slug }));
+                } else {
+                    c->setStash(QStringLiteral("error_msg"), QStringLiteral("Failed to add user, check application logs"));
+                }
+            } else {
+                c->setStash(QStringLiteral("error_msg"), QStringLiteral("Password must be longer than 10 characters"));
+            }
+        } else {
+            c->setStash(QStringLiteral("error_msg"), QStringLiteral("The two password didn't match"));
+        }
+    }
 }
 
 void AdminSettings::database(Context *c)

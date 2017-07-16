@@ -24,6 +24,8 @@
 #include <QVariant>
 #include <QHash>
 
+#include <Cutelyst/ParamsMultiMap>
+
 namespace Cutelyst {
 class Context;
 }
@@ -116,6 +118,11 @@ public:
     static QString normalizeTitle(const QString &path);
 
     virtual QHash<QString, QString> loadSettings(Cutelyst::Context *c) = 0;
+
+    /**
+     * returns slug
+     */
+    virtual QString addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace) = 0;
 
     virtual QVariantList users() = 0;
     virtual QHash<QString, QString> user(const QString &slug) = 0;

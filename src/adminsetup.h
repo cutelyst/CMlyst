@@ -22,9 +22,11 @@
 
 #include <Cutelyst/Controller>
 
+#include "cmengine.h"
+
 using namespace Cutelyst;
 
-class AdminSetup : public Controller
+class AdminSetup : public Controller, public CMEngine
 {
     Q_OBJECT
     C_NAMESPACE("")

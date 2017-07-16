@@ -1,5 +1,5 @@
 <h2 class="sub-header">Users
-<a href="/.admin/settings/users/new" class="btn btn-info pull-right" role="button">Add New</a></h2>
+<a href="/.admin/settings/users_new" class="btn btn-info pull-right" role="button">Add New</a></h2>
 
 <div class="table-responsive">
   <table class="table table-striped">
@@ -12,14 +12,34 @@
     </thead>
     <tbody>
     {% for user in users %}
-      <tr>
+      <tr id="row-id-{{ user.id }}">
         <td>
           <a href="/.admin/settings/users/{{ user.slug }}">{{ user.name }}</a>
         </td>
         <td><a href="/.admin/settings/users/{{ user.slug }}">{{ user.email }}</a></td>
-        <td></td>
+        <td><a href="#" class="confirm-delete" data-path="users_delete/" data-id="{{ user.id }}">Delete</a></td>
       </tr>
     {% endfor %}
     </tbody>
   </table>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Delete</h4>
+      </div>
+      <div class="modal-body">
+        <p>You are about to delete this user.</p>
+        <p>Do you want to proceed?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+        <button type="button" id="btnYes" class="btn btn-danger">Delete</button>
+      </div>
+    </div>
+  </div>
 </div>

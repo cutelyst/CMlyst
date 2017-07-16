@@ -485,6 +485,19 @@ QString SqlEngine::addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap 
     return slug;
 }
 
+bool SqlEngine::removeUser(Cutelyst::Context *c, int id)
+{
+    QSqlQuery query = CPreparedSqlQueryThreadForDB(
+                QStringLiteral("DELETE FROM users WHERE id = :id"),
+                QStringLiteral("cmlyst"));
+    query.bindValue(QStringLiteral(":id"), id);
+    if (query.exec() && query.numRowsAffected() == 1) {
+        setSettingsValue(c, QStringLiteral("modified"), QString());
+        return true;
+    }
+    return false;
+}
+
 QVariantList SqlEngine::users()
 {
     return m_users;

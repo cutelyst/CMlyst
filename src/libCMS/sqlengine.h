@@ -74,6 +74,7 @@ public:
     virtual QDateTime lastModified() override;
 
     virtual QString addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace) override;
+    virtual bool removeUser(Cutelyst::Context *c, int id) override;
     virtual QVariantList users() override;
     virtual QHash<QString, QString> user(const QString &slug) override;
     virtual QHash<QString, QString> user(int id) override;

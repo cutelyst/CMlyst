@@ -219,11 +219,6 @@ void AdminSettings::changePassword(Context *c, const QString &id, const ParamsMu
     }
 }
 
-void AdminSettings::users_edit(Context *c, const QString &id)
-{
-    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), QStringList{ id }));
-}
-
 void AdminSettings::users_new(Context *c)
 {
     c->setStash(QStringLiteral("template"), QStringLiteral("settings/user_new.html"));
@@ -260,6 +255,17 @@ void AdminSettings::users_new(Context *c)
         } else {
             c->setStash(QStringLiteral("error_msg"), QStringLiteral("The two password didn't match"));
         }
+    }
+}
+
+void AdminSettings::users_delete(Context *c, const QString &id)
+{
+    if (c->request()->isPost()) {
+        if (!engine->removeUser(c, id.toInt())) {
+            c->response()->setStatus(Response::NoContent);
+        }
+    } else {
+        c->response()->setStatus(Response::BadRequest);
     }
 }
 

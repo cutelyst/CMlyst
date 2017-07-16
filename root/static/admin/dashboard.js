@@ -6,17 +6,20 @@ $('.confirm-delete').on('click', function(e) {
     e.preventDefault();
 
     var id = $(this).data('id');
+    var path = $(this).data('path');
+    $('#myModal').data('path', path);
     $('#myModal').data('id', id).modal('show');
 });
 
 $('#btnYes').click(function() {
     // handle deletion here
     var $modalDiv = $('#myModal');
-    var id = $('#myModal').data('id');
+    var id = $modalDiv.data('id');
+    var path = $modalDiv.data('path');
 
     $modalDiv.addClass('loading');
-    $.post('posts/delete/' + id).then(function() {
-        $('#post-'+id).remove();
+    $.post(path + id).then(function() {
+        $('#row-id-'+id).remove();
         $modalDiv.modal('hide').removeClass('loading');
     });
 });

@@ -123,6 +123,8 @@ public:
      * returns slug
      */
     virtual QString addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace) = 0;
+    virtual bool removeUser(Cutelyst::Context *c, int id) = 0;
+
 
     virtual QVariantList users() = 0;
     virtual QHash<QString, QString> user(const QString &slug) = 0;

@@ -48,11 +48,11 @@ public:
     void updateUserData(Context *c, const QString &id, const ParamsMultiMap params);
     void changePassword(Context *c, const QString &id, const ParamsMultiMap params);
 
-    C_ATTR(users_edit, :Path("users/edit") :AutoArgs)
-    void users_edit(Context *c, const QString &id);
-
-    C_ATTR(users_new, :Path('users/new') :AutoArgs)
+    C_ATTR(users_new, :Local :AutoArgs)
     void users_new(Context *c);
+
+    C_ATTR(users_delete, :Local :AutoArgs)
+    void users_delete(Context *c, const QString &id);
 
     C_ATTR(database, :Local :AutoArgs)
     void database(Context *c);

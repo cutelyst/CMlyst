@@ -172,7 +172,7 @@ void AdminSettings::updateUserData(Context *c, const QString &id, const ParamsMu
         engine->setSettingsValue(c, QStringLiteral("modified"), QString());
         c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("user")), { slug }));
     } else {
-        c->setStash(QStringLiteral("user"), QVariant::fromValue(params));
+        c->setStash(QStringLiteral("user"), params);
     }
 }
 

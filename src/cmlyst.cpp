@@ -79,12 +79,12 @@ bool CMlyst::init()
     }
     setConfig(QStringLiteral("DataLocation"), dataDir.absolutePath());
 
-    view->setIncludePaths({ pathTo({ QStringLiteral("root"), QStringLiteral("themes"), QStringLiteral("default") }) });
+    view->setIncludePaths({ pathTo(QStringLiteral("root/themes/default")) });
 
     auto adminView = new GrantleeView(this, QStringLiteral("admin"));
     adminView->setTemplateExtension(QStringLiteral(".html"));
     adminView->setWrapper(QStringLiteral("wrapper.html"));
-    adminView->setIncludePaths({ pathTo({ QStringLiteral("root"), QStringLiteral("admin") }) });
+    adminView->setIncludePaths({ pathTo(QStringLiteral("root/admin")) });
     adminView->setCache(production);
 
     if (qEnvironmentVariableIsSet("SETUP")) {
@@ -116,8 +116,8 @@ bool CMlyst::init()
 
     new StatusMessage(this);
 
-    qDebug() << "Root location" << pathTo({ QStringLiteral("root") });
-    qDebug() << "Root Admin location" << pathTo({ QStringLiteral("root"), QStringLiteral("src"), QStringLiteral("admin") });
+    qDebug() << "Root location" << pathTo(QStringLiteral("root"));
+    qDebug() << "Root Admin location" << pathTo(QStringLiteral("root/src/admin"));
     qDebug() << "Data location" << dataDir.absolutePath();
 
     return true;

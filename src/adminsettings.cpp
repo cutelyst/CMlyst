@@ -71,7 +71,7 @@ void AdminSettings::general(Context *c)
         timezones.push_back(QString::fromUtf8(rawTz));
     }
 
-    QDir themesDir = c->app()->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
+    QDir themesDir = c->app()->pathTo(QStringLiteral("root/themes"));
     QStringList themes = themesDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot,
                                              QDir::Name | QDir:: IgnoreCase);
 

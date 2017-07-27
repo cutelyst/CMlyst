@@ -666,7 +666,7 @@ void SqlEngine::configureView(Cutelyst::Context *c)
 
         auto view = qobject_cast<Cutelyst::GrantleeView*>(app->view());
 
-        const QDir themeDir = app->pathTo({ QStringLiteral("root"), QStringLiteral("themes") });
+        const QDir themeDir = app->pathTo(QStringLiteral("root/themes"));
 
         view->setIncludePaths({ themeDir.absoluteFilePath(theme) });
     }

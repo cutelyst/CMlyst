@@ -146,8 +146,8 @@ void AdminPages::edit(Context *c, const QString &id, const QString &postType, bo
         const ParamsMultiMap params = c->request()->bodyParams();
         title = params.value(QStringLiteral("title"));
         content = params.value(QStringLiteral("edit-content"));
-        path = params.value(QStringLiteral("path"));
-        QString action = params.value(QStringLiteral("submit"));
+        path = CMS::Engine::normalizePath(params.value(QStringLiteral("path")));
+        const QString action = params.value(QStringLiteral("submit"));
 
         page->updateContent(content);
         page->setTitle(title);

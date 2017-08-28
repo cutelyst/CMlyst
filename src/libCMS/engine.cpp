@@ -104,13 +104,18 @@ QVariant Engine::settingsProperty()
 
 QString Engine::normalizePath(const QString &path)
 {
+    QString ret;
     // "/foo/bar/Iam a big...path" turns into
     // "/foo/bar/iam-a-big-path"
     QStringList parts = path.split(QLatin1Char('/'), QString::SkipEmptyParts);
     for (int i = 0; i < parts.size(); ++i) {
         parts.replace(i, normalizeTitle(parts.at(i)));
     }
-    return parts.join(QLatin1Char('/'));
+    ret = parts.join(QLatin1Char('/'));
+    if (ret.isNull()) {
+        ret = QStringLiteral("");
+    }
+    return ret;
 }
 
 QString Engine::normalizeTitle(const QString &title)

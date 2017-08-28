@@ -30,9 +30,9 @@ public:
     Q_INVOKABLE explicit CMlyst(QObject *parent = 0);
     ~CMlyst();
 
-    bool init();
+    bool init() override;
 
-    virtual bool postFork();
+    virtual bool postFork() override;
 };
 
 #endif // CMLYST_H

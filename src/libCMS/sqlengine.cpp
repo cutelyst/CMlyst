@@ -367,6 +367,8 @@ bool SqlEngine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 
     QJsonDocument doc(menusObj);
     setSettingsValue(c, QStringLiteral("menus"), QString::fromUtf8(doc.toJson(QJsonDocument::Compact)));
+
+    return true;
 }
 
 bool SqlEngine::removeMenu(Cutelyst::Context *c, const QString &name)
@@ -378,6 +380,8 @@ bool SqlEngine::removeMenu(Cutelyst::Context *c, const QString &name)
             break;
         }
     }
+
+    return true;
 }
 
 QHash<QString, Menu *> SqlEngine::menuLocations()

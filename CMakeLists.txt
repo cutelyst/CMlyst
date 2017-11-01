@@ -16,10 +16,15 @@ set(CMAKE_AUTOMOC ON)
 # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+set(CMLYST_APP_DIR "${LIB_INSTALL_DIR}/cutelyst-apps" CACHE PATH "Installation directory for the Cutelyst app")
+set(CMLYST_HTML_DIR "${SHARE_INSTALL_PREFIX}/cmlyst" CACHE PATH "Target directory for the Grantlee/HTML files")
+
 # Build time config definitions
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 file(GLOB_RECURSE TEMPLATES_SRC root/*)
+
+install(DIRECTORY root DESTINATION ${CMLYST_HTML_DIR})
 
 include_directories(
     ${CMAKE_SOURCE_DIR}

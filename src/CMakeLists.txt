@@ -52,4 +52,4 @@ target_link_libraries(cmlyst
 )
 
 # TODO install to a place where uWSGI Cutelyst plugin searches for
-install(TARGETS cmlyst DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
+install(TARGETS cmlyst DESTINATION ${CMLYST_APP_DIR})

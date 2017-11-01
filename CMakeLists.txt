@@ -8,6 +8,7 @@ find_package(Qt5 COMPONENTS
     Sql
 )
 find_package(CutelystQt5 1.8.0 REQUIRED)
+find_package(Grantlee5 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)

@@ -47,13 +47,14 @@
 #include "libCMS/page.h"
 #include "libCMS/menu.h"
 
-#include <QJsonArray>
-#include <QJsonObject>
-#include <QJsonDocument>
+#include <QCoreApplication>
 
 CMlyst::CMlyst(QObject *parent) :
     Cutelyst::Application(parent)
 {
+    QCoreApplication::setApplicationName(QStringLiteral("cmlyst"));
+    QCoreApplication::setOrganizationName(QStringLiteral("cutelyst"));
+
     qRegisterMetaType<Author>();
     qRegisterMetaTypeStreamOperators<Author>("Author");
 }

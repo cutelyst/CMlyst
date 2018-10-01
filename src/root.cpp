@@ -285,7 +285,7 @@ void Root::author(Context *c, const QString &slug)
         c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
     }
 
-    const QString cms_foot = settings.value(QStringLiteral("cms_head"));
+    const QString cms_foot = settings.value(QStringLiteral("cms_foot"));
     if (!cms_foot.isEmpty()) {
         const Grantlee::SafeString safe(cms_foot, true);
         c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));

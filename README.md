@@ -4,7 +4,7 @@ CMlyst is a Content Management application built upon Cutelyst with support for 
  Help is welcome :)
 
 ## Dependencies
- * Cutelyst 1.7.0
+ * Cutelyst 2.0.0
 
 ## Configuration
 Create an INI file like cmlyst.conf with:

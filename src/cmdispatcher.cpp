@@ -21,6 +21,10 @@ CMDispatcher::~CMDispatcher()
 
 QByteArray CMDispatcher::list() const
 {
+    if (!m_pageAction) {
+        return QByteArray();
+    }
+
     QStringList page = {
         QStringLiteral("Page"),
         QLatin1Char('/') + m_pageAction->reverse()

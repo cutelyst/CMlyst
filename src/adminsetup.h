@@ -31,7 +31,7 @@ class AdminSetup : public Controller, public CMEngine
     Q_OBJECT
     C_NAMESPACE("")
 public:
-    explicit AdminSetup(QObject *app = 0);
+    explicit AdminSetup(QObject *app = nullptr);
 
     C_ATTR(setup, :Local :AutoArgs)
     void setup(Context *c);

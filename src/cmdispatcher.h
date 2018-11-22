@@ -11,7 +11,7 @@ class CMDispatcher : public DispatchType, public CMEngine
 {
     Q_OBJECT
 public:
-    explicit CMDispatcher(QObject *parent = 0);
+    explicit CMDispatcher(QObject *parent = nullptr);
     ~CMDispatcher();
 
     /**
@@ -35,8 +35,8 @@ public:
     virtual bool inUse() final;
 
 private:
-    Action *m_pageAction = 0;
-    Action *m_latestPostsAction = 0;
+    Action *m_pageAction = nullptr;
+    Action *m_latestPostsAction = nullptr;
 };
 
 #endif // CMDISPATCHER_H

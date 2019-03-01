@@ -7,7 +7,7 @@ find_package(Qt5 COMPONENTS
     Network
     Sql
 )
-find_package(Cutelyst2Qt5 2.0.0 REQUIRED)
+find_package(Cutelyst2Qt5 2.7.0 REQUIRED)
 find_package(Grantlee5 REQUIRED)
 
 # Auto generate moc files
@@ -25,12 +25,6 @@ configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 file(GLOB_RECURSE TEMPLATES_SRC root/*)
 
 install(DIRECTORY root DESTINATION ${CMLYST_HTML_DIR})
-
-include_directories(
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${Cutelyst2Qt5_INCLUDE_DIR}
-)
 
 add_definitions(
     -DQT_NO_KEYWORDS

@@ -34,7 +34,7 @@ public:
     QString title;
     QString path;
     Author author;
-    Grantlee::SafeString content;
+    Cutelee::SafeString content;
     QDateTime publishedAt;
     QDateTime updatedAt;
     QDateTime createdAt;

@@ -101,7 +101,7 @@ void Page::setAuthor(const Author &author)
     d->author = author;
 }
 
-Grantlee::SafeString Page::content() const
+Cutelee::SafeString Page::content() const
 {
     Q_D(const Page);
     return d->content;
@@ -110,10 +110,10 @@ Grantlee::SafeString Page::content() const
 void Page::setContent(const QString &body, bool safe)
 {
     Q_D(Page);
-    d->content = Grantlee::SafeString(body, safe);
+    d->content = Cutelee::SafeString(body, safe);
 }
 
-void Page::updateContent(const Grantlee::SafeString &body)
+void Page::updateContent(const Cutelee::SafeString &body)
 {
     Q_D(Page);
     d->content = body;

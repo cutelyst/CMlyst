@@ -22,11 +22,11 @@
 #include <Cutelyst/Application>
 #include <Cutelyst/Context>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
-#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
+#include <Cutelyst/Plugins/View/Cutelee/cuteleeview.h>
 #include <Cutelyst/Plugins/Utils/Sql>
 #include <Cutelyst/Plugins/Utils/Pagination>
 
-#include <grantlee/safestring.h>
+#include <cutelee/safestring.h>
 
 #include <QSqlQuery>
 
@@ -91,13 +91,13 @@ void Root::page(Cutelyst::Context *c)
     auto settings = engine->settings();
     const QString cms_head = settings.value(QStringLiteral("cms_head"));
     if (!cms_head.isEmpty()) {
-        const Grantlee::SafeString safe(cms_head, true);
+        const Cutelee::SafeString safe(cms_head, true);
         c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
     }
 
     const QString cms_foot = settings.value(QStringLiteral("cms_foot"));
     if (!cms_foot.isEmpty()) {
-        const Grantlee::SafeString safe(cms_foot, true);
+        const Cutelee::SafeString safe(cms_foot, true);
         c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
     }
 
@@ -281,13 +281,13 @@ void Root::author(Context *c, const QString &slug)
 
     const QString cms_head = settings.value(QStringLiteral("cms_head"));
     if (!cms_head.isEmpty()) {
-        const Grantlee::SafeString safe(cms_head, true);
+        const Cutelee::SafeString safe(cms_head, true);
         c->setStash(QStringLiteral("cms_head"), QVariant::fromValue(safe));
     }
 
     const QString cms_foot = settings.value(QStringLiteral("cms_foot"));
     if (!cms_foot.isEmpty()) {
-        const Grantlee::SafeString safe(cms_foot, true);
+        const Cutelee::SafeString safe(cms_foot, true);
         c->setStash(QStringLiteral("cms_foot"), QVariant::fromValue(safe));
     }
 

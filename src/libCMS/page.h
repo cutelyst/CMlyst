@@ -23,7 +23,7 @@
 #include <QObject>
 #include <QDateTime>
 #include <QStringList>
-#include <grantlee/safestring.h>
+#include <cutelee/safestring.h>
 
 typedef QHash<QString, QString> Author;
 
@@ -39,7 +39,7 @@ class Page : public QObject
     Q_PROPERTY(QString name READ title WRITE setTitle)
     Q_PROPERTY(QString path READ path WRITE setPath)
     Q_PROPERTY(Author author READ author WRITE setAuthor)
-    Q_PROPERTY(Grantlee::SafeString content READ content)
+    Q_PROPERTY(Cutelee::SafeString content READ content)
     Q_PROPERTY(QDateTime published_at READ publishedAt WRITE setPublishedAt)
     Q_PROPERTY(QDateTime updated_at READ updated WRITE setUpdated)
     Q_PROPERTY(QDateTime created_at READ created WRITE setCreated)
@@ -65,9 +65,9 @@ public:
     Author author() const;
     void setAuthor(const Author &author);
 
-    Grantlee::SafeString content() const;
+    Cutelee::SafeString content() const;
     void setContent(const QString &body, bool safe);
-    void updateContent(const Grantlee::SafeString &body);
+    void updateContent(const Cutelee::SafeString &body);
 
     bool published() const;
     void setPublished(bool enable);

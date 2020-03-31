@@ -4,8 +4,8 @@ CMlyst is a Content Management application built upon Cutelyst with support for 
  Help is welcome :)
 
 ## Dependencies
- * Grantlee
- * Cutelyst 2.0.0 with enablend Grantlee plugin
+ * Cutelee
+ * Cutelyst 2.11.0 with CuteleeView plugin enabled
 
 ## Configuration
 Create an INI file like cmlyst.conf with:

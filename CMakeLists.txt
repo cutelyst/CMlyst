@@ -17,7 +17,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMLYST_APP_DIR "${LIB_INSTALL_DIR}/cutelyst-apps" CACHE PATH "Installation directory for the Cutelyst app")
-set(CMLYST_HTML_DIR "${SHARE_INSTALL_PREFIX}/cmlyst" CACHE PATH "Target directory for the Grantlee/HTML files")
+set(CMLYST_HTML_DIR "${SHARE_INSTALL_PREFIX}/cmlyst" CACHE PATH "Target directory for the Cutelee/HTML files")
 
 # Build time config definitions
 configure_file(config.h.in ${CMAKE_BINARY_DIR}/config.h)

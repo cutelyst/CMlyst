@@ -19,7 +19,7 @@
 #include "cmlyst.h"
 
 #include <Cutelyst/Application>
-#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
+#include <Cutelyst/Plugins/View/Cutelee/cuteleeview.h>
 #include <Cutelyst/Plugins/Session/Session>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/authenticationrealm.h>
@@ -68,7 +68,7 @@ bool CMlyst::init()
     bool production = config(QStringLiteral("production")).toBool();
     qDebug() << "Production" << production;
 
-    auto view = new GrantleeView(this);
+    auto view = new CuteleeView(this);
     view->setTemplateExtension(QStringLiteral(".html"));
     view->setWrapper(QStringLiteral("base.html"));
     view->setCache(production);
@@ -82,7 +82,7 @@ bool CMlyst::init()
 
     view->setIncludePaths({ pathTo(QStringLiteral("root/themes/default")) });
 
-    auto adminView = new GrantleeView(this, QStringLiteral("admin"));
+    auto adminView = new CuteleeView(this, QStringLiteral("admin"));
     adminView->setTemplateExtension(QStringLiteral(".html"));
     adminView->setWrapper(QStringLiteral("wrapper.html"));
     adminView->setIncludePaths({ pathTo(QStringLiteral("root/admin")) });

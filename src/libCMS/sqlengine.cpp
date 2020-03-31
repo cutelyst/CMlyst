@@ -2,7 +2,7 @@
 #include "page.h"
 #include "menu.h"
 
-#include <Cutelyst/Plugins/View/Grantlee/grantleeview.h>
+#include <Cutelyst/Plugins/View/Cutelee/cuteleeview.h>
 #include <Cutelyst/Plugins/Utils/Sql>
 #include <Cutelyst/Context>
 #include <Cutelyst/Application>
@@ -668,7 +668,7 @@ void SqlEngine::configureView(Cutelyst::Context *c)
 
         Cutelyst::Application *app = c->app();
 
-        auto view = qobject_cast<Cutelyst::GrantleeView*>(app->view());
+        auto view = qobject_cast<Cutelyst::CuteleeView*>(app->view());
 
         const QDir themeDir = app->pathTo(QStringLiteral("root/themes"));
 

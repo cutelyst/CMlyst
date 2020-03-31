@@ -39,13 +39,13 @@ add_library(cmlyst SHARED ${cmlyst_SRCS})
 # Link to Cutelyst
 target_link_libraries(cmlyst
     Cutelyst::Core
-    Cutelyst::View::Grantlee
+    Cutelyst::View::Cutelee
     Cutelyst::Utils::Sql
     Cutelyst::Authentication
     Cutelyst::StatusMessage
     Cutelyst::Utils::Pagination
     Cutelyst::Session
-    Grantlee5::Templates
+    Cutelee5::Templates
     Qt5::Core
     Qt5::Network
     Qt5::Sql

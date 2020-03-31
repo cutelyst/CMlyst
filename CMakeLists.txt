@@ -7,8 +7,8 @@ find_package(Qt5 COMPONENTS
     Network
     Sql
 )
-find_package(Cutelyst2Qt5 2.7.0 REQUIRED)
-find_package(Grantlee5 REQUIRED)
+find_package(Cutelyst2Qt5 2.11.0 REQUIRED)
+find_package(Cutelee5 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)

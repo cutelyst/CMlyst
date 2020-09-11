@@ -1,8 +1,3 @@
-include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 # Our sources
 set(cmlyst_SRCS
     ${TEMPLATES_SRC}
@@ -30,9 +25,6 @@ set(cmlyst_SRCS
     rsswriter.cpp
 )
 
-# C++11 rocks!
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-
 # Create the application
 add_library(cmlyst SHARED ${cmlyst_SRCS})
 
@@ -51,5 +43,11 @@ target_link_libraries(cmlyst
     Qt5::Sql
 )
 
-# TODO install to a place where uWSGI Cutelyst plugin searches for
-install(TARGETS cmlyst DESTINATION ${CMLYST_APP_DIR})
+install(TARGETS cmlyst
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
+)
+
+install(DIRECTORY ../root
+        DESTINATION ${CMAKE_INSTALL_FULL_DATADIR}/cmlyst
+)

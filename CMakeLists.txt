@@ -4,7 +4,7 @@ project(CMlyst VERSION 0.5.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-find_package(Qt5 COMPONENTS
+find_package(Qt5 5.10 COMPONENTS
     Core
     Network
     Sql

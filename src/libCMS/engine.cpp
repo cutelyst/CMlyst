@@ -70,6 +70,7 @@ QVariant Engine::menusProperty()
 
 bool Engine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 {
+    Q_UNUSED(c)
     Q_UNUSED(menu)
     Q_UNUSED(replace)
     return false;
@@ -77,6 +78,7 @@ bool Engine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 
 bool Engine::removeMenu(Cutelyst::Context *c, const QString &name)
 {
+    Q_UNUSED(c)
     Q_UNUSED(name)
     return false;
 }
@@ -113,7 +115,7 @@ QString Engine::normalizePath(const QString &path)
     }
     ret = parts.join(QLatin1Char('/'));
     if (ret.isNull()) {
-        ret = QStringLiteral("");
+        ret = QLatin1String("");
     }
     return ret;
 }
@@ -129,7 +131,8 @@ QString Engine::normalizeTitle(const QString &title)
     ret.replace(QLatin1Char('-'), QChar::Space);
 
     // remove everything that is not a word or space
-    ret.remove(QRegularExpression(QStringLiteral("[^\\w\\s]")));
+    static QRegularExpression re(QStringLiteral("[^\\w\\s]"));
+    ret.remove(re);
 
     // remove abused space
     ret = ret.simplified();

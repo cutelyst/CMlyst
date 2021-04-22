@@ -43,6 +43,23 @@ target_link_libraries(cmlyst
     Qt5::Sql
 )
 
+add_executable(cmlystd ${cmlyst_SRCS} main.cpp)
+target_link_libraries(cmlystd
+    Cutelyst::Core
+    Cutelyst::View::Cutelee
+    Cutelyst::Utils::Sql
+    Cutelyst::Authentication
+    Cutelyst::StatusMessage
+    Cutelyst::Utils::Pagination
+    Cutelyst::Session
+    Cutelyst::WSGI
+    Cutelee5::Templates
+    Qt5::Core
+    Qt5::Network
+    Qt5::Sql
+)
+add_compile_definitions(CMLYST_ROOT=\"${CMAKE_INSTALL_FULL_DATADIR}/cmlyst\")
+
 install(TARGETS cmlyst
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel

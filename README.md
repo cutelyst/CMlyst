@@ -28,7 +28,7 @@ After the setup is done and you have your first admin using created unset the SE
 
     cmlystd --http-socket :3000 --ini cmlyst.conf
   
-Now point your browser to http://localhost:3000
+Now point your browser to http://localhost:3000/.admin configure and create your first pages/posts
 
 ## Paths
  * http://localhost:3000/.admin  Admin interface

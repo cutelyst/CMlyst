@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.6.0 FATAL_ERROR)
 
-project(CMlyst VERSION 0.5.0 LANGUAGES CXX)
+project(CMlyst VERSION 0.5.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 

@@ -60,7 +60,7 @@ target_link_libraries(cmlystd
 )
 add_compile_definitions(CMLYST_ROOT=\"${CMAKE_INSTALL_FULL_DATADIR}/cmlyst\")
 
-install(TARGETS cmlyst
+install(TARGETS cmlyst cmlystd
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT runtime
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT devel
 )

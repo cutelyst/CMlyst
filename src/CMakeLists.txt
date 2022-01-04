@@ -37,7 +37,7 @@ target_link_libraries(cmlyst
     Cutelyst::StatusMessage
     Cutelyst::Utils::Pagination
     Cutelyst::Session
-    Cutelee5::Templates
+    Cutelee::Templates
     Qt5::Core
     Qt5::Network
     Qt5::Sql
@@ -52,8 +52,8 @@ target_link_libraries(cmlystd
     Cutelyst::StatusMessage
     Cutelyst::Utils::Pagination
     Cutelyst::Session
-    Cutelyst::WSGI
-    Cutelee5::Templates
+    Cutelyst::Server
+    Cutelee::Templates
     Qt5::Core
     Qt5::Network
     Qt5::Sql

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 Daniel Nicoletti <dantti12@gmail.com>
+ * Copyright (C) 2021-2022 Daniel Nicoletti <dantti12@gmail.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +17,7 @@
  */
 #include <QCoreApplication>
 
-#include <Cutelyst/WSGI/wsgi.h>
+#include <Cutelyst/Server/server.h>
 
 #include "cmlyst.h"
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationName(QStringLiteral("cutelyst-wsgi"));
     QCoreApplication::setApplicationVersion(QStringLiteral("1.0.0"));
 
-    CWSGI::WSGI server;
+    Cutelyst::Server server;
     server.setStaticMap({
                             QStringLiteral("/static=root/static")
                         });

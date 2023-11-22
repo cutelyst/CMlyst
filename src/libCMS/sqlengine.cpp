@@ -97,7 +97,7 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
     return page;
 }
 
-Page *SqlEngine::getPage(const QString &path, QObject *parent)
+Page *SqlEngine::getPage(QStringView path, QObject *parent)
 {
     QSqlQuery query = CPreparedSqlQueryThreadForDB(QStringLiteral("SELECT id, uuid, path, title, author_id, content,"
                                                                   " created_at, updated_at, published_at, page, allow_comments, published "
@@ -105,7 +105,7 @@ Page *SqlEngine::getPage(const QString &path, QObject *parent)
                                                                   "WHERE path = :path"),
                                                    QStringLiteral("cmlyst"));
     if (!path.isNull()) {
-        query.bindValue(QStringLiteral(":path"), path);
+        query.bindValue(QStringLiteral(":path"), path.toString());
     } else {
         query.bindValue(QStringLiteral(":path"), QStringLiteral(""));
     }

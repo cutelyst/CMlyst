@@ -23,7 +23,7 @@ public:
     /**
      * Return true if the dispatchType matches the given path
      */
-    virtual DispatchType::MatchType match(Context *c, const QString &path, const QStringList &args) const final;
+    DispatchType::MatchType match(Context *c, QStringView path, const QStringList &args) const override final;
 
     /**
      * Returns an uri for an action

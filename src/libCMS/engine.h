@@ -61,7 +61,7 @@ public:
      */
     virtual bool init(const QHash<QString, QString> &settings) = 0;
 
-    virtual Page *getPage(const QString &path, QObject *parent) = 0;
+    virtual Page *getPage(QStringView path, QObject *parent) = 0;
 
     virtual Page *getPageById(const QString &id, QObject *parent) = 0;
 

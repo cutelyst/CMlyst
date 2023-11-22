@@ -6,11 +6,10 @@
 
 class SqlUserStore : public Cutelyst::AuthenticationStore
 {
-    Q_OBJECT
 public:
-    explicit SqlUserStore(QObject *parent = 0);
+    explicit SqlUserStore();
 
-    virtual Cutelyst::AuthenticationUser findUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &userinfo);
+    Cutelyst::AuthenticationUser findUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &userinfo) override;
 
     QString addUser(const Cutelyst::ParamsMultiMap &user, bool replace);
 };

@@ -36,14 +36,14 @@ bool Admin::Auto(Context *c)
 
     StatusMessage::load(c);
 
-    if (c->action() == CActionFor(QStringLiteral("login")) ||
-            c->action() == CActionFor(QStringLiteral("logout"))) {
+    if (c->action() == CActionFor(u"login") ||
+            c->action() == CActionFor(u"logout")) {
         return true;
     }
 
     if (!Authentication::userExists(c)) {
         qDebug() << "*** Admin::Auto() User not found forwarding to /.admin/login";
-        c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
+        c->res()->redirect(c->uriFor(CActionFor(u"login")));
         return false;
     }
 
@@ -70,7 +70,7 @@ bool Admin::End(Context *c)
 void Admin::logout(Cutelyst::Context *c)
 {
     Authentication::logout(c);
-    c->res()->redirect(c->uriFor(CActionFor(QStringLiteral("login"))));
+    c->res()->redirect(c->uriFor(CActionFor(u"login")));
 }
 
 void Admin::login(Context *c)

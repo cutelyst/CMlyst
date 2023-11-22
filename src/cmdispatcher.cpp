@@ -35,10 +35,10 @@ QByteArray CMDispatcher::list() const
                       QStringLiteral("Loaded Content Manager actions:"));
 }
 
-DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, const QStringList &args) const
+DispatchType::MatchType CMDispatcher::match(Context *c, QStringView path, const QStringList &args) const
 {
     // we only match absolute paths
-    if (!args.isEmpty() || path.endsWith(QLatin1Char('/'))) {
+    if (!args.isEmpty() || path.endsWith(u'/')) {
         return NoMatch;
     }
 
@@ -53,7 +53,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
     if ((path.isEmpty() && showPostsOnFront) ||
             (!showPostsOnFront && settings.value(QStringLiteral("page_for_posts")) == path)) {
         req->setArguments(args);
-        req->setMatch(path);
+        req->setMatch(path.toString());
         setupMatchedAction(c, m_latestPostsAction);
         return ExactMatch;
     }
@@ -68,7 +68,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, const QString &path, con
     if (page && page->published()) {
         c->setStash(QStringLiteral("page"), QVariant::fromValue(page));
         req->setArguments(args);
-        req->setMatch(path);
+        req->setMatch(path.toString());
         setupMatchedAction(c, m_pageAction);
         return ExactMatch;
     }

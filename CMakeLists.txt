@@ -1,16 +1,16 @@
 cmake_minimum_required(VERSION 3.6.0 FATAL_ERROR)
 
-project(CMlyst VERSION 0.6.0 LANGUAGES CXX)
+project(CMlyst VERSION 0.7.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-find_package(Qt5 5.10 COMPONENTS
+find_package(Qt6 6.0 COMPONENTS
     Core
     Network
     Sql
 )
-find_package(Cutelyst3Qt5 3.1.0 REQUIRED)
-find_package(Cutelee6Qt5 REQUIRED)
+find_package(Cutelyst4Qt6 4.0.0 REQUIRED)
+find_package(Cutelee6Qt6 REQUIRED)
 
 # Auto generate moc files
 set(CMAKE_AUTOMOC ON)
@@ -18,7 +18,7 @@ set(CMAKE_AUTOMOC ON)
 # to always look for includes there:
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
@@ -33,13 +33,14 @@ file(GLOB_RECURSE TEMPLATES_SRC root/*)
 install(DIRECTORY root DESTINATION ${CMLYST_HTML_DIR})
 
 add_definitions(
-    -DQT_NO_KEYWORDS
     -DQT_NO_CAST_TO_ASCII
     -DQT_NO_CAST_FROM_ASCII
     -DQT_STRICT_ITERATORS
     -DQT_NO_URL_CAST_FROM_STRING
     -DQT_NO_CAST_FROM_BYTEARRAY
     -DQT_USE_QSTRINGBUILDER
+    -DQT_USE_FAST_OPERATOR_PLUS
+    -DQT_DISABLE_DEPRECATED_BEFORE=0x060000
 )
 
 add_subdirectory(src)

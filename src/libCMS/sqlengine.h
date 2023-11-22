@@ -22,65 +22,65 @@ class SqlEngine : public Engine
 public:
     explicit SqlEngine(QObject *parent = 0);
 
-    virtual bool init(const QHash<QString, QString> &settings) override;
+    bool init(const QHash<QString, QString> &settings) override;
 
-    virtual Page *getPage(const QString &path, QObject *parent) override;
+    Page *getPage(QStringView path, QObject *parent) override;
 
-    virtual Page *getPageById(const QString &id, QObject *parent) override;
+    Page *getPageById(const QString &id, QObject *parent) override;
 
-    virtual bool removePage(int id) override;
+    bool removePage(int id) override;
 
     /**
      * Returns the available pages,
      * when depth is -1 all pages are listed
      */
-    virtual QList<Page *> listPages(QObject *parent,
+    QList<Page *> listPages(QObject *parent,
                                     int offset,
                                     int limit) override;
 
-    virtual QList<Page *> listPagesPublished(QObject *parent,
+    QList<Page *> listPagesPublished(QObject *parent,
                                              int offset,
                                              int limit) override;
 
-    virtual QList<Page *> listPosts(QObject *parent,
+    QList<Page *> listPosts(QObject *parent,
                                     int offset,
                                     int limit) override;
 
-    virtual QList<Page *> listPostsPublished(QObject *parent,
+    QList<Page *> listPostsPublished(QObject *parent,
                                              int offset,
                                              int limit) override;
 
-    virtual QList<Page *> listAuthorPostsPublished(QObject *parent,
+    QList<Page *> listAuthorPostsPublished(QObject *parent,
                                                    int authorId,
                                                    int offset,
                                                    int limit) override;
 
-    virtual QHash<QString, QString> settings() const override;
+    QHash<QString, QString> settings() const override;
 
-    virtual QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
-    virtual bool setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value) override;
+    QString settingsValue(const QString &key, const QString &defaultValue = QString()) const override;
+    bool setSettingsValue(Cutelyst::Context *c, const QString &key, const QString &value) override;
 
-    virtual QList<Menu *> menus() override;
+    QList<Menu *> menus() override;
 
-    virtual bool saveMenu(Cutelyst::Context *c, Menu *menu, bool replace) override;
-    virtual bool removeMenu(Cutelyst::Context *c, const QString &name) override;
+    bool saveMenu(Cutelyst::Context *c, Menu *menu, bool replace) override;
+    bool removeMenu(Cutelyst::Context *c, const QString &name) override;
 
-    virtual QHash<QString, Menu *> menuLocations() override;
+    QHash<QString, Menu *> menuLocations() override;
 
-    virtual bool settingsIsWritable() const override;
+    bool settingsIsWritable() const override;
 
     QHash<QString, QString> loadSettings(Cutelyst::Context *c) override;
 
-    virtual QDateTime lastModified() override;
+    QDateTime lastModified() override;
 
-    virtual QString addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace) override;
-    virtual bool removeUser(Cutelyst::Context *c, int id) override;
-    virtual QVariantList users() override;
-    virtual QHash<QString, QString> user(const QString &slug) override;
-    virtual QHash<QString, QString> user(int id) override;
+    QString addUser(Cutelyst::Context *c, const Cutelyst::ParamsMultiMap &user, bool replace) override;
+    bool removeUser(Cutelyst::Context *c, int id) override;
+    QVariantList users() override;
+    QHash<QString, QString> user(const QString &slug) override;
+    QHash<QString, QString> user(int id) override;
 
 private:
-    virtual int savePageBackend(Page *page) override;
+    int savePageBackend(Page *page) override;
 
     void loadMenus();
     void loadUsers();

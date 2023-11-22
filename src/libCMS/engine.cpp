@@ -109,11 +109,11 @@ QString Engine::normalizePath(const QString &path)
     QString ret;
     // "/foo/bar/Iam a big...path" turns into
     // "/foo/bar/iam-a-big-path"
-    QStringList parts = path.split(QLatin1Char('/'), QString::SkipEmptyParts);
+    QStringList parts = path.split(u'/', Qt::SkipEmptyParts);
     for (int i = 0; i < parts.size(); ++i) {
         parts.replace(i, normalizeTitle(parts.at(i)));
     }
-    ret = parts.join(QLatin1Char('/'));
+    ret = parts.join(u'/');
     if (ret.isNull()) {
         ret = QLatin1String("");
     }
@@ -127,8 +127,8 @@ QString Engine::normalizeTitle(const QString &title)
     QString ret = title.toLower();
 
     // turn separators into space
-    ret.replace(QLatin1Char('.'), QChar::Space);
-    ret.replace(QLatin1Char('-'), QChar::Space);
+    ret.replace(u'.', QChar::Space);
+    ret.replace(u'-', QChar::Space);
 
     // remove everything that is not a word or space
     static QRegularExpression re(QStringLiteral("[^\\w\\s]"));

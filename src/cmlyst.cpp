@@ -56,7 +56,6 @@ CMlyst::CMlyst(QObject *parent) :
     QCoreApplication::setOrganizationName(QStringLiteral("cutelyst"));
 
     qRegisterMetaType<Author>();
-    qRegisterMetaTypeStreamOperators<Author>("Author");
 }
 
 CMlyst::~CMlyst()
@@ -73,7 +72,7 @@ bool CMlyst::init()
     view->setWrapper(QStringLiteral("base.html"));
     view->setCache(production);
 
-    const QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::DataLocation)).toString();
+    const QDir dataDir = config(QStringLiteral("DataLocation"), QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)).toString();
     if (!dataDir.exists() && !dataDir.mkpath(dataDir.absolutePath())) {
         qCritical() << "Could not create DataLocation" << dataDir.absolutePath();
         return false;
@@ -102,18 +101,16 @@ bool CMlyst::init()
 
     new CMDispatcher(this);
 
-    auto store = new SqlUserStore;
+    auto store = std::make_shared<SqlUserStore>();
 
-    auto password = new CredentialPassword;
+    auto password = std::make_shared<CredentialPassword>();
     password->setPasswordField(QStringLiteral("password"));
     password->setPasswordType(CredentialPassword::Hashed);
-
-    auto realm = new AuthenticationRealm(store, password);
 
     new Session(this);
 
     auto auth = new Authentication(this);
-    auth->addRealm(realm);
+    auth->addRealm(store, password);
 
     new StatusMessage(this);
 

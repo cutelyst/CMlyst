@@ -38,9 +38,9 @@ target_link_libraries(cmlyst
     Cutelyst::Utils::Pagination
     Cutelyst::Session
     Cutelee::Templates
-    Qt5::Core
-    Qt5::Network
-    Qt5::Sql
+    Qt::Core
+    Qt::Network
+    Qt::Sql
 )
 
 add_executable(cmlystd ${cmlyst_SRCS} main.cpp)
@@ -54,9 +54,9 @@ target_link_libraries(cmlystd
     Cutelyst::Session
     Cutelyst::Server
     Cutelee::Templates
-    Qt5::Core
-    Qt5::Network
-    Qt5::Sql
+    Qt::Core
+    Qt::Network
+    Qt::Sql
 )
 add_compile_definitions(CMLYST_ROOT=\"${CMAKE_INSTALL_FULL_DATADIR}/cmlyst\")
 

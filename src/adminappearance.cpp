@@ -38,7 +38,7 @@ AdminAppearance::~AdminAppearance()
 
 void AdminAppearance::index(Context *c)
 {
-    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
+    c->response()->redirect(c->uriFor(CActionFor(u"menus")));
 }
 
 void AdminAppearance::menus(Context *c)
@@ -56,7 +56,7 @@ void AdminAppearance::menus_remove(Context *c, const QString &id)
         engine->removeMenu(c, id);
     }
 
-    c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
+    c->response()->redirect(c->uriFor(CActionFor(u"menus")));
 }
 
 void AdminAppearance::menus_new(Context *c)
@@ -67,7 +67,7 @@ void AdminAppearance::menus_new(Context *c)
         QString id = QUuid::createUuid().toString().remove(QLatin1Char('{')).remove(QLatin1Char('}'));
         CMS::Menu *menu = new CMS::Menu(id, c);
         if (saveMenu(c, menu, params, false)) {
-            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
+            c->response()->redirect(c->uriFor(CActionFor(u"menus")));
             return;
         }
 
@@ -88,14 +88,14 @@ void AdminAppearance::menus_edit(Context *c, const QString &id)
     CMS::Menu *menu = engine->menu(id.toHtmlEscaped());
     if (!menu) {
         qWarning() << "menu not found" << id;
-        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
+        c->response()->redirect(c->uriFor(CActionFor(u"menus")));
         return;
     }
 
     qWarning() << "params" << c->req()->method();
     if (c->req()->isPost()) {
         if (saveMenu(c, menu, c->req()->bodyParams(), true)) {
-            c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("menus"))));
+            c->response()->redirect(c->uriFor(CActionFor(u"menus")));
             return;
         } else {
             c->stash({

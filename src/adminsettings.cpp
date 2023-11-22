@@ -486,15 +486,15 @@ void AdminSettings::json_export(Context *c)
     QJsonObject main;
     main.insert(QStringLiteral("db"), dbArray);
 
-    c->response()->setJsonBody(QJsonDocument(main));
+    c->response()->setJsonObjectBody(main);
     c->response()->headers().setContentDispositionAttachment(QStringLiteral("data.cmlyst.%1.json")
-                                                             .arg(QDateTime::currentDateTimeUtc().toString(QStringLiteral("yyyy-MM-dd"))));
+                                                             .arg(QDateTime::currentDateTimeUtc().toString(u"yyyy-MM-dd")).toLatin1());
 }
 
 void AdminSettings::db_clean(Context *c)
 {
     if (!c->request()->isPost()) {
-        c->response()->redirect(c->uriFor(CActionFor(QStringLiteral("database"))));
+        c->response()->redirect(c->uriFor(CActionFor(u"database")));
     }
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(

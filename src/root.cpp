@@ -175,7 +175,7 @@ void Root::feed(Context *c)
 
     Headers &headers = res->headers();
     headers.setLastModified(currentDateTime);
-    headers.setContentType(QStringLiteral("text/xml; charset=UTF-8"));
+    headers.setContentType("text/xml; charset=UTF-8");
 
     QSqlQuery query = CPreparedSqlQueryThreadForDB(
                 QStringLiteral("SELECT p.title, p.path, u.slug, p.published_at, p.content "

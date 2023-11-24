@@ -35,9 +35,11 @@ QByteArray CMDispatcher::list() const
                       QStringLiteral("Loaded Content Manager actions:"));
 }
 
-DispatchType::MatchType CMDispatcher::match(Context *c, QStringView path, const QStringList &args) const
+DispatchType::MatchType CMDispatcher::match(Context *c, QStringView pathView, const QStringList &args) const
 {
     // we only match absolute paths
+    // Cutelyst v4 changed path to start with /
+    const QString path = pathView.sliced(pathView.size() > 0 ? 1 : 0).toString();
     if (!args.isEmpty() || path.endsWith(u'/')) {
         return NoMatch;
     }
@@ -53,7 +55,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, QStringView path, const 
     if ((path.isEmpty() && showPostsOnFront) ||
             (!showPostsOnFront && settings.value(QStringLiteral("page_for_posts")) == path)) {
         req->setArguments(args);
-        req->setMatch(path.toString());
+        req->setMatch(path);
         setupMatchedAction(c, m_latestPostsAction);
         return ExactMatch;
     }
@@ -68,7 +70,7 @@ DispatchType::MatchType CMDispatcher::match(Context *c, QStringView path, const 
     if (page && page->published()) {
         c->setStash(QStringLiteral("page"), QVariant::fromValue(page));
         req->setArguments(args);
-        req->setMatch(path.toString());
+        req->setMatch(path);
         setupMatchedAction(c, m_pageAction);
         return ExactMatch;
     }

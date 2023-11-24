@@ -24,7 +24,7 @@ public:
 
     bool init(const QHash<QString, QString> &settings) override;
 
-    Page *getPage(QStringView path, QObject *parent) override;
+    Page *getPage(const QString &path, QObject *parent) override;
 
     Page *getPageById(const QString &id, QObject *parent) override;
 

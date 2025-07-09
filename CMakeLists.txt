@@ -1,15 +1,15 @@
-cmake_minimum_required(VERSION 3.6.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.28 FATAL_ERROR)
 
-project(CMlyst VERSION 0.7.0 LANGUAGES CXX)
+project(CMlyst VERSION 0.8.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 
-find_package(Qt6 6.0 COMPONENTS
+find_package(Qt6 6.4 COMPONENTS
     Core
     Network
     Sql
 )
-find_package(Cutelyst4Qt6 4.0.0 REQUIRED)
+find_package(Cutelyst5Qt6 5.0.0 REQUIRED)
 find_package(Cutelee6Qt6 REQUIRED)
 
 # Auto generate moc files

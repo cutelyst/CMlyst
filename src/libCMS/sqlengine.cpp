@@ -71,21 +71,21 @@ Page *SqlEngine::createPageObj(const QSqlQuery &query, QObject *parent)
     page->setContent(query.value(QStringLiteral("content")).toString(), true);
 
     QDateTime updated = QDateTime::fromString(query.value(QStringLiteral("updated_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-    updated.setTimeSpec(Qt::UTC);
+    updated.toTimeZone(QTimeZone::UTC);
     updated = updated.toTimeZone(m_timezone);
-    updated.setTimeSpec(Qt::LocalTime);
+    updated.toTimeZone(QTimeZone::LocalTime);
     page->setUpdated(updated);
 
     QDateTime created = QDateTime::fromString(query.value(QStringLiteral("created_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-    created.setTimeSpec(Qt::UTC);
+    created.toTimeZone(QTimeZone::UTC);
     created = created.toTimeZone(m_timezone);
-    created.setTimeSpec(Qt::LocalTime);
+    created.toTimeZone(QTimeZone::LocalTime);
     page->setCreated(created);
 
     QDateTime published = QDateTime::fromString(query.value(QStringLiteral("published_at")).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-    published.setTimeSpec(Qt::UTC);
+    published.toTimeZone(QTimeZone::UTC);
     published = published.toTimeZone(m_timezone);
-    published.setTimeSpec(Qt::LocalTime);
+    published.toTimeZone(QTimeZone::LocalTime);
     page->setPublishedAt(published);
 
     page->setTitle(query.value(QStringLiteral("title")).toString());
@@ -303,7 +303,7 @@ bool SqlEngine::setSettingsValue(Cutelyst::Context *c, const QString &key, const
         }
     }
 
-    qint64 currentDateTime = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch() / 1000;
+    qint64 currentDateTime = QDateTime::currentMSecsSinceEpoch() / 1000;
     query.bindValue(QStringLiteral(":key"), QStringLiteral("modified"));
     query.bindValue(QStringLiteral(":value"), currentDateTime);
     if (!query.exec()) {
@@ -350,14 +350,14 @@ bool SqlEngine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 
         QJsonArray locations;
         const auto menuLocations = menu->locations();
-        for (const auto location : menuLocations) {
+        for (const auto &location : menuLocations) {
             locations.append(location);
         }
         objMenu.insert(QStringLiteral("locations"), locations);
 
         QJsonArray entriesJson;
         const QList<QVariantHash> entries = menu->entries();
-        for (const auto entry : entries) {
+        for (const auto &entry : entries) {
             entriesJson.append(QJsonObject::fromVariantHash(entry));
         }
         objMenu.insert(QStringLiteral("entries"), entriesJson);
@@ -373,7 +373,7 @@ bool SqlEngine::saveMenu(Cutelyst::Context *c, Menu *menu, bool replace)
 
 bool SqlEngine::removeMenu(Cutelyst::Context *c, const QString &name)
 {
-    for (const auto menuIt : m_menus) {
+    for (const auto menuIt : std::as_const(m_menus)) {
         if (menuIt->id() == name) {
             m_menus.removeOne(menuIt);
             saveMenu(c, nullptr, false);
@@ -597,7 +597,7 @@ void SqlEngine::loadMenus()
         menu->setLocations(locations);
 
         bool added = false;
-        for (const QString &location : locations) {
+        for (const QString &location : std::as_const(locations)) {
             if (!menuLocations.contains(location)) {
                 menuLocations.insert(location, menu);
                 added = true;

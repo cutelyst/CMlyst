@@ -375,17 +375,17 @@ void AdminSettings::json_import(Context *c)
 
             auto created = QDateTime::fromString(post.value(QStringLiteral("created_at")).toString(),
                                                  QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-            created.setTimeSpec(Qt::UTC);
+            created.toTimeZone(QTimeZone::UTC);
             page->setCreated(created);
 
             auto updated = QDateTime::fromString(post.value(QStringLiteral("updated_at")).toString(),
                                                  QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-            updated.setTimeSpec(Qt::UTC);
+            updated.toTimeZone(QTimeZone::UTC);
             page->setUpdated(updated);
 
             auto published = QDateTime::fromString(post.value(QLatin1String("published_at")).toString(),
                                                    QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-            published.setTimeSpec(Qt::UTC);
+            published.toTimeZone(QTimeZone::UTC);
             page->setPublishedAt(published);
 
             engine->savePage(c, page);
@@ -428,10 +428,10 @@ void AdminSettings::json_export(Context *c)
                 post.insert(QStringLiteral("html"), query.value(QStringLiteral("html")).toString());
                 post.insert(QStringLiteral("page"), !query.value(QStringLiteral("blog")).toBool());
                 post.insert(QStringLiteral("author_id"), query.value(QStringLiteral("author")).toLongLong());
-                const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000, Qt::UTC);
+                const QDateTime modified = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("modified")).toLongLong() * 1000, QTimeZone::UTC);
                 post.insert(QStringLiteral("created_at"), modified.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
                 post.insert(QStringLiteral("updated_at"), modified.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
-                const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000, Qt::UTC);
+                const QDateTime created = QDateTime::fromMSecsSinceEpoch(query.value(QStringLiteral("created")).toLongLong() * 1000, QTimeZone::UTC);
                 post.insert(QStringLiteral("published_at"), created.toString(QStringLiteral("yyyy-MM-dd HH:mm:ss")));
 
                 posts.append(post);

@@ -217,7 +217,7 @@ void Root::feed(Context *c)
             writer.writeItemCreator(query.value(2).toString());
 
             QDateTime published = QDateTime::fromString(query.value(3).toString(), QStringLiteral("yyyy-MM-dd HH:mm:ss"));
-            published.setTimeSpec(Qt::UTC);
+            published.toTimeZone(QTimeZone::UTC);
             writer.writeItemPubDate(published);
 
             const QString content = query.value(4).toString();
